@@ -1,0 +1,42 @@
+\section{Computer Algebra Systems}\label{sec:cas}
+\glsreset{cas}
+A \gls{cas} is a mathematical software, which is, for example, able to analyze, simplify and compute mathematical expressions. It is based on the theory of computer algebra. Computer Algebra is a part of computer science that designs, analyzes, implements and applies algebraic algorithms~\cite{ComputerAlgebra}. In 1963, \textit{Schoonschip} was one of the first \gls{cas} developed by Martinus J. G. Veltman~\cite{Schoonschip}. It was mainly used for high-energy physics.
+
+Using \gls{cas} was highly desirable, because it was a faster and easier alternative to calculation tables~\cite{Tables}. Another \gls{cas} \textit{MATLAB}\footnote{\textit{MATLAB} is an abbreviation for \textit{\textbf{mat}rix \textbf{lab}oratory}.} was initially developed by Cleve Moler in the late 1970s to allow students to use Fortran\footnote{Originally \textit{FORTRAN}, was the first widely used high-level programming language for general purposes and is still very popular for high-performance computing.} libraries without learning Fortran itself~\cite{MATLAB}. \textit{MATLAB} was constantly updated\footnote{Newest version is \textit{MATLAB 9.2} from march 2017.} and is still widely used for education and in image processing, because of its performance in linear algebra and numerical analysis.
+
+Nowadays, there are several different \gls{cas} available. From proprietary solutions, such as \textit{MATLAB}, \Maple, \Mathematica, to freely available software packages, such as \textit{SageMath}. Most \gls{cas} are more or less specialized for fields in mathematics, such as \textit{MATLAB} for linear algebra and numerical computations. However, nowadays the most popular \gls{cas} are \Mathematica{} and \Maple.
+
+\subsection{Maple}\label{subsec:maple}
+\Maple{} was initially released in 1982 and is written in \textit{C}, \textit{Java} and its internal programming language, also called \textit{Maple}. The main purposes was to create an \gls{cas}, which would be able to run on lower cost computers. \Maple{} bases on a small kernel, which is written in \textit{C}, that provides the \Maple{} language. Additional libraries are written in the \Maple{} language, while the \gls{gui} is written in \textit{Java}.
+
+In this thesis, we refer to version \textit{Maple 2016} and all information about internal data structures and the usage of \Maple{} is described in the manual~\cite{MAPLE:ProgrammingGuide}.
+
+Internally, symbolic expressions are stored in the memory as \gls{dag} data structures. This avoids multiple blocks in the memory for the same object in an expression. 
+
+Furthermore, \Maple{} allows different input notations: the \texttt{1D} input and the \texttt{2D} input. Consider the infinite integral
+\begin{equation}\label{eq:maple-input}
+\int\displaylimits_0^\infty \frac{\pi+\sin(2x)}{x^2} dx.
+\end{equation}
+The corresponding \texttt{1D} input notation in \Maple{} is
+\begin{equation}\label{eq:1dmaple-input}
+\texttt{int((Pi+sin(2*x))/x\^{}2, x=0..infinity)}.
+\end{equation}
+
+Historically, the \texttt{1D} format was used for inputting commands and expressions into \Maple, while the \texttt{2D} input is more used for interaction with human users. In fact, the internal \texttt{2D} representation is similar to \gls{mathML}~\cite{MathML} and its display is similar to \eqref{eq:maple-input}.
+
+We consider \Maple's \texttt{1D} input as syntactically correct and our translation process always refers to the \texttt{1D} input representation rather than the \texttt{2D} input representation.
+
+Another interesting characteristic, which becomes import for our translator, is determinism.
+
+\begin{definition}[Deterministic Algorithm]
+An algorithm is called \textbf{deterministic} if it produces always the same results on two identical inputs.
+\end{definition}
+
+\Maple{} is in general non-deterministic. That means, that two identical inputs possibly produce two different outputs depending on the run time environment. The reason is, that for example the order of the elements of a set\footnote{Mathematically, the elements in a set are not ordered. This is technically different in computer algebra, because each element is somewhere located in the memory. In a scope of a low-level programming environment, the elements of sets always have an order.} depends on the addresses of the elements in the memory. Mostly the background operation systems determine the positions of variables in the memory rather than the application \Maple{} does. 
+
+However, \Maple{} works in sessions. When a user starts a worksheet a new \Maple{-session} will be created. It is also possible to start a new session in a worksheet with the command \texttt{restart}. Within such sessions \Maple{} is deterministic as long as the input doesn't use non-deterministic algorithms, such as probabilistic algorithms\footnote{Probabilistic algorithms use randomness to find approximate solutions. Such algorithms are obviously non-deterministic.}.
+
+\subsection{Mathematica}\label{subsec:mathematica}
+\textit{Wolfram Mathematica} was conceived by Stephen Wolfram and initially released in 1988~\cite{Mathematica}. It is also written in \textit{C/C++}, \textit{Java} and its internal programming language \textit{Wolfram Language}. It is one of the most comprehensive \gls{cas} nowadays and an ever growing software. The previously mentioned interactive document \gls{cdf} uses \Mathematica. Also the knowledge engine\footnote{Also known as answer engine, is a computer science discipline which tries to automatically answer questions posed by humans in natural language.} \textit{Wolfram|Alpha}\footnote{\url{https://www.wolframalpha.com/}, seen 08/2017} is based on \Mathematica.
+
+In 2008 an error~\cite{Mathematica:Bug} in \Mathematica{} shows a problem of confidence in \gls{cas}. As we will explain later, our translator uses symbolic simplification\cite[section 2]{ComputerAlgebra} techniques in \Maple. Implemented symbolic simplification algorithms are rarely\footnote{In fact, there is no proof of correctness for symbolic simplifications in any \gls{cas} known.} proven and may therefore produce errors. We can only presume that the simplifications are correct.

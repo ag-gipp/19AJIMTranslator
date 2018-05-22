@@ -1,0 +1,35 @@
+\cleardoublepage
+\begin{abstract}
+\setcounter{page}{3}
+\glsresetall
+\thispagestyle{plain}
+This Master's thesis presents the development of a translation tool between representations of semantically enriched mathematical formulae in a \gls{wp} and its corresponding representations in a \gls{cas}. The representatives for the \gls{cas} are \Maple{} and \Mathematica{}, while the representative \gls{wp} is \LaTeX.
+
+Semantic information of a mathematical formula in \LaTeX{} is rather given in the context than in the formula itself. Extracting the information is complicated and sometimes even impossible. However, a translation to a \gls{cas} is only achievable, if the semantic of the formula is unique. The \gls{nist} in the U.S. has developed a set of semantic \LaTeX{} macros for all \glslink{opsf}{orthogonal polynomials and special functions (OPSF)} defined in the \gls{dlmf}. Using these macros can disambiguate formulae and provide access to the semantic information.
+
+Even if the semantics of a representation of one formula is unique, it does not need to match the semantics in another representation of the formula. For example, there are may be differences in the domains or a function in a \gls{cas} is normalized for a better performance. An important concept for complex and multivalued functions are \textit{branch cuts}. However, the positions of these cuts are not consistently defined and can vary from system to system. Therefore, a \gls{cas} user needs to fully understand the properties and definitions of the used functions in the \gls{cas}. Hence, a manual translation from one system to another is not only laborious, but also prone to errors.
+
+This thesis explains the realization of the translator, and discusses and suggests the approaches to the problems mentioned above.
+\end{abstract}
+
+\newpage
+% back side of title should be empty -> empty page here
+\mbox{}
+\begin{otherlanguage}{ngerman}
+\begin{abstract}
+\setcounter{page}{5}
+\glsresetall
+\thispagestyle{plain}
+Im Rahmen der Masterarbeit wurde ein Programm entwickelt, welches semantisch angereicherte mathematische Formeln von einer Darstellung in einem \glslink{wp}{Textverarbeitungssystem (WP)} wie \LaTeX{} zu einer entsprechenden Darstellung in einem \glslink{cas}{Computeralgebrasystem (CAS)} wie \Maple{} oder \Mathematica{} vor- und zurückübersetzen kann.
+
+Semantische Informationen von mathematischen Formeln in \LaTeX{} ergeben sich vor allem aus dem Kontext der Formeln. Diese Informationen zu extrahieren ist jedoch schwierig und in einigen Fällen bisher sogar unmöglich. Eine direkte Übersetzung zu einem \acrshort{cas} ist jedoch nur möglich, wenn die semantischen Informationen eindeutig sind. Das \gls{nist} in den USA hat dafür eine Liste von \LaTeX{} Makros erstellt, welche semantische Informationen für jedes \glslink{opsf}{orthogonale Polynom und jede spezielle Funktion (OPSF)} in der \gls{dlmf} bereitstellen. Mit Hilfe dieser Makros können Doppeldeutigkeiten vermieden und der Zugang zu den semantischen Informationen erleichtert werden.
+
+Selbst wenn die Semantik in einer Darstellung eindeutig ist, muss diese nicht mit der Semantik in einer anderen Darstellung übereinstimmen. Es kann Unterschiede in den Definitionsmengen geben oder eine Normalisierung definiert sein, um eine schnellere Berechnung zu ermöglichen. Bei mehrwertigen, komplexen Funktionen spielen sogenannte \textit{Branch-Cuts} eine wichtige Rolle für \acrshort{cas}. Die Position dieser \textit{Branch-Cuts} folgt zwar allgemeinen Konventionen, diese müssen aber nicht zwangsläufig eingehalten werden. Der Umgang mit einem \acrshort{cas} erfordert daher gute Kenntnisse über die speziellen Eigenschaften und Definitionen. Deshalb ist eine Übersetzung von einer Darstellung (z.B. \LaTeX) zu einer Anderen (z.B. \Maple) per Hand nicht nur mühselig, sondern auch fehleranfällig.
+
+In der vorliegenden Arbeit wird die Umsetzung des Übersetzers erläutert und Lösungsansätze für die oben genannten Probleme werden erörtert.
+\end{abstract}
+\end{otherlanguage}
+\setcounter{page}{6}
+\newpage
+\mbox{}
+\newpage

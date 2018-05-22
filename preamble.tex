@@ -1,0 +1,225 @@
+% general settings
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman,english]{babel} % german because of Zusammenfassung
+\usepackage[T1]{fontenc} 
+\usepackage{hyperref}			% for all hyperlinks (also cites)
+\usepackage[acronym, nomain]{glossaries} % generate glossaries (for example acronyms) before txfonts!
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{parskip}		% space between paragraphs
+\usepackage{txfonts}            % times new roman
+\usepackage{xcolor}				% more colors
+\usepackage{enumitem}			% customizable enumerates/itemizes
+\usepackage{algorithm}
+\usepackage{algpseudocode} %pseudocode
+\usepackage{lipsum} % fill text
+\usepackage{tabularx}
+\usepackage{stmaryrd}
+\usepackage{float}
+\usepackage{csquotes}
+\usepackage{layout}
+\usepackage{textcomp} % for prime symbol command: \textquotesingle
+
+% geometry for margin control and footer control (fancyhdr)
+% [showframe] for debugging
+% [outer=3cm,inner=4cm,bindingoffset=6mm]
+% [width=150mm,top=25mm,bottom=25mm,bindingoffset=6mm]
+\usepackage[%
+	a4paper,%
+	%bindingoffset=1.5cm,% offset for binding
+	%marginparwidth=1cm,
+	width=418pt,
+	inner=3.4cm,
+	%showframe % debugging
+	]{geometry}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+%\pagestyle{fancy} % not in general but after the content table
+
+% setup graphics
+\usepackage{graphicx}           % for all images
+\usepackage{subfig}             % for subfloats (titlepage images)
+\usepackage{wrapfig}			% wrapping text around figures
+\graphicspath{ {./images/} }    % set the default path for graphics
+
+% http://mirror.utexas.edu/ctan/macros/latex/contrib/adjustbox/adjustbox.pdf
+\usepackage[export]{adjustbox}  % for vertical align of images
+
+% own styles
+\usepackage{styles/thesistitle} % define preamble variable subtitle
+\usepackage{styles/DLMF/DLMFmath}
+\usepackage{styles/DLMF/DRMFfcns}
+
+% loading late is better...
+\usepackage{cleveref}			% better references, should be loaded last
+%\crefname{section}{§}{§§}
+%\crefformat{section}{§#2#1#3}
+
+% bibliography
+\input{./bibliography/Bib.tex}
+
+% ---------------------- DEFINITIONS ---------------------- %
+% define hyperlink colors
+\hypersetup{
+	%draft		= true,% deleted all links and colors of links! Printing mode
+	pdftitle	= {Semantic Preserving Bijective Mappings for Representations of Special Functions in Computer Algebra Systems and Word Processors - Exemplified using the DLMF/DRMF, the Word Processor LaTeX and the Computer Algebra Systems Maple and Mathematica},
+	pdfsubject={Master's Thesis in Mathematics, Technische Universität Berlin, July 2017.},
+	pdfauthor	= {Andr\'e Greiner-Petter},
+	pdfcreator	= {Andr\'e Greiner-Petter},
+	pdfkeywords	= {Special Functions, LaTeX, Translation},
+    colorlinks, 	% instead of color borders, color the string
+    linkcolor	= {red!50!black}, %{red!0!black} <- print
+    citecolor	= {blue!50!black},%{blue!0!black} <- print
+    urlcolor	= {blue!70!black}
+}
+
+% replace "Contents" by "Table of Contents" in babel-english
+\addto\captionsenglish{
+  \renewcommand{\contentsname}%
+    {Table of Contents}%
+}
+
+% allow line breaks in URLs in bibliography
+\apptocmd{\UrlBreaks}{\do\f\do\m}{}{}
+\setcounter{biburllcpenalty}{9000}% Kleinbuchstaben
+\setcounter{biburlucpenalty}{9000}% Großbuchstaben
+
+% --------------- DEFINE HEADER AND FOOTER ---------------- %
+% The fancyhdr package lets us add things in the left (L), right (R) and centre (C) of the header or footer and also lets us specify a different arrangement depending on whether its on an odd (O) or even (E) page.
+% For instance \fancyhead[RO,LE]{Section \thesection}
+\fancyhead{} %reset
+\fancyhead[LE,RO]{\leftmark}
+\fancyhead[RE,LO]{Section \thechapter.\thesection}
+\fancyfoot{} % reset
+\fancyfoot[LE,RO]{\thepage}
+
+% --------------- ALGORITHM DEFINITIONS ---------------- %
+\renewcommand{\algorithmicrequire}{\textbf{Input:}} % rename require to input
+\renewcommand{\algorithmicensure}{\textbf{Output:}} % rename ensure to output
+\newcommand{\NULL}{\textbf{null}}
+\renewcommand{\Return}{\textbf{return}}
+
+% --------------------- NEW COMMANDS ---------------------- %
+\newcommand{\DLMF}{DLMF}
+\newcommand{\DRMF}{DRMF}
+\newcommand{\CAS}{CAS}
+\newcommand{\Maple}{Maple}
+\newcommand{\Mathematica}{Mathematica}
+\newcommand{\Macro}{\DLMF/\DRMF{} \LaTeX{} macro}
+\newcommand{\MLP}{MLP}
+\newcommand{\JOBAD}{{\tt JOBAD}}
+
+\newcommand{\tbs}{\textbackslash}
+
+\newcommand{\langTex}{\mathfrak{sL}}
+\newcommand{\langMaple}{\mathfrak{M}_{aple}}
+\newcommand{\langMathe}{\mathfrak{M}_{athematica}}
+
+\newcommand{\inertF}{\texttt{InertForm}}
+
+%\newcommand{\1D}{\texttt{1-D}}
+
+\newcommand{\raw}[1]{\texttt{#1}}
+\newcommand{\trans}[3]{\mathrm{tr}_{#2}^{#1}\left(#3\right)}
+
+\newcommand{\sTeX}{{\raisebox{-.5ex}S\kern-.5ex\TeX}}
+
+\newcommand{\todo}[1]{{\color{red}\textbf{#1}}}
+
+\newcommand{\tableRowSpace}{\rule{0pt}{0.9\normalbaselineskip}}
+
+\newcommand{\aSingleQuote}{\hspace{0.03cm}\textquotesingle\hspace{0.03cm}}
+
+\newcommand{\tempEnvCitation}{}
+\newcommand{\tempEnvSpacing}{}
+\newenvironment{myQuote}[2][-0.4cm]%
+{%
+	\begin{quote}
+	\renewcommand{\tempEnvCitation}{#2}
+	\renewcommand{\tempEnvSpacing}{#1}
+	\itshape
+}%
+{%
+	\vspace{\tempEnvSpacing}
+	\begin{flushright}
+		\rule{6cm}{0.4pt}\\[-2pt]
+		\tempEnvCitation{}
+	\end{flushright}%
+	\end{quote}
+}
+
+\newcommand*{\myRuleTextFill}[2]{%
+  \makebox[#1]{%
+    \leaders\hrule height \dimexpr 8.2pt\relax depth \dimexpr -7pt\relax \hfill% Left rule
+    \enskip{#2}\enskip% Text (and surrounding spaces)
+    \leaders\hrule height \dimexpr 8.2pt\relax depth \dimexpr -7pt\relax \hfill\kern0pt}% Right rule
+}
+
+\def\myRuleFill{\leavevmode\leaders\hrule height \dimexpr 8.2pt\relax depth \dimexpr -7pt\hfill\kern0pt}
+
+\newtheoremstyle{defTheoStyle}
+	{6pt} % Space above
+	{2pt} % Space below
+	{\itshape} % Body font
+	{} % Indent amount
+	{\bfseries} % Theorem head font
+	{} % Punctuation after theorem head
+	{\newline} % Space after theorem head
+	{\thmname{#1} \thmnumber{#2}: {\normalfont\textit{(#3)}}} % Threaom head spec (can be left empty, meaning 'normal')
+	
+\newtheoremstyle{defExampStyle}
+	{6pt} % Space above
+	{2pt} % Space below
+	{\itshape} % Body font
+	{} % Indent amount
+	{\bfseries} % Theorem head font
+	{} % Punctuation after theorem head
+	{\newline} % Space after theorem head
+	{\thmname{#1} \thmnumber{#2}:} % Threaom head spec (can be left empty, meaning 'normal')
+
+\theoremstyle{defTheoStyle}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\theoremstyle{defExampStyle}
+\newtheorem{example}{Example}[chapter]
+
+% do not vertically extend pages
+\raggedbottom
+
+% -------------------- DEFINE ACRONYMS ----------------------- %
+\newacronym{dlmf}{DLMF}{Digital Library of Mathematical Functions}
+\newacronym{drmf}{DRMF}{Digital Repository of Mathematical Formulae}
+\newacronym{cas}{CAS}{Computer Algebra System}
+\newacronym{mlp}{MLP}{Mathematical Language Parser}
+\newacronym{mlp-pt}{PT}{MLP-Parse Tree}
+\newacronym{bnf}{BNF}{Backus-Naur Form}
+\newacronym{p2c}{P2C}{Presentation-To-Computation}
+\newacronym{nlp}{NLP}{Natural Language Processing}
+\newacronym{pom}{POM}{Part-of-Math}
+\newacronym{csv}{CSV}{Comma-Separated Values}
+\newacronym{json}{JSON}{JavaScript Object Notation}
+\newacronym{teo}{TEO}{Translated Expression Object}
+\newacronym{pol}{NPN}{Normal Polish Notation}
+\newacronym{rpol}{RPN}{Reverse Polish Notation}
+\newacronym{dag}{DAG}{Directed Acyclic Graph}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{mathml}{MathML}{Mathematical Markup Language}
+\newacronym{oop}{OOP}{Object-Oriented Programming}
+\newacronym{cdf}{CDF}{Computable Document Format}
+\newacronym{mathML}{MathML}{Mathematical Markup Language}
+\newacronym{cfsf}{CFSF}{Continued Fractions for Special Functions}
+\newacronym{ecf}{eCF}{Encoding Continued Fraction Knowledge}
+\newacronym{nist}{NIST}{National Institute of Standards and Technology}
+\newacronym{vmext}{VMEXT}{Visualizing Mathematical Expression Trees}
+\newacronym{opsf}{OPSF}{Orthogonal Polynomials and Special Functions}
+\newacronym{wp}{WP}{Word Processor}
+\newacronym{stem}{STEM}{Science, Technology, Engineering and Mathematics}
+\newacronym{gui}{GUI}{Graphical User Interface}
+\newacronym{omdoc}{OMDoc}{Open Mathematical Documents}
+\makeglossaries
+
+% --------------------- TODO BEFORE RELEASE --------------------- %
+%
+% other margins? https://www.sharelatex.com/blog/2013/08/06/thesis-series-pt2.html
+%
+% --------------------- TODO BEFORE RELEASE --------------------- %

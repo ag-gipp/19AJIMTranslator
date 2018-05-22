@@ -1,0 +1,61 @@
+The goal is to develop an independent, lite translation tool between mathematical \LaTeX{} expressions and \gls{cas}. The semantic \LaTeX{} macros are constantly changing. Therefore, the translator can easily be updated as well, without implementing new code. Furthermore, we have implemented forward translations to the \gls{cas} \Maple{} and \Mathematica{} and a backward translation from \Maple. The translator is therefore able to allow complete round trip translations between \Maple{} and semantic \LaTeX. We have summarized the results of those validation techniques in chapter~\ref{ch:evaluation}.
+
+The translator is based on not published code from the \gls{mlp} and \gls{pom}-tagger. Furthermore, the \Macro s are not published yet as well. Therefore, the current version of the translator is not online available yet. However, we are planning to publish the translator soon on the \gls{drmf} website\footnote{\url{http://drmf.wmflabs.org}}.
+
+Our translator knows 665 \Macro s. We have defined forward translations for 201 of those to \Maple{} and 195 functions for backward translation from \Maple, plus translations for all Greek letters, constants and generic \LaTeX{} macros. The small percentage of covered macros is the translator's most important weakness. The reason is that most of the functions which are represented by a \Macro{} are not defined in \Maple. For example, the multivalued versions of the inverse trigonometric functions~\cite[(4.23.1-6)]{NIST:DLMF} and the $q$-generalizations are not defined in \Maple. A possible workaround is to define alternative translations based on the definition or other representations of the function, see the equations~\ref{eq:acot-alternatives} as an example. 
+
+Nonetheless, the translator is able to handle a wide range of input expressions. This is shown by the test case of several formulae directly taken from the \DLMF. Out of 4165 test equations, 716 have been successfully forward translated to \Maple{} and proven to be correct by the internal simplification functions of \Maple. In addition, 1519 have been successfully forward translated to \Maple, but all validation methods failed. Thus, the translator is able to translate approximately $53.59\%$ of all test cases. Numerical test cases can advance the validation process and have been proven to be very powerful, but implementations of such automatic numerical tests are very complex and therefore not realized yet.
+\newpage
+
+\section{Bijection of Translations}
+One of the main goals has been the provision of bijective mappings between semantic \LaTeX{} and \gls{cas}. This goal has not been achieved, because of the large number of functions that are only defined in one system, but not in the other. Our translations are in general neither injective nor surjective.
+
+The forward translation is not injective, because there exist multiple macros for the same mathematical object. For example, the ultraspherical orthogonal polynomial (or Gegenbauer polynomial) has two macros and both are translated to the same function in the \gls{cas}. One of the macros is defined in the \gls{dlmf}, while the other is defined by the \gls{drmf}. For the background translation we choose the \gls{dlmf} representation.
+\begin{eqnarray*}
+	\verb|\Ultra{\lambda}{n}@{x}| & \overset{\langMaple}{\mapsto} & \verb|GegenbauerC(n, lambda, x)|,\\
+	\verb|\Ultraspherical{\lambda}{n}@{x}| & \overset{\langMaple}{\mapsto} & \verb|GegenbauerC(n, lambda, x)|,\\
+	\verb|\Ultraspherical{\lambda}{n}@{x}| & \overset{\langMaple}{\mapsfrom} & \verb|GegenbauerC(n, lambda, x)|.
+\end{eqnarray*}
+
+Deleting those multiple definitions from the set of macros would make a forward translation injective. Note that this is only true if two expressions are defined as identical as soon as their semantic meanings are identical. For example, formulae with a different number of white spaces are technically not identical, but will be translated to the same expression. However, those formulae can be defined as identical.
+
+The forward translation is not surjective either, because obviously there are expressions in \gls{cas} which the translator would never produce. The same problems appear for the backward translation. For example, a backward translation from \Maple{} can never produce $\frac{x}{2}$, because of \Maple's internal changes it will only produce $x\frac{1}{2}$. Therefore, a backward translation is not surjective. Furthermore, it is not injective because of functions that cannot be translated yet.
+
+However, for a subset of functions and expressions a bijective mapping is possible and has been proven by round trip tests. The main goal is therefore to enlarge these subsets. Mathematically, we looking for subsets $L_1 \subseteq \langTex$ and $L_2 \subseteq \langMaple$, such that $|L_1|$ and $|L_2|$ are maximal and $\mathrm{tr}^{L_1}_{L_2}$ is bijective and its inverse function is $\mathrm{tr}^{L_2}_{L_1}$.
+
+\section{Supported CAS}
+We support a forward translation to \Maple{} and \Mathematica. Nevertheless, the forward translation to \Mathematica{} is in an early state and only support a few translations for functions. Since the main work is already done for \Maple{}, one only needs to update the libraries for a better support of \Mathematica.
+
+In theory it is possible to support even more \gls{cas}, but this has not been tested yet. Especially difficult are \gls{cas} that use different mathematical notations in their input format, such as the prefix notation. Those \gls{cas} cannot be supported as long as the \gls{mlp} does not produce expression trees. 
+
+A backward translation has only been implemented for \Maple{} yet and it needs to have a licensed version of \Maple{} installed on the system to work, because access to the internal expression tree of \Maple{} expressions is necessary for the translator. Therefore, possible backward translations from other \gls{cas} also need access to the internal data structure.
+
+\section{Open Problems}
+One still unsolved problem are different branch cuts in two systems for the same mathematical function. Our workaround only provides additional information to the user, who needs to handle this issue on his own. However, we have presented an approach to solve this problem. Instead of translating the function itself, the translator could use equivalent formulae for the translation that only contain functions that use the same positions for branch cuts in both systems.
+
+On the other hand, this approach does not solve the problem of the relation~(\ref{eq:branch-cut-near}), between the modified Bessel function of the second kind and the parabolic cylinder function. 
+\begin{equation*}
+\displaystyle \ParabolicU@{0}{z} = \sqrt{\frac{z}{2\cpi}}\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}
+\end{equation*}
+In this case, the problem is not an inconsistent definition of the position of the branch cuts, but that the variable $z$ jumps over branch cuts. While this is generally an issue of \gls{cas}, the translator could solve it automatically by using analytic continuation if necessary. This presumes that the translator can compute semantic \LaTeX{} expressions to detect critical values of $z^2$. Together with a \gls{cas}, this approach is feasible.
+
+Another open problem are the verification techniques for translated expressions. While the backward translations are mostly verified by round trip tests, almost all of the translations need a powerful equivalence checker in the \gls{cas}. The limitations of this functionality are an important open problem for our validations. Furthermore, we currently need to assume the correctness of the used simplification functions. A bug in the simplification process spuriously verifying or mistakenly refusing the translation must be taken into consideration.
+
+An approach to solve this problems are the described numerical tests. However, the verification of equivalence with a finite set of discrete values in a sufficient way, is an open problem.
+
+Besides all of this, the translator still has problems with unclear semantics. One example are the already explained prime symbols to indicate derivatives. Another example are mathematical conventions for notations. For example, an expression
+\begin{equation}
+\sin^{-1}@{x}
+\end{equation}
+is mostly interpreted as the arcsine function $\asin@{x}$. However, our translator translates it as
+\begin{equation}
+\verb|\sin^{-1}@{x}| \overset{\langMaple}{\mapsto} \verb|1/(sin(x))|.
+\end{equation}
+
+Another problem are mismatched parenthesis. An expression for an half-opened interval $(a,b]$ currently returns an error because of the mismatch of the parenthesis. Nonetheless, this expression is valid for the representation of an interval.
+
+We have also discovered a bug in the grammatical rules for the square root \LaTeX{} macro. The expression
+\begin{equation}\label{eq:mlp-bug}
+\verb|\sqrt \frac{a}{b}|
+\end{equation}
+produces an error. The generic \LaTeX{} macros always taken a fixed number of following expression as arguments. It is possible to group an expression with curly brackets. However, if there are no curly brackets used, a \LaTeX{} compiler interprets just one symbol as the argument. Therefore, the expression '\verb|\frac{a}{b}|' and '\verb|\frac ab|' produces the same output: $\frac ab$. The next symbol can also be a \LaTeX{} macro, such as in expression~(\ref{eq:mlp-bug}). Because the \gls{bnf} rule of the \gls{mlp} defines curly brackets currently as mandatory around the argument of the square root function, the \gls{mlp} produces an error during the parsing process.

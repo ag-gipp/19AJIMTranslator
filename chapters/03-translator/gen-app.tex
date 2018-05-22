@@ -1,0 +1,188 @@
+The overall goal of the whole project was to provide an interactive one click-translation for each formula in the \gls{drmf} to a specified \gls{cas}. The program mainly supports translations from and to the \gls{cas} \Maple. However, the program is designed to support other \gls{cas}. In the current stage it also supports translations to \Mathematica{}, but the backend library needs to get extended for a full support.
+
+In this chapter, the functionality and the design of the translator will be explained. The structure follows the development process and explains our decisions, problems and solutions. It starts with an overview of our approaches in~\ref{sec:gen-appr} and solutions for the problems. We will also focus on the theory of our backend libraries in~\ref{subsec:libs} and how to extend them in~\ref{subsec:extension}. The sections~\ref{sec:forward-translation} and \ref{sec:backward-translation} explains the forward and backward translator separately.
+
+\section{General Approach and Goals}\label{sec:gen-appr}
+Initially this project aimed for translations not only for semantic \LaTeX{} expressions but for generic \LaTeX{} as well. However, as discussed before, the semantic information in generic \LaTeX{} is hardly accessible (as seen in \ref{subsec:semantic-latex}). Supporting generic \LaTeX{} translations would go beyond the scope of a Master's thesis. Hence, we focused on translations for semantic \LaTeX{} expressions. Furthermore, the translator should support multiple \gls{cas} and because of the work in progress state of the \Macro{} it should be easily extendable and changeable. Due to the time limitations of the project we focused our implementations on the support for \Maple{} and \Mathematica.
+
+Another strive for a goal was to keep a translation as straight forward as possible. In other words, the structure of the translated expression should be similar to the structure of the input expression. This makes it easier for a user to follow the translation process and debug the program. This intention should not to be confused with the task for \textit{appropriate} translations. We will see that a translation process (especially the backward translation) can easily change expressions without changing the semantics. We want to avoid that behavior in our translations as often as possible.
+
+Furthermore, the translation process should solve problems of existing technologies, presented in section~\ref{sec:related-work}. In the following subsection, we will focus on known problems and present solutions before we start to explain implementation details.
+
+\subsection{Translation Problems}
+Most of the existing translation tools cannot preserve the semantic information during the translation process (see section~\ref{sec:related-work}). Therefore, our program should not lose semantic information during the process. However, the semantics can be changed during a translation. This happens when a definition or property of a mathematical object varies from system to system. Our reference systems for all mathematical \LaTeX{} expressions are the \gls{dlmf} and the \gls{drmf}.
+
+Let us focus on translations of mathematical objects that are not defined in one of the languages, first. Obviously, we cannot translate these objects \textit{directly}. Our workaround is to translate not the mathematical object itself, but the definition of the object. For example, the \textit{Gudermannian}~\cite[(4.23.10)]{NIST:DLMF} $\Gudermannian@{x}$ function can be defined by
+\begin{equation}\label{eq:gudermannian}
+\Gudermannian@{x} := \atan@{\sinh@{x}} \quad x \in \Real.
+\end{equation}
+This function is not implemented in \Maple. Therefore, we translate its definition~\eqref{eq:gudermannian}
+\begin{equation}\label{eq:guder-trans}
+\verb|\Gudermannian@{x}| \overset{\langMaple}{\mapsto} \texttt{arctan(sinh(x))}.
+\end{equation}
+
+We want to avoid such translations, because they are not intuitive and therefore can confuse a user. However, providing such translations is still better than providing no translation.
+
+Instead of none possible translation, how can we handle multiple alternative translations? We already discussed the problem of the inverse trigonometric function $\acot@{x}$. Because of a different branch cut in \Maple{} (compared to the \gls{dlmf} definition), there are alternative translations available (see~\eqref{eq:acot-alternatives}). In such cases, we define the most intuitive, the direct translation. In addition, we inform the user about the available alternative translations and the branch cut issues. Hence,
+\begin{equation}
+\verb|\acot@{x}| \overset{\langMaple}{\mapsto} \texttt{arccot(x)}.
+\end{equation}
+
+Since we have these alternative translations, we also use the same technique for the previous Gudermannian example. We provide one direct translation and possible alternative translations for a mathematical object.
+
+These two problems already explained, why our translation process is in general not bijective. However, we will explain later in a more detailed way that the translation is only bijective for a subset of possible expressions. Thereby, a bigger goal is to increase this subset as much as possible.
+
+\subsection{Libraries}\label{subsec:libs}
+The first step for providing an automatic translation tool is to defining the translation for each function. We manually create a table of translations for each \Macro. Translations for generic \LaTeX{} functions, mathematical symbols, Greek letters and constants are organized in \gls{json} files for a better performance.
+ 
+For each translation, we design a translation pattern with placeholders to define the correct position of each argument. The placeholders are defined as \verb|$i|, where \verb|i| is a non-negative integer specifying the position, starting at $0$. Table~\ref{tab:placeholder_ex1} illustrates the translation patterns for the trigonometric sine function in semantic \LaTeX, \Maple{} and \Mathematica.
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{lc}
+		\hline
+		Semantic \LaTeX & \verb|\sin@{$0}| \\
+		\Maple & \verb|sin($0)| \\
+		\Mathematica & \verb|Sin[$0]|\\
+		\hline
+	\end{tabular}
+	\caption{Translation patterns for the sine function in the \DLMF, \Maple{} and \Mathematica.}
+	\label{tab:placeholder_ex1}
+\end{table}
+
+Placeholders gives us the opportunity to define the order of the arguments and handle nested function calls. The order of arguments can differ between the systems. For example, if a function possesses parameters written in sub- and superscripts, \Maple{} and \Mathematica{} usually put the parameters in the subscript before the parameters in the superscripts. The notation in the \Macro s uses the reversed order. Table~\ref{tab:JacobiP-usecase} in the introduction shows an example of such different orders. The translation patterns for the Jacobi polynomial are illustrated in table~\ref{tab:placeholder_ex2}.
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{lc}
+		\hline
+		\multicolumn{2}{l}{\textit{Forward Translation:}} \\
+		\Maple & \verb|JacobiP($2, $0, $1, $3)| \\
+		\Mathematica & \verb|JacobiP[$2, $0, $1, $3]|\\
+		\hline
+		\multicolumn{2}{l}{\textit{Backward Translation from \Maple/\Mathematica:}} \\
+		Semantic \LaTeX & \verb|\JacobiP{$1}{$2}{$0}@{$3}|\\
+		\hline
+	\end{tabular}
+	\caption{Forward and backward translation patterns of the Jacobi polynomial. The pattern for the backward translation is the same for \Maple{} and \Mathematica.}
+	\label{tab:placeholder_ex2}
+\end{table}
+
+Note that \Maple{} also uses the symbol \verb|$| in few functions. This can cause trouble in the replacement process. However, we can handle all of the few cases by adding addition parenthesis. Consider the differentiation function in \Maple
+\begin{equation}
+\verb|diff(f, [x$n])|,
+\end{equation}
+with $f$ as an algebraic expression or an equation, $x$ the name of the differentiation variable and $n$ for the $n$-th order differentiation. Therefore
+\begin{equation}
+\deriv[2]{x^2}{x} = \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|.
+\end{equation}
+But the translation pattern in \Maple{} would be
+\begin{equation}
+\verb|diff($1, [$2$$0])|.
+\end{equation}
+Replace the placeholders sequentially by the arguments ends in
+\begin{eqnarray*}
+&&\verb|diff($1, [$2$$0])|\\
+\text{Replace index 0 by $2$\hphantom{$^2$}}& \rightarrow &\verb|diff($1, [$2$2])|\\
+\text{Replace index 1 by $x^2$}& \rightarrow &\verb|diff(x^2, [$2$2])|\\
+\text{Replace index 2 by $x$\hphantom{$^2$}}& \rightarrow &\verb|diff(x^2, [xx])|.
+\end{eqnarray*}
+We use parenthesis to solve this issue and define the translation pattern with
+\begin{equation}
+\verb|diff($1, [$2$($0)])|.
+\end{equation}
+
+A special problem can be binary operators. A good example is the multiplication sign. In \LaTeX{} most scientist would use white spaces or \verb|\cdot| to indicate a multiplication (using none of them can cause ambiguities, see \ref{subsec:ambiguities}). Similar to that approach, \Mathematica{} also understands white spaces and asterisks as multiplications. When we translate semantic \LaTeX{} expressions to \Maple, we use the {\sf 1D \Maple{}} representation (see subsection~\ref{subsec:maple}), where an asterisk becomes mandatory for multiplications. White spaces would produce a syntactical error in this input format. On the other hand, white spaces in \LaTeX{} do not necessarily indicate a multiplication. It could also be used to improve the readability. Whether a white space indicates a multiplication or not is a semantic information in the expression. We introduce a new \DLMF{} macro that indicates a multiplication, but not gets rendered. This macro is \verb|\idot|, for an invisible dot.
+
+As already mentioned, the information is stored in three different file types. Together they form the backend library.
+
+\subsubsection{CSV Tables}
+The \gls{csv} file represents the translation tables generated by MS Excel. Although \gls{csv} is an abbreviation for \textit{comma-seperated}, one can specify the split symbol. Most common are semicolons. In our case we use semicolons, because commas are frequently used in string representations of mathematical functions to separate multiple parameters and variables. Note that semicolons are also sometimes used, but \gls{csv} files are able to use quotation marks to separate a value with semicolon from the split symbols.
+
+Note that \gls{csv} files are databases. While we do not want to introduce the theory of databases in this thesis, note that our databases contain a \textit{primary key}. A primary key uniquely identifies and provides access to information in the database. The main \gls{csv} file is called \verb|DLMFMacro.csv|. It provides information about each macro. The primary key of this database is the macro itself. Further information consists of the name of the mathematical function, the hyperlink to the \DLMF{} definition, the numbers of parameters, variables and the maximum number of $@$ symbols. The maximum number of $@$ symbols is mostly used for backward translations. Additionally, the \gls{csv} file can contain information about the constraints, branch cuts and a role. The additional role can be used to ignore the macro in the translation process, or to specify that this macro is a mathematical constant. For example, mathematical constants are ignored, because they are organized in the \gls{json} files. This avoid multiple definitions in the database.
+
+Since a translation is not necessarily bijective, the translations are defined in two separate \gls{csv} files per \gls{cas}. For \Maple{} those files are \verb|DLMF_Maple.csv| for the forward translation, and \verb|CAS_Maple.csv| for the backward translation. Both are organized in the same already described logic.
+
+In~\ref{eq:guder-trans} we defined the definition for the Gudermannian function. The translated expression contains two function calls: the inverse tangent function and the hyperbolic sine function. Instead of providing a hyperlink to the definitions for both functions on the \Maple{} help page, we only provide one hyperlink. We specify the hyperlink by a special prefix in the translation pattern. To explain this prefix, we need to take a look to optional parameters before. While the primary key in the \gls{csv} files is only the macro name, we need to specify the number of optional parameters in front of the macro name. Otherwise, for example, the Legendre and the associated Legendre function of the first kind would be linked to the same definition. Our prefix notation solve both problems. It links to one specific function for the translation and specify the correct version of the macro, if there are optional parameters included. The prefix starts and ends with an $X$ and contains two information. The number of optional parameters (if none, than this number will be $0$) and the name of the used function. Table~\ref{tab:legendreP-lex} illustrates the lexicon entry of the Legendre and the associated Legendre function of the first kind.
+
+\begin{table}
+	\centering
+	\begin{tabular}{ll}
+		\hline
+		Semantic Macro & Entry in the CSV file\\
+		\hline
+		\verb|\LegendreP{\nu}@{x}| & \verb|\LegendreP{\nu}@{x}| \\
+		\verb|\LegendreP[\mu]{\nu}@{x}| & \verb|X1:\LegendrePX\LegendreP[\mu]{\nu}@{x}|\\
+		\hline
+	\end{tabular}
+	\caption{CSV entry example of the Legendre and associated Legendre function of the first kind.}
+	\label{tab:legendreP-lex}
+\end{table}
+
+In \Maple{} the number of optional arguments is not stored in the dictionaries. Therefore, we link to the total number of arguments. Consider Olver's associated Legendre function. A forward translation can be defined with 
+\begin{equation}
+\verb|\LegendreBlackQ{\nu}@{z}| \overset{\langMaple}{\mapsto} \verb|LegendreQ(\nu,z)/GAMMA(\nu+1)|.
+\end{equation}
+In this case, we would prefer to provide the hyperlink to the definition of \Maple's \verb|LegendreQ| function rather than to the definition of the \verb|GAMMA| function. The used function has two arguments in \Maple. Hence, the lexicon entry for the translation pattern is
+\begin{equation}
+\verb|X2:LegendreQXLegendreQ($0,$1)/GAMMA($1+1)|.
+\end{equation}
+
+All of the \gls{csv} files just store the information to provide an easy access for the developer. Nevertheless, the program itself works only with the \textit{lexicon files}. Therefore, each \gls{csv} file needs to get converted into a lexicon file. Subsection~\ref{subsec:extension} explains how to do that and how to update the database.
+
+\subsubsection{JSON Libraries}
+Some translations are defined in separate \gls{json} files. The reason is to separate translations for \gls{opsf} from translation for single symbols and generic \LaTeX{} macros. These files therefore define translations for the following types expressions.
+
+\begin{itemize}
+\item \textbf{Generic \LaTeX{} macros for functions}:\newline 
+For example, the macros \verb|\frac{a}{b}|, \texttt{\tbs binom\{a\}\{b\}} and \verb|\sqrt{a}|. This section also defines translations for special symbols for mathematical functions such as the exclamation mark '\verb|!|' to indicate the factorial function or \verb|\mod| for the modulo function.
+\item \textbf{Mathematical Symbols}:\newline 
+For example, the symbol to indicate multiplications, sums, inequalities.
+\item \textbf{Greek Letters}:\newline 
+For example, \verb|\alpha|, \verb|\beta| or \verb|\Theta|.
+\item \textbf{Mathematical Constants}:\newline 
+For example \verb|\cpi| for the constant $\cpi$ or \verb|\EulerConstant| for the Euler-Mascheroni constant $\EulerConstant$.
+\end{itemize}
+
+\subsubsection{Lexicon Files}
+The knowledge of the \gls{mlp} is based on lexicon files, as explained in subsection~\ref{subsec:pom-mlp}. Since the \gls{mlp} project was not a part of the \Macro s project, the \gls{bnf} grammar defines no rules about semantic macros. Furthermore, the knowledge database has no information about the semantic macros. Therefore, we created a new lexicon file that defines each semantic \LaTeX{} macro and provides further information about it. This information is stored in the previously mentioned \gls{csv} files.
+
+Table~\ref{tab:sine-lex-example} presents the entry for the sine function in the \verb|DLMF-macros-lexicon.txt|. The \verb|global-lexicon.txt| file is the main dictionary of the \gls{mlp} and combines the whole knowledge of the parser in one file. This lexicon files also help to translate ambiguous expressions. We will discuss some of these decision in the following sections. However, it is important to mention that a successful translation strongly depends on the comprehensive database of the lexicon files.
+
+\begin{table}
+	\centering
+	\begin{tabular}{lll}
+	\hline
+	\multicolumn{3}{l}{Symbol: \texttt{\textbackslash sin}} \\
+	\! & \multicolumn{2}{l}{Feature Set: dlmf-macro} \\
+	\! & \! & DLMF: \verb|\sin@@{z}|\\
+	\! & \! & DLMF-Link: dlmf.nist.gov/4.14\# E1\\
+	\! & \! & Meanings: Sine\\
+	\! & \! & Number of Parameters: 0\\
+	\! & \! & Number of Variables: 1\\
+	\! & \! & Number of Ats: 2\\
+	\! & \! & Maple: \verb|sin($0)|\\
+	\! & \! & Maple-Link: www.maplesoft.com/support/\\
+	\! & \! & \hspace{32pt} help/maple/view.aspx?path=sin\\
+	\! & \! & help/maple/view.aspx?path=sin\\
+	\! & \! & Mathematica: \verb|Sin[$0]|\\
+	\! & \! & Mathematica-Link: reference.wolfram.com/\\
+	\! & \! & \hspace{32pt} language/ref/Sin\\
+	\hline
+	\end{tabular}
+	\caption{The entry of the sine function in the lexicon file.}
+	\label{tab:sine-lex-example}
+\end{table}
+
+The concept of the lexicon files is also adapted to store the backward translations from \Maple. Since the \gls{mlp} project is developed to parse \LaTeX{} expressions, it could be confusing to use the original lexicon files to also store names of \Maple{} functions. Therefore, we create another type of lexicon files, which are very similar to the original lexicon files. In \Maple{} a function can have multiple entries differing in the number of arguments. Therefore, the primary key of the backward translation database is the combination of the function name and the number of arguments. For example, the name \verb|GAMMA| in \Maple{} is reserved for the Euler Gamma function in case of one argument, but also for the incomplete Gamma function in the case of two arguments. Therefore the lexicon file for the backward translation also contains the number of arguments to specify a translation.
+
+\subsection{Extending the Forward Translator}\label{subsec:extension}
+The whole project is still work in progress. Therefore, it is an important goal to keep it easy to update the backend libraries. This section will explain the typical workflow to add new translations for semantic \LaTeX{} macros and \Maple{} functions or how to support a forward translation to another \gls{cas}.
+
+\subsubsection{Adding Translations to Existing CAS}
+Since \gls{csv} files are not as easy to maintain as MS Excel\footnote{Microsoft Excel is widely used to work with tables and is able to import, export and manipulate \gls{csv} files.} worksheets, the workflow starts with MS Excel. Once a user updates the existing tables, the MS Excel file needs to get exported as a \gls{csv} file. The translator project contains the \verb|lexicon-creator.jar| file to convert the \gls{csv} files to the backend lexicon files. Of course, these steps are not necessary if the user just changes a translation in the \gls{json} files.
+
+Once the \verb|lexicon-creator.jar| finished the conversion process, the translator is aware of all changes and ready to use.
+
+\subsubsection{Supporting New CAS}
+To support a complete new \gls{cas} for the forward translation, the user needs to add the \gls{cas} in the \gls{json} files and create two new \gls{csv} files. Even if there is no backward translation implemented yet, the \gls{csv} file for the backward translation is needed. 
+
+Once all of the files are updated, the \verb|lexicon-creator.jar| can be used to update the lexicon files.
