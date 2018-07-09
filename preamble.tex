@@ -19,6 +19,7 @@
 \usepackage{csquotes}
 \usepackage{layout}
 \usepackage{textcomp} % for prime symbol command: \textquotesingle
+\usepackage{authblk} % affilition via \affil
 
 % geometry for margin control and footer control (fancyhdr)
 % [showframe] for debugging
@@ -28,8 +29,8 @@
 	a4paper,%
 	%bindingoffset=1.5cm,% offset for binding
 	%marginparwidth=1cm,
-	width=418pt,
-	inner=3.4cm,
+	%width=418pt,
+	%inner=3.4cm,
 	%showframe % debugging
 	]{geometry}
 \setlength{\headheight}{14pt}
@@ -47,8 +48,8 @@
 
 % own styles
 \usepackage{styles/thesistitle} % define preamble variable subtitle
-\usepackage{styles/DLMF/DLMFmath}
-\usepackage{styles/DLMF/DRMFfcns}
+%\usepackage{styles/DLMF/DLMFmath}
+%\usepackage{styles/DLMF/DRMFfcns}
 
 % loading late is better...
 \usepackage{cleveref}			% better references, should be loaded last
@@ -67,10 +68,10 @@
 	pdfauthor	= {Andr\'e Greiner-Petter},
 	pdfcreator	= {Andr\'e Greiner-Petter},
 	pdfkeywords	= {Special Functions, LaTeX, Translation},
-    colorlinks, 	% instead of color borders, color the string
-    linkcolor	= {red!50!black}, %{red!0!black} <- print
-    citecolor	= {blue!50!black},%{blue!0!black} <- print
-    urlcolor	= {blue!70!black}
+    %colorlinks, 	% instead of color borders, color the string
+    %linkcolor	= {red!50!black}, %{red!0!black} <- print
+    %citecolor	= {blue!50!black},%{blue!0!black} <- print
+    %urlcolor	= {blue!70!black}
 }
 
 % replace "Contents" by "Table of Contents" in babel-english
@@ -178,10 +179,10 @@
 	{\thmname{#1} \thmnumber{#2}:} % Threaom head spec (can be left empty, meaning 'normal')
 
 \theoremstyle{defTheoStyle}
-\newtheorem{definition}{Definition}[chapter]
-\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
 \theoremstyle{defExampStyle}
-\newtheorem{example}{Example}[chapter]
+\newtheorem{example}{Example}[section]
 
 % do not vertically extend pages
 \raggedbottom
@@ -217,6 +218,9 @@
 \newacronym{gui}{GUI}{Graphical User Interface}
 \newacronym{omdoc}{OMDoc}{Open Mathematical Documents}
 \makeglossaries
+
+% ----------------------- DEFINE Simple Macros ----------------------- %
+\DeclareRobustCommand{\iunit}{{i}}
 
 % --------------------- TODO BEFORE RELEASE --------------------- %
 %
