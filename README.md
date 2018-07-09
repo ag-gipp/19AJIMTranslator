@@ -16,6 +16,7 @@
 **Publication**: Aslib Journal of Information Management, volume 71, issue 2, 2019 (March 2019)
 
 ## Important Links
+  - [Author Guidelines](http://www.emeraldgrouppublishing.com/products/journals/author_guidelines.htm?id=ajim)
   - [AJIM Website](http://www.emeraldgrouppublishing.com/products/journals/author_guidelines.htm?id=AJIM)
   - [Call for Papers](http://www.emeraldgrouppublishing.com/products/journals/call_for_papers.htm?id=7803): Information Science in German-speaking countries
   - [Submission Platform](https://mc.manuscriptcentral.com/ajoim)
