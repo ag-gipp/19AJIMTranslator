@@ -1,12 +1,16 @@
 \usepackage[
 	backend		= biber,
-	style		= numeric,
+	style		= authoryear-ibid,
+	giveninits	= true, % initials for first names
 	natbib		= true,
-	url			= true,
-	doi			= true,
+	url			= false,
+	isbn		= false,
+	doi			= false,
 	eprint		= false,
-	maxbibnames	= 9,
+	maxbibnames	= 99,
 	minbibnames	= 3
 ]{biblatex}
+
+\DeclareNameAlias{sortname}{last-first}
 
 \addbibresource{./bibliography/Bibliography.bib}

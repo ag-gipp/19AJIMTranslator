@@ -1,11 +1,11 @@
 \begin{abstract}
 \glsresetall
 \noindent
-This Master's thesis presents the development of a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. The representatives for the \gls*{cas} are \Maple{} and \Mathematica{}, while the representative \gls*{wp} is \LaTeX.
+This paper presents a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. The representatives for the \gls*{cas} are \Maple{} and \Mathematica{}, while the representative \gls*{wp} is \LaTeX.
 %
-Semantic information of a mathematical formula in \LaTeX{} is rather given in the context than in the formula itself. Extracting the information is complicated and sometimes even impossible. However, a translation to a \gls*{cas} is only achievable, if the semantic of the formula is unique. The \gls*{nist} in the U.S. has developed a set of semantic \LaTeX{} macros for all \gls*{opsf} defined in the \gls*{dlmf}. Using these macros can disambiguate formulae and provide access to the semantic information.
+The \gls*{nist} in the U.S.~has developed a set of semantic \LaTeX{} macros for \gls*{opsf}. The \gls*{dlmf} use these semantic macros to provide a semantically enhanced mathematical online compendium. This kind of semantic macros provides exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, it does not need to match the semantics in another representation for the same formula. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
+This paper presents an automatic translation system and discusses the problems and suggests solutions. 
 %
-Even if the semantics of a representation of one formula is unique, it does not need to match the semantics in another representation of the formula. For example, there are may be differences in the domains or a function in a \gls*{cas} is normalized for a better performance. An important concept for complex and multivalued functions are \textit{branch cuts}. However, the positions of these cuts are not consistently defined and can vary from system to system. Therefore, a \gls*{cas} user needs to fully understand the properties and definitions of the used functions in the \gls*{cas}. Hence, a manual translation from one system to another is not only laborious, but also prone to errors.
-%
-This thesis explains the realization of the translator, and discusses and suggests the approaches to the problems mentioned above.
+Furthermore, this paper introduces new evaluation approaches for the developed translation tool. 
+With the help of the automatic translation tool, the evaluation experiments were able to discover errors in the \gls*{dlmf} and in the \gls*{cas} Maple.
 \end{abstract}
