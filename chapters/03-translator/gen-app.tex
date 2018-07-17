@@ -1,31 +1,31 @@
-The overall goal of the whole project was to provide an interactive one click-translation for each formula in the \gls{drmf} to a specified \gls{cas}. The program mainly supports translations from and to the \gls{cas} \Maple. However, the program is designed to support other \gls{cas}. In the current stage it also supports translations to \Mathematica{}, but the backend library needs to get extended for a full support.
+%The overall goal of the whole project was to provide an interactive one click-translation for each formula in the \gls{drmf} to a specified \gls{cas}. The program mainly supports translations from and to the \gls{cas} \Maple. However, the program is designed to support other \gls{cas}. In the current stage it also supports translations to \Mathematica{}, but the backend library needs to get extended for a full support.
 
-In this chapter, the functionality and the design of the translator will be explained. The structure follows the development process and explains our decisions, problems and solutions. It starts with an overview of our approaches in~\ref{sec:gen-appr} and solutions for the problems. We will also focus on the theory of our backend libraries in~\ref{subsec:libs} and how to extend them in~\ref{subsec:extension}. The sections~\ref{sec:forward-translation} and \ref{sec:backward-translation} explains the forward and backward translator separately.
+%In this chapter, the functionality and the design of the translator will be explained. The structure follows the development process and explains our decisions, problems and solutions. It starts with an overview of our approaches in~\ref{sec:gen-appr} and solutions for the problems. We will also focus on the theory of our backend libraries in~\ref{subsec:libs} and how to extend them in~\ref{subsec:extension}. The sections~\ref{sec:forward-translation} and \ref{sec:backward-translation} explains the forward and backward translator separately.
 
-\section{General Approach and Goals}\label{sec:gen-appr}
-Initially this project aimed for translations not only for semantic \LaTeX{} expressions but for generic \LaTeX{} as well. However, as discussed before, the semantic information in generic \LaTeX{} is hardly accessible (as seen in \ref{subsec:semantic-latex}). Supporting generic \LaTeX{} translations would go beyond the scope of a Master's thesis. Hence, we focused on translations for semantic \LaTeX{} expressions. Furthermore, the translator should support multiple \gls{cas} and because of the work in progress state of the \Macro{} it should be easily extendable and changeable. Due to the time limitations of the project we focused our implementations on the support for \Maple{} and \Mathematica.
+%\section{General Approach and Goals}\label{sec:gen-appr}
+%Initially this project aimed for translations not only for semantic \LaTeX{} expressions but for generic \LaTeX{} as well. However, as discussed before, the semantic information in generic \LaTeX{} is hardly accessible (as seen in \ref{subsec:semantic-latex}). Supporting generic \LaTeX{} translations would go beyond the scope of a Master's thesis. Hence, we focused on translations for semantic \LaTeX{} expressions. Furthermore, the translator should support multiple \gls{cas} and because of the work in progress state of the \Macro{} it should be easily extendable and changeable. Due to the time limitations of the project we focused our implementations on the support for \Maple{} and \Mathematica.
 
-Another strive for a goal was to keep a translation as straight forward as possible. In other words, the structure of the translated expression should be similar to the structure of the input expression. This makes it easier for a user to follow the translation process and debug the program. This intention should not to be confused with the task for \textit{appropriate} translations. We will see that a translation process (especially the backward translation) can easily change expressions without changing the semantics. We want to avoid that behavior in our translations as often as possible.
+%Another strive for a goal was to keep a translation as straight forward as possible. In other words, the structure of the translated expression should be similar to the structure of the input expression. This makes it easier for a user to follow the translation process and debug the program. This intention should not to be confused with the task for \textit{appropriate} translations. We will see that a translation process (especially the backward translation) can easily change expressions without changing the semantics. We want to avoid that behavior in our translations as often as possible.
 
-Furthermore, the translation process should solve problems of existing technologies, presented in section~\ref{sec:related-work}. In the following subsection, we will focus on known problems and present solutions before we start to explain implementation details.
+%Furthermore, the translation process should solve problems of existing technologies, presented in section~\ref{sec:related-work}. In the following subsection, we will focus on known problems and present solutions before we start to explain implementation details.
 
-\subsection{Translation Problems}
+\section{Translation Problems}
 Most of the existing translation tools cannot preserve the semantic information during the translation process (see section~\ref{sec:related-work}). Therefore, our program should not lose semantic information during the process. However, the semantics can be changed during a translation. This happens when a definition or property of a mathematical object varies from system to system. Our reference systems for all mathematical \LaTeX{} expressions are the \gls{dlmf} and the \gls{drmf}.
 
-Let us focus on translations of mathematical objects that are not defined in one of the languages, first. Obviously, we cannot translate these objects \textit{directly}. Our workaround is to translate not the mathematical object itself, but the definition of the object. For example, the \textit{Gudermannian}~\cite[(4.23.10)]{NIST:DLMF} $\Gudermannian@{x}$ function can be defined by
+Let us focus on translations of mathematical objects that are not defined in one of the languages, first. Obviously, we cannot translate these objects \textit{directly}. Our workaround is to translate not the mathematical object itself, but the definition of the object. For example, the \textit{Gudermannian}~\parencite[(4.23.10)]{NIST:DLMF} $\Gudermannian{x}$ function can be defined by
 \begin{equation}\label{eq:gudermannian}
-\Gudermannian@{x} := \atan@{\sinh@{x}} \quad x \in \Real.
+\Gudermannian{x} := \atan{\sinh{x}} \quad x \in \Real.
 \end{equation}
 This function is not implemented in \Maple. Therefore, we translate its definition~\eqref{eq:gudermannian}
 \begin{equation}\label{eq:guder-trans}
-\verb|\Gudermannian@{x}| \overset{\langMaple}{\mapsto} \texttt{arctan(sinh(x))}.
+\verb|\Gudermannian{x}| \overset{\langMaple}{\mapsto} \texttt{arctan(sinh(x))}.
 \end{equation}
 
 We want to avoid such translations, because they are not intuitive and therefore can confuse a user. However, providing such translations is still better than providing no translation.
 
 Instead of none possible translation, how can we handle multiple alternative translations? We already discussed the problem of the inverse trigonometric function $\acot@{x}$. Because of a different branch cut in \Maple{} (compared to the \gls{dlmf} definition), there are alternative translations available (see~\eqref{eq:acot-alternatives}). In such cases, we define the most intuitive, the direct translation. In addition, we inform the user about the available alternative translations and the branch cut issues. Hence,
 \begin{equation}
-\verb|\acot@{x}| \overset{\langMaple}{\mapsto} \texttt{arccot(x)}.
+\verb|\acot{x}| \overset{\langMaple}{\mapsto} \texttt{arccot(x)}.
 \end{equation}
 
 Since we have these alternative translations, we also use the same technique for the previous Gudermannian example. We provide one direct translation and possible alternative translations for a mathematical object.
@@ -66,13 +66,13 @@ Placeholders gives us the opportunity to define the order of the arguments and h
 	\label{tab:placeholder_ex2}
 \end{table}
 
-Note that \Maple{} also uses the symbol \verb|$| in few functions. This can cause trouble in the replacement process. However, we can handle all of the few cases by adding addition parenthesis. Consider the differentiation function in \Maple
+Note that \Maple{} also uses the symbol \verb|$| in few functions. This can cause trouble in the replacement process. However, we can handle all of the few cases by adding additional parenthesis. Consider the differentiation function in \Maple
 \begin{equation}
 \verb|diff(f, [x$n])|,
 \end{equation}
 with $f$ as an algebraic expression or an equation, $x$ the name of the differentiation variable and $n$ for the $n$-th order differentiation. Therefore
 \begin{equation}
-\deriv[2]{x^2}{x} = \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|.
+\frac{d^2x^2}{dx^2} = \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|.
 \end{equation}
 But the translation pattern in \Maple{} would be
 \begin{equation}

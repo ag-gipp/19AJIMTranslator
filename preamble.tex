@@ -88,11 +88,11 @@
 % --------------- DEFINE HEADER AND FOOTER ---------------- %
 % The fancyhdr package lets us add things in the left (L), right (R) and centre (C) of the header or footer and also lets us specify a different arrangement depending on whether its on an odd (O) or even (E) page.
 % For instance \fancyhead[RO,LE]{Section \thesection}
-\fancyhead{} %reset
-\fancyhead[LE,RO]{\leftmark}
-\fancyhead[RE,LO]{Section \thechapter.\thesection}
-\fancyfoot{} % reset
-\fancyfoot[LE,RO]{\thepage}
+%\fancyhead{} %reset
+%\fancyhead[LE,RO]{\leftmark}
+%\fancyhead[RE,LO]{Section \thechapter.\thesection}
+%\fancyfoot{} % reset
+%\fancyfoot[LE,RO]{\thepage}
 
 % --------------- ALGORITHM DEFINITIONS ---------------- %
 \renewcommand{\algorithmicrequire}{\textbf{Input:}} % rename require to input
@@ -217,10 +217,21 @@
 \newacronym{stem}{STEM}{Science, Technology, Engineering and Mathematics}
 \newacronym{gui}{GUI}{Graphical User Interface}
 \newacronym{omdoc}{OMDoc}{Open Mathematical Documents}
-\makeglossaries
+%\makeglossaries
 
 % ----------------------- DEFINE Simple Macros ----------------------- %
+\DeclareRobustCommand{\cpi}{{\pi}}
+\DeclareRobustCommand{\expe}{{e}}
+\DeclareRobustCommand{\EulerConstant}{{\gamma}}
 \DeclareRobustCommand{\iunit}{{i}}
+\DeclareRobustCommand{\Complex}{\mathbb{C}}
+\DeclareRobustCommand{\Real}{\mathbb{R}}
+
+\newcommand{\Gudermannian}[1]{\mathrm{gd}\!\left(#1\right)}
+\newcommand{\atan}[1]{\mathrm{arctan}\!\left(#1\right)}
+\newcommand{\acot}[1]{\mathrm{arccot}\!\left(#1\right)}
+\newcommand{\ph}[1]{\mathrm{ph}\!\left(#1\right)}
+
 
 % --------------------- TODO BEFORE RELEASE --------------------- %
 %

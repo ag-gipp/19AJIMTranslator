@@ -2,7 +2,7 @@ This project aims for a translation of mathematical expressions from \LaTeX{} so
 
 First of all, each semantic \LaTeX{} macro ties a specific character sequence to a well-defined mathematical object. This definition can be found at the \gls{dlmf} or \gls{drmf}. Therefore, our reference source for semantic \LaTeX{} expressions is always the \gls{dlmf} or \gls{drmf}. This gives us the opportunity to compare more than the string representations of the mathematical objects in a translation process. For example, consider the simple translation of the cosine function
 \begin{equation}\label{eq:simple-cosine}
-\verb|\cos@{x}| \overset{\langMaple}{\mapsto} \texttt{cos(x)}.
+\verb|\cos{x}| \overset{\langMaple}{\mapsto} \texttt{cos(x)}.
 \end{equation}
 Our verification and validation techniques, to proof for example that~(\ref{eq:simple-cosine}) is an \textit{appropriate} translation, can be grouped into three parts. We present in the following sections these three parts and conclusively, we use all these techniques to actually verify translations for a test suite directly extracted from the \gls{dlmf}.
 
@@ -69,7 +69,7 @@ Step 4 is identical to step 2. Theorem~\ref{theo:fixpoint} implies that step 2 i
 
 Almost all test cases are reaching a fixed point representation. Starting from semantic \LaTeX, the first fixed point is reached at step 2 in semantic \LaTeX, because of \Maple's internal changes. If the structure of the semantic \LaTeX{} input is already identical to the internal structure of \Maple's representation and the expression only contains functions and symbols with an available direct translation from and to each system, the input expression is already the fixed point representation. For example, consider the semantic \LaTeX{} expression in step 2 in table~\ref{tab:fixpoint} as the input expression. In that case the input is already a fixed point. Starting a round trip test from \Maple, the first fixed point representation is reached in step 1 in semantic \LaTeX, because \Maple's changes has already been performed after the first translation. Again, this is only true if the expression only contains functions and symbols with a direct translation from and to each system. Furthermore, if a test case reaches a fixed point, it is equivalent (checked by \Maple's \textit{simplify} function or manually) to the input expression.
 
-There is currently only one exception known where a round trip test does not reach a fixed point representation at all: Legendre's incomplete elliptic integrals~\cite[(19.2.4-7)]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
+There is currently only one exception known where a round trip test does not reach a fixed point representation at all: Legendre's incomplete elliptic integrals~\parencite[(19.2.4-7)]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
 \begin{eqnarray}
 \verb|\EllIntF@{\phi}{k}| & \overset{\langMaple}{\mapsto} & \verb|EllipticF(sin(phi),k)|,\\
 \verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|.
@@ -87,9 +87,9 @@ In that case the round trip test would not detect any errors and reach a fixed p
 \section{Function Relation Tests}\label{sec:relation-tests}
 In addition to the correctness of string representations, it is more important to validate whether a translation is \textit{appropriate}. Special functions are highly related to each other. The theory of special functions researches these relations and other properties of the functions. The \gls{dlmf} is a compendium of special functions and lists a lot of those relations. The translation of such relations to another system and the following analysis of the relations with the translated formulae would form a very effective test.
 
-With this technique we can detect translation errors such as in (\ref{eq:wrong-trans-1} and \ref{eq:wrong-trans-2}). Consider the \gls{dlmf} equation for the sine and cosine function~\cite[(4.21.2)]{NIST:DLMF}
+With this technique we can detect translation errors such as in (\ref{eq:wrong-trans-1} and \ref{eq:wrong-trans-2}). Consider the \gls{dlmf} equation for the sine and cosine function~\parencite[(4.21.2)]{NIST:DLMF}
 \begin{equation}
-\sin@{u+v} = \sin@@{u}\cos@@{v} + \cos@@{u}\sin@@{v}.
+\sin \left(u+v\right) = \sin{u}\cos{v} + \cos{u}\sin{v}.
 \end{equation}
 Assume the translator would forward translate the expression based on (\ref{eq:wrong-trans-1},~\ref{eq:wrong-trans-2}). Than
 \begin{eqnarray}
@@ -99,13 +99,13 @@ Assume the translator would forward translate the expression based on (\ref{eq:w
 \end{eqnarray}
 This produces the equation in \Maple
 \begin{equation}
-\cos@{u+v} = \cos@{u}\sin@{v} + \sin@{u}\cos@{v},
+\cos\left(u+v\right) = \cos{u}\sin{v} + \sin{u}\cos{v},
 \end{equation}
 which is wrong. Since the expression is correct before the translation, we conclude an error during the translation process.
 
 However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls{cas} have trouble to test even simple equations. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \textit{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \textit{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. We implement some tricks to help \textit{simplify}: pre-conversion of the functions of the expression to other special functions is able to help \textit{simplify}, because the algorithms in the background can use different simplification methods for different functions. For example, the user can use the \Maple{} function \textit{convert} to convert the expression
 \begin{equation}
-\sinh@{x} + \sin@{x}
+\sinh{x} + \sin{x}
 \end{equation}
 to an equivalent representation using the exponential function:
 \begin{equation}
@@ -113,26 +113,26 @@ to an equivalent representation using the exponential function:
 \end{equation}
 With such pre-conversions we are able to improve the simplification process in \Maple. However, the limitations of the \textit{simplify} function are still the weakest part of this verification approach. Consider the equation~(\ref{eq:branch-cut-issue}) from \cref{subsec:branch-cut-issues}. 
 \begin{equation}\label{eq:branch-cut-near}
-\displaystyle \ParabolicU@{0}{z} = \sqrt{\frac{z}{2\cpi}}\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}
+\displaystyle U(0,z) = \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right)
 \end{equation}
-As already discussed, the modified Bessel function of the second kind~\cite[(12.7.10)]{NIST:DLMF} has its branch cut in \Maple{} at $z < 0$. However, the argument of $K$ contains $z^2$. For now, just focus on
+As already discussed, the modified Bessel function of the second kind~\parencite[(12.7.10)]{NIST:DLMF} has its branch cut in \Maple{} at $z < 0$. However, the argument of $K$ contains $z^2$. For now, just focus on
 \begin{equation}\label{eq:besselK}
-\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}
+K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right)
 \end{equation}
-Because of $z^2$, if $|\ph@{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of (\ref{eq:besselK}) would be no longer on the principal branch. However, \Maple{} will still compute (\ref{eq:besselK}) on the principal branch independently of the value of $z$. Hence, a translation
+Because of $z^2$, if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of (\ref{eq:besselK}) would be no longer on the principal branch. However, \Maple{} will still compute (\ref{eq:besselK}) on the principal branch independently of the value of $z$. Hence, a translation
 \begin{equation}
 \verb|\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}| \overset{\langMaple}{\mapsto} \verb|BesselK(1/4,(1/4)*z^2)|
 \end{equation}
-is incorrect if $|\ph@{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one has to use analytic continuation for the right-hand side of equation (\ref{eq:branch-cut-near}). In subsection~\ref{subsec:branch-cut-issues} we also shown that the complete right-hand side of equation~(\ref{eq:branch-cut-near}) has three branch cuts, caused by the square root function and the $z^2$ argument of the modified Bessel function of the second kind. Such complex examples cannot be simplified yet.
+is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one has to use analytic continuation for the right-hand side of equation (\ref{eq:branch-cut-near}). In subsection~\ref{subsec:branch-cut-issues} we also shown that the complete right-hand side of equation~(\ref{eq:branch-cut-near}) has three branch cuts, caused by the square root function and the $z^2$ argument of the modified Bessel function of the second kind. Such complex examples cannot be simplified yet.
 
 However, this validation approach is powerful and runs automatically. We use this approach to verify a large set of test cases extracted directly from the \gls{dlmf}, see \cref{sec:test-summary}.
 
 \section{Numerical Tests}\label{sec:numerical-tests}
 Another approach of verification are numerical tests. In principle, we follow the same approach as the relation tests in \cref{sec:relation-tests}, but rather than using the simplification functions we compare the left-hand side and right-hand side for actual values. 
 
-For example, reconsider equation~(\ref{eq:branch-cut-near}) from \cite[(12.7.10)]{NIST:DLMF}. Define the difference of right-hand side and left-hand side
+For example, reconsider equation~(\ref{eq:branch-cut-near}) from \parencite[(12.7.10)]{NIST:DLMF}. Define the difference of right-hand side and left-hand side
 \begin{equation}\label{eq:difference}
-D(z) := \ParabolicU@{0}{z} - \sqrt{\frac{z}{2\cpi}}\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2},
+D(z) := U(0,z) - \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right),
 \end{equation}
 and compute $D(z)$ for some values of $z$. Table~\ref{tab:computations-for-difference} presents four computations for $D(z)$, one value for each quadrant in the complex plane.
 \begin{table}[ht]
@@ -164,11 +164,11 @@ As far as we know, there is no answer to this question yet. This is one reason w
 \section{DLMF Test Suite}\label{sec:test-summary}
 To verify our translations with the approaches described above we create test suites by extracting equations and formulae from the sources of the \gls{dlmf}. We start with a small test suite of 110\footnote{The set of test cases is available at\newline \url{https://gist.github.com/AndreG-P/f48121d70fbd2a57b2cf6d88019ddadf}} equations and provide a more detailed look to those tests. We are able to translate 108 of those 110 cases. 
 
-Two of the test cases (lines 42 and 43) contain macros we are not able to translate yet. Those macros are \verb|\subplus| and \verb|\CFK|, which are used for continued fractions. They have been created for another translation project~\cite[§5]{CICM:Paper} for continued fractions defined in the \textit{Handbook of Continued Fractions for Special Functions} (2008) \cite{CF:Handbook}. The conversion process for the \gls{cfsf} \cite{CF:Maple} dataset from \Maple{} and the \gls{ecf} \cite{CF:eCF,eCF:FinalReport} dataset from Wolfram uses special file types. Therefore, our translator is not able to handle those macros yet.
+Two of the test cases (lines 42 and 43) contain macros we are not able to translate yet. Those macros are \verb|\subplus| and \verb|\CFK|, which are used for continued fractions. They have been created for another translation project~\parencite[§5]{CICM:Paper} for continued fractions defined in the \textit{Handbook of Continued Fractions for Special Functions} (2008) \parencite{CF:Handbook}. The conversion process for the \gls{cfsf} \parencite{CF:Maple} dataset from \Maple{} and the \gls{ecf} \parencite{CF:eCF,eCF:FinalReport} dataset from Wolfram uses special file types. Therefore, our translator is not able to handle those macros yet.
 
-However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\cite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\cite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls{dlmf} has already updated the wrong equation.}
+However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\parencite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls{dlmf} has already updated the wrong equation.}
 \begin{equation}\label{eq:signerror}
-\displaystyle \LegendreP[1/2]{\nu}@{\cosh@@{\xi}} = - \left( \frac{2}{\cpi \sinh@@{\xi}} \right)^{1/2} \cosh@{\left( \nu + \tfrac{1}{2} \right) \xi}.
+\displaystyle P^{1/2}_{\nu}\left(\cosh{\xi}\right) = - \left( \frac{2}{\cpi \sinh{\xi}} \right)^{1/2} \cosh{\left( \nu + \tfrac{1}{2} \right) \xi}.
 \end{equation}
 Besides this wrong equation, all of these manual numerical tests return zero for the difference between the left-hand side and right-hand side. Of course it is still not possible to conclude the equivalence based on our manual numerical tests, as explained above.
 
@@ -176,7 +176,7 @@ Those 110 test cases are not sufficiently comprehensive for all of the functions
 
 We are able to translate 2,232 (approx. 53.59\%) of those test cases. The \textit{simplify} function of \Maple{} returns zero for the difference for 490 of the translated 2,232 test cases. We increase the number to 713 with automatic pre-conversions helping the simplification process. With simplification over the division of the left-hand side by the right-hand side (rather than simplify the difference) we have three more verified translations and 716 in total. Therefore, 1,516 test cases were translated but the translation cannot be verified automatically yet.
 
-The translator cannot translate 1,933 test cases. First of all, 32 lines contain neither an equation nor a relation. Because we have created this dataset for our verification approaches, we do not translate those 32 lines at all. Most of the other failures are produced because of missing semantic information in the \LaTeX{} expression or the formulae contains a macro that cannot be translated in the current state of the program, such as in 978 lines that contain a macro that cannot be translated. For example, in 171 lines one of the symmetric elliptic integrals~\cite[(19.16.1-6)]{NIST:DLMF} appears and we do not provide translation patterns for those integrals, because there is no direct translation possible yet. A workaround would be to allow translations based on the definitions, see~(\ref{eq:gudermannian}).
+The translator cannot translate 1,933 test cases. First of all, 32 lines contain neither an equation nor a relation. Because we have created this dataset for our verification approaches, we do not translate those 32 lines at all. Most of the other failures are produced because of missing semantic information in the \LaTeX{} expression or the formulae contains a macro that cannot be translated in the current state of the program, such as in 978 lines that contain a macro that cannot be translated. For example, in 171 lines one of the symmetric elliptic integrals~\parencite[(19.16.1-6)]{NIST:DLMF} appears and we do not provide translation patterns for those integrals, because there is no direct translation possible yet. A workaround would be to allow translations based on the definitions, see~(\ref{eq:gudermannian}).
 
 Other errors appear in 914 cases, where the semantic information is missing or is not unique. An example are 284 lines that use a potentially ambigious single quote (or prime) notation '\aSingleQuote' to identify derivatives of functions. 
 

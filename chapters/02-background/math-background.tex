@@ -27,12 +27,12 @@ Since the same basic arithmetical rules apply in $\Complex$ as in $\Real$, we wi
 
 This thesis mostly focus on the \gls{cas} \Maple, therefore all of the following complex plots use the default color map in \Maple{~}\ref{fig:maple-color}.
 
-A three-dimensional plot of a complex function, such as $f$ from above, usually maps the real and imaginary part of the variable to the $x$ and $y$ axes, while the height is defined by the absolute value of the complex variable $|z|$. Figure~\ref{fig:cylinderU} demonstrates a complex plot of the parabolic cylinder function $\ParabolicU@{a}{z}$~\cite[(12.2i)]{NIST:DLMF} in \Maple. 
+A three-dimensional plot of a complex function, such as $f$ from above, usually maps the real and imaginary part of the variable to the $x$ and $y$ axes, while the height is defined by the absolute value of the complex variable $|z|$. Figure~\ref{fig:cylinderU} demonstrates a complex plot of the parabolic cylinder function $U(a,z)$~\cite[(12.2i)]{NIST:DLMF} in \Maple. 
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.8\textwidth]{cylinderUPlot.png}
-	\caption{A 3-dimensional complex plot of the parabolic cylinder function $\ParabolicU@{a}{z}$ at $a=0$ plotted by \Maple.~\cite[(12.2i)]{NIST:DLMF}}
+	\caption{A 3-dimensional complex plot of the parabolic cylinder function $U(a,z)$ at $a=0$ plotted by \Maple.~\cite[(12.2i)]{NIST:DLMF}}
 	\label{fig:cylinderU}
 \end{figure}
 
@@ -51,7 +51,7 @@ Note that for real function plots, such separate plots for the imaginary and rea
         \includegraphics[width=0.8\textwidth]{cylinderUIm.png}
         \label{fig:cylinderUIm}%
     }
-    \caption{Separately plot of the real~\protect\subref{fig:cylinderURe} and imaginary~\protect\subref{fig:cylinderUIm} part of the parabolic cylinder function $\ParabolicU@{a}{z}$ at $a=0$.}
+    \caption{Separately plot of the real~\protect\subref{fig:cylinderURe} and imaginary~\protect\subref{fig:cylinderUIm} part of the parabolic cylinder function $U(a,z)$ at $a=0$.}
     \label{fig:cylinderUSplit}
 \end{figure}
 
@@ -204,10 +204,10 @@ Note that the following notation uses our standard notation for a translation fr
 
 As illustrated above, translation~(\ref{eq:acot-alternatives}) contains the branch cut issue. Translation~(\ref{eq:acot-alternatives-1}) is an alternative, because the arctangent function in \Maple{} has the same position for the branch cut of the arctangent function in the \gls{dlmf}. However, in this case, the arccotangent function would be no longer defined at $z=0$. Translation~(\ref{eq:acot-alternatives-2}) is another alternative and defined at $z=0$. 
 
-A more complicated example might be the equation of the already introduced parabolic cylinder function $\ParabolicU@{a}{z}$ and the modified Bessel function of the second kind $\BesselK{\nu}@{z}$. The parabolic cylinder function is a solution of a second order differential equation~\cite[(12.2i)]{NIST:DLMF} and can be represented by $\BesselK{\nu}@@{z}$ for $a=0$. The relation is defined in~(\ref{eq:branch-cut-issue}). 
+A more complicated example might be the equation of the already introduced parabolic cylinder function $U(a,z)$ and the modified Bessel function of the second kind $\BesselK{\nu}@{z}$. The parabolic cylinder function is a solution of a second order differential equation~\cite[(12.2i)]{NIST:DLMF} and can be represented by $\BesselK{\nu}@@{z}$ for $a=0$. The relation is defined in~(\ref{eq:branch-cut-issue}). 
 
 \begin{equation}\label{eq:branch-cut-issue}
-\displaystyle \ParabolicU@{0}{z} = \sqrt{\frac{z}{2\cpi}}\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}
+\displaystyle U(0,z) = \sqrt{\frac{z}{2\cpi}}\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}
 \end{equation}
 
 Following the same approach as for the arccotangent function discovers results in a branch cut problem. Figure~\ref{fig:u-bessel} illustrates that problem for equation~(\ref{eq:branch-cut-issue}) with $z=2.5\expe^{\iunit\phi}$ and letting $\phi$ increase from $0$ to $2\cpi$. While the left hand side is an entire function of $z$ (can be seen in figure~\ref{fig:u-cont}), the right hand side has two functions with a branch cut along the negative real axis each. As already discussed, the branch cut of the square root function is at $(-\infty,0]$. Therefore, at $\phi = \cpi$ the right hand side jumps over the branch cut (green dots) back to the principal branch rather than continue on the other branch. Furthermore, the principal branch of $K_\nu$ is defined for $\phi \in (-\cpi,\cpi]$. With $z^2 = r^2\expe^{2\iunit\phi}$, the branch cut of $K_\nu$ is reached at $\phi = \left\{ \frac{\cpi}{2}, \frac{3\cpi}{2} \right\}$ (red dots and blue dots). The branch cut of $K_\nu$ "moves" to $(-\infty\iunit,0]$ and $[0,\infty\iunit)$. Hence, we end up with three branch cuts for the right hand side of (\ref{eq:branch-cut-issue}).

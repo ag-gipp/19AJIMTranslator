@@ -1,7 +1,7 @@
 \section{Maple to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
 The backward translation is based on the internal data structure of \Maple. Therefore, a license of \Maple{} is mandatory to perform backward translations. The following subsections will explain why this approach was necessary and how \Maple{} works internally. Using the internal data structure also requires to handle the internal properties of \Maple. This can causes some problems. Those problems and our solutions will be explained in subsection~\ref{subsec:maple-probs}. In the last subsection~\ref{subsec:maple-impl}, we will focus on the implementation of the backward translation.
 
-Note that all explanations in this section is based on \Maple's programming guide~\cite{MAPLE:ProgrammingGuide} for \Maple{} 2016. 
+Note that all explanations in this section is based on \Maple's programming guide~\parencite{MAPLE:ProgrammingGuide} for \Maple{} 2016. 
 
 \subsection{Internal Data Structure}
 While our forward translation is realized for the \texttt{1D} input representation in \Maple, this representation is not suitable for a backward translation. Since \Maple{} uses it's own syntax and programming language, we would need a new parser for \Maple{} expressions to realize a backward translation tool. Of course, \Maple{} has this parser implemented. But it is not possible to use the parser without using \Maple{} itself. Therefore, an installed version of \Maple{} is mandatory for our backward translation.  
@@ -48,12 +48,12 @@ The \Maple{} \gls{dag} can be visualized in a graph, such as in figure~\ref{fig:
 	FUNCTION & Function invocation with the name, arguments and attributes of the function.\\
 	\hline
 \end{tabular}
-\caption{A subset of important internal \Maple{} structures. See~\cite{MAPLE:ProgrammingGuide} for a complete list.}
+\caption{A subset of important internal \Maple{} structures. See~\parencite{MAPLE:ProgrammingGuide} for a complete list.}
 \label{tab:maple-types}
 \end{table}
 
 \subsection{Maple's Open Maple API}
-\Maple{} provides an \gls{api}, called \texttt{OpenMaple}~\cite[\S 14.3]{MAPLE:ProgrammingGuide} for interaction with the \Maple{} kernel. The \texttt{OpenMaple} \gls{api} is implemented for different programming languages such as \texttt{C}, \texttt{Java} and \texttt{Visual Basic}. Since our forward translation and the \gls{mlp} is implemented in \texttt{Java}, we use the \texttt{Java} \gls{api} for the backward translation. The \texttt{Java} \gls{api} has some limitations to interact with \Maple's \gls{dag}.
+\Maple{} provides an \gls{api}, called \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} for interaction with the \Maple{} kernel. The \texttt{OpenMaple} \gls{api} is implemented for different programming languages such as \texttt{C}, \texttt{Java} and \texttt{Visual Basic}. Since our forward translation and the \gls{mlp} is implemented in \texttt{Java}, we use the \texttt{Java} \gls{api} for the backward translation. The \texttt{Java} \gls{api} has some limitations to interact with \Maple's \gls{dag}.
 
 For the backward translation, we use the \inertF. This representation can be converted to a nested list version and the \texttt{OpenMaple} Java \gls{api} can handle lists. Therefore, the backward translation firstly converts the \inertF{} to a nested list structure before any translation process starts.
 
@@ -167,12 +167,12 @@ The general translation process runs through different states. Each translation 
 
 Figure~\ref{fig:BackwardDel} shows the subtranslators of the backward translation process. The structure is the same as for the forward translation, seen in figure~\ref{fig:ForwardDel}. The \verb|MapleInterface| represents the entry point of a translation process. Before the translation starts, the \Maple{} kernel needs to be initialized and prepared for the translation process by loading all custom procedures. Once everything is loaded, an expression is delegated to specialized subtranslators depending on the internal data type, defined by custom procedures and \Maple's \inertF.
 
-The following figure~\ref{fig:backward-trans} illustrates the backward translation process for the Jacobi polynomial example $\JacobiP{\alpha}{\beta}{n}@{\cos@{a\Theta}}$ from table~\ref{tab:JacobiP-usecase}. The input expression is converted to the nested list representation of the \texttt{MyInertForm} (the customized \inertF{} of \Maple). Afterwards, each node of the tree is translated separately by specialized subtranslators (visualized by blue arrows). The translation of functions (bold blue arrows) is again realized by translation patterns, which define the correct position for each argument. The last step is used to put all translated arguments to the right position (visualized by red arrows).
+The following figure~\ref{fig:backward-trans} illustrates the backward translation process for the Jacobi polynomial example $P_n^{(\alpha , \beta)}(\cos(a\Theta))$ from table~\ref{tab:JacobiP-usecase}. The input expression is converted to the nested list representation of the \texttt{MyInertForm} (the customized \inertF{} of \Maple). Afterwards, each node of the tree is translated separately by specialized subtranslators (visualized by blue arrows). The translation of functions (bold blue arrows) is again realized by translation patterns, which define the correct position for each argument. The last step is used to put all translated arguments to the right position (visualized by red arrows).
 
 \begin{figure}[!htp]
 	\centering
 	\includegraphics[clip, trim=0.1cm 0.1cm 0.1cm 0.1cm, scale=0.7]{MapleTranslation.pdf}
-	\caption{A scheme of the backward translation process from \Maple{} for the Jacobi polynomial $\JacobiP{\alpha}{\beta}{n}@{\cos@{a\Theta}}$. The input string is converted by the \Maple{} kernel into the nested list representation. This list is translated by subtranslators (blue and red arrows). A function translation (bold blue arrows) is again realized by translation patterns to define the position of the arguments (red arrows).}
+	\caption{A scheme of the backward translation process from \Maple{} for the Jacobi polynomial $P_n^{(\alpha , \beta)}(\cos(a\Theta))$. The input string is converted by the \Maple{} kernel into the nested list representation. This list is translated by subtranslators (blue and red arrows). A function translation (bold blue arrows) is again realized by translation patterns to define the position of the arguments (red arrows).}
 	\label{fig:backward-trans}
 \end{figure}
 
