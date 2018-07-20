@@ -45,7 +45,7 @@ With theorem~\ref{theo:fixpoint}, we are able to find fixed points in round trip
 
 Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reaches a fixed point. The test formula is
 \begin{equation}
-\frac{\cos@{a\Theta}}{2}.
+\frac{\cos\left(a\Theta\right)}{2}.
 \end{equation}
 
 \begin{table}[ht]
@@ -166,9 +166,9 @@ To verify our translations with the approaches described above we create test su
 
 Two of the test cases (lines 42 and 43) contain macros we are not able to translate yet. Those macros are \verb|\subplus| and \verb|\CFK|, which are used for continued fractions. They have been created for another translation project~\parencite[§5]{CICM:Paper} for continued fractions defined in the \textit{Handbook of Continued Fractions for Special Functions} (2008) \parencite{CF:Handbook}. The conversion process for the \gls{cfsf} \parencite{CF:Maple} dataset from \Maple{} and the \gls{ecf} \parencite{CF:eCF,eCF:FinalReport} dataset from Wolfram uses special file types. Therefore, our translator is not able to handle those macros yet.
 
-However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\parencite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls{dlmf} has already updated the wrong equation.}
+However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\parencite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls{dlmf} has fixed the wrong equation with version 1.0.16.}
 \begin{equation}\label{eq:signerror}
-\displaystyle P^{1/2}_{\nu}\left(\cosh{\xi}\right) = - \left( \frac{2}{\cpi \sinh{\xi}} \right)^{1/2} \cosh{\left( \nu + \tfrac{1}{2} \right) \xi}.
+\displaystyle \mathsf{Q}^{-1/2}_{\nu}\left(\cos\theta\right)=-\left(\frac{\pi}{2\sin\theta}\right)^{1/2}\frac{\cos\left(\left(\nu+\frac{1}{2}\right)\theta\right)}{\nu+\frac{1}{2}}.
 \end{equation}
 Besides this wrong equation, all of these manual numerical tests return zero for the difference between the left-hand side and right-hand side. Of course it is still not possible to conclude the equivalence based on our manual numerical tests, as explained above.
 

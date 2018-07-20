@@ -23,7 +23,7 @@ This function is not implemented in \Maple. Therefore, we translate its definiti
 
 We want to avoid such translations, because they are not intuitive and therefore can confuse a user. However, providing such translations is still better than providing no translation.
 
-Instead of none possible translation, how can we handle multiple alternative translations? We already discussed the problem of the inverse trigonometric function $\acot@{x}$. Because of a different branch cut in \Maple{} (compared to the \gls{dlmf} definition), there are alternative translations available (see~\eqref{eq:acot-alternatives}). In such cases, we define the most intuitive, the direct translation. In addition, we inform the user about the available alternative translations and the branch cut issues. Hence,
+Instead of none possible translation, how can we handle multiple alternative translations? We already discussed the problem of the inverse trigonometric function $\acot{x}$. Because of a different branch cut in \Maple{} (compared to the \gls{dlmf} definition), there are alternative translations available (see~\eqref{eq:acot-alternatives}). In such cases, we define the most intuitive, the direct translation. In addition, we inform the user about the available alternative translations and the branch cut issues. Hence,
 \begin{equation}
 \verb|\acot{x}| \overset{\langMaple}{\mapsto} \texttt{arccot(x)}.
 \end{equation}
