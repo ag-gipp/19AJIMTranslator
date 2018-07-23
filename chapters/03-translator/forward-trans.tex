@@ -1,4 +1,4 @@
-\section{The Forward Translation}\label{sec:forward-translation}
+\subsection{Forward Translations}\label{sec:forward-translation}
 %\glsreset{teo}
 The translation process starts with semantic \LaTeX{} expressions. These expressions get analyzed and parsed by the \gls{mlp}, which produces a \gls{mlp-pt} of the input expression with additional information about each symbol. An abstract translator class analyzes each node and delegates them to specialized subtranslators. In this process an object called \gls{teo} is build. This \gls{teo} is needed to rebuild a string representation of the mathematical expression given by the \gls{mlp-pt}.
 
