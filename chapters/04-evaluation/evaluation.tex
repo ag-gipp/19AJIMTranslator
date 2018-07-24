@@ -1,15 +1,27 @@
-This project aims for a translation of mathematical expressions from \LaTeX{} sources to \gls{cas} and back again. Essentially, the translator translates only string representations. We need to verify that such translations are \textit{appropriate}. Therefore, we develop verification and validation techniques for translations and present them in this chapter.
+\section{Evaluation}\label{sec:evaluation}
+%This project aims for a translation of mathematical expressions from \LaTeX{} sources to \gls*{cas} and back again. Essentially, the translator translates only string representations. We need to verify that such translations are \textit{appropriate}. Therefore, we develop verification and validation techniques for translations and present them in this chapter.
 
-First of all, each semantic \LaTeX{} macro ties a specific character sequence to a well-defined mathematical object. This definition can be found at the \gls{dlmf} or \gls{drmf}. Therefore, our reference source for semantic \LaTeX{} expressions is always the \gls{dlmf} or \gls{drmf}. This gives us the opportunity to compare more than the string representations of the mathematical objects in a translation process. For example, consider the simple translation of the cosine function
-\begin{equation}\label{eq:simple-cosine}
-\verb|\cos{x}| \overset{\langMaple}{\mapsto} \texttt{cos(x)}.
-\end{equation}
-Our verification and validation techniques, to proof for example that~(\ref{eq:simple-cosine}) is an \textit{appropriate} translation, can be grouped into three parts. We present in the following sections these three parts and conclusively, we use all these techniques to actually verify translations for a test suite directly extracted from the \gls{dlmf}.
+%First of all, each semantic \LaTeX{} macro ties a specific character sequence to a well-defined mathematical object. This definition can be found at the \gls*{dlmf} or \gls*{drmf}. Therefore, our reference source for semantic \LaTeX{} expressions is always the \gls*{dlmf} or \gls*{drmf}. This gives us the opportunity to compare more than the string representations of the mathematical objects in a translation process. For example, consider the simple translation of the cosine function
+%\begin{equation}\label{eq:simple-cosine}
+%\verb|\cos{x}| \overset{\langMaple}{\mapsto} \texttt{cos(x)}.
+%\end{equation}
 
-\section{Round Trip Tests}\label{sec:round-trip}
-Round trip tests are our first approach to verify translations. The idea is to translate an expression back and forth again and check if the representation changes during this process. The translator is able to translate expressions from and to \Maple. Therefore, we implement the following round trip tests only for \Maple.
+%Our verification and validation techniques, to proof for example that~(\ref{eq:simple-cosine}) is an \textit{appropriate} translation, can be grouped into three parts. We present in the following sections these three parts and conclusively, we use all these techniques to actually verify translations for a test suite directly extracted from the \gls*{dlmf}.
 
-Furthermore, we take advantage of \Maple's symbolic simplification function to compare a \Maple{} expression in the beginning of an round trip test with the \Maple{} expression after the translations. If \Maple's \textit{simplify} function returns zero for the difference between two representations, both expressions are symbolically equivalent. Note that this relies on the correctness of the simplification, which is not proven (see section~\ref{subsec:mathematica}). On the other hand, the equivalence is not disproven if the simplification returns something different to zero.
+We implemented three approaches to evaluate whether a translation was \textit{appropriate} or \textit{inappropriate}.
+\begin{enumerate}
+\item \textbf{Round Trip Tests}: translates expressions back and forth and analyzing the changes.
+\item \textbf{Function Relation Tests}: translate mathematically proven equivalent expressions from one system to a \gls*{cas} and evaluate whether the relation remains valid
+\begin{enumerate}
+\item via equivalence checks of the \gls*{cas} or
+\item via numerical evaluation tests.
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Round Trip Tests}\label{sec:round-trip}
+%Round trip tests are our first approach to verify translations. The idea is to translate an expression back and forth again and check if the representation changes during this process. The translator is able to translate expressions from and to \Maple. Therefore, we implement the following round trip tests only for \Maple.
+
+%Furthermore, we take advantage of \Maple's symbolic simplification function to compare a \Maple{} expression in the beginning of an round trip test with the \Maple{} expression after the translations. If \Maple's \textit{simplify} function returns zero for the difference between two representations, both expressions are symbolically equivalent. Note that this relies on the correctness of the simplification, which is not proven (see section~\ref{subsec:mathematica}). On the other hand, the equivalence is not disproven if the simplification returns something different to zero.
 
 A round trip test always starts with a valid expression either in semantic \LaTeX{} or in \Maple. A translation from one system to another is called \textbf{a step}. A complete round trip translation (two steps) is called \textbf{one cycle}.
 
@@ -17,31 +29,31 @@ A round trip test always starts with a valid expression either in semantic \LaTe
 A \textbf{fixed point representation} (or short fixed point) in a round trip translation process is a string representation that is identical to all string representations in the following cycles.
 \end{definition}
 
-Obviously, there may appear two fixed point representations in round trip tests, one for each system. We will see that most of the round trip translations reach fixed points after a certain amount of steps.
+%Obviously, there may appear two fixed point representations in round trip tests, one for each system. We will see that most of the round trip translations reach fixed points after a certain amount of steps.
 
-\begin{theorem}[Fixed Point Properties]\label{theo:fixpoint}
-Consider two languages $A,B \in \mathcal{L}$. A fixed point representation is reached if the current representation is just identical to the next representation in the same language (after one cycle). Furthermore, if $a \in A$ is a fixed point representation, the translation of $a$ to $b \in B$ is also a fixed point representation.
-\end{theorem}
-\begin{proof}
-Let $A, B \in \mathcal{L}$ be languages. Consider a round trip translation test between the languages $A$ and $B$. Without loss of generality, let $a \in A$ be a fixed point representation and let $a$ be the \textit{first} fixed point representation that appears in this test. The \gls{mlp} as well as \Maple{} are deterministic, because a test case works in only one \Maple{-session} and we do not compute the inputs in \Maple. Therefore, the translation process is not able to call any probabilistic algorithms. Hence, our translator is also deterministic. 
+%\begin{theorem}[Fixed Point Properties]\label{theo:fixpoint}
+%Consider two languages $A,B \in \mathcal{L}$. A fixed point representation is reached if the current representation is just identical to the next representation in the same language (after one cycle). Furthermore, if $a \in A$ is a fixed point representation, the translation of $a$ to $b \in B$ is also a fixed point representation.
+%\end{theorem}
+%\begin{proof}
+%Let $A, B \in \mathcal{L}$ be languages. Consider a round trip translation test between the languages $A$ and $B$. Without loss of generality, let $a \in A$ be a fixed point representation and let $a$ be the \textit{first} fixed point representation that appears in this test. The \gls*{mlp} as well as \Maple{} are deterministic, because a test case works in only one \Maple{-session} and we do not compute the inputs in \Maple. Therefore, the translation process is not able to call any probabilistic algorithms. Hence, our translator is also deterministic. 
 
-Let $b \in B$ with
-\begin{equation}
-\mathrm{tr}^A_B(a) = b.
-\end{equation}
+%Let $b \in B$ with
+%\begin{equation}
+%\mathrm{tr}^A_B(a) = b.
+%\end{equation}
 
-Since the translation process is deterministic, $a$ will be always translated to $b$. Consider $a' \in A$ as the backward translation from $b$
-\begin{equation}
-\mathrm{tr}^B_A(b) = a'.
-\end{equation}
-Now $a$ was defined to be a fixed point representation in $A$. Therefore, $a$ is identical to all string representation in the following cycles. Thus $a = a'$.
+%Since the translation process is deterministic, $a$ will be always translated to $b$. Consider $a' \in A$ as the backward translation from $b$
+%\begin{equation}
+%\mathrm{tr}^B_A(b) = a'.
+%\end{equation}
+%Now $a$ was defined to be a fixed point representation in $A$. Therefore, $a$ is identical to all string representation in the following cycles. Thus $a = a'$.
 
-Furthermore, because the translations are deterministic, $b$ will be always backward translated to $a' = a$ and $a$ will be always forward translated to $b$. Therefore, $b$ is identical to the representation after one cycle. Per definition, $b$ is therefore a fixed point in $B$.
+%Furthermore, because the translations are deterministic, $b$ will be always backward translated to $a' = a$ and $a$ will be always forward translated to $b$. Therefore, $b$ is identical to the representation after one cycle. Per definition, $b$ is therefore a fixed point in $B$.
 
-Remember, $a$ was chosen arbitrarily as the first fixed point representation that appears in the round trip test. Therefore, whenever a fixed point appears in a round trip test, the next translation to the respective other language will be a fixed point as well. Consequently, a fixed point is already reached, when just the next representation (after one cycle) is identical to the current representation.
-\end{proof}
+%Remember, $a$ was chosen arbitrarily as the first fixed point representation that appears in the round trip test. Therefore, whenever a fixed point appears in a round trip test, the next translation to the respective other language will be a fixed point as well. Consequently, a fixed point is already reached, when just the next representation (after one cycle) is identical to the current representation.
+%\end{proof}
 
-With theorem~\ref{theo:fixpoint}, we are able to find fixed points in round trip tests by only testing the equality to the next representation (after one cycle). Furthermore, we only need to find the first fixed point representation in either system, because the next step will be a fixed point representation for the respective other system. When a round trip test reaches such a fixed point in \Maple, the \textit{simplify} function tries to simplify the difference between the first expression in \Maple{} and the fixed point expression. It is not feasible to simplify or compute \LaTeX{} expressions yet (neither generic nor semantic \LaTeX) - actually, our translation tool just makes this possible. Therefore, we check the equivalence between a fixed point and its first expression in semantic \LaTeX{} manually.
+%With theorem~\ref{theo:fixpoint}, we are able to find fixed points in round trip tests by only testing the equality to the next representation (after one cycle). Furthermore, we only need to find the first fixed point representation in either system, because the next step will be a fixed point representation for the respective other system. When a round trip test reaches such a fixed point in \Maple, the \textit{simplify} function tries to simplify the difference between the first expression in \Maple{} and the fixed point expression. It is not feasible to simplify or compute \LaTeX{} expressions yet (neither generic nor semantic \LaTeX) - actually, our translation tool just makes this possible. Therefore, we check the equivalence between a fixed point and its first expression in semantic \LaTeX{} manually.
 
 Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reaches a fixed point. The test formula is
 \begin{equation}
@@ -65,29 +77,31 @@ Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reach
 \label{tab:fixpoint}
 \end{table}
 
-Step 4 is identical to step 2. Theorem~\ref{theo:fixpoint} implies that step 2 is the fixed point representation for semantic \LaTeX{} and step 3 is the fixed point representation for \Maple. The structure of the expression changes between the steps 1 and 2. The reason are internal changes made by \Maple. These problems have been discussed in the previous \cref{subsec:maple-probs}.
+Step 4 is identical to step 2 and since the translator is a deterministic algorithm it can be easily shown that step 2 and step 3 are fixed point representations for semantic \LaTeX{} and \Maple.
 
-Almost all test cases are reaching a fixed point representation. Starting from semantic \LaTeX, the first fixed point is reached at step 2 in semantic \LaTeX, because of \Maple's internal changes. If the structure of the semantic \LaTeX{} input is already identical to the internal structure of \Maple's representation and the expression only contains functions and symbols with an available direct translation from and to each system, the input expression is already the fixed point representation. For example, consider the semantic \LaTeX{} expression in step 2 in table~\ref{tab:fixpoint} as the input expression. In that case the input is already a fixed point. Starting a round trip test from \Maple, the first fixed point representation is reached in step 1 in semantic \LaTeX, because \Maple's changes has already been performed after the first translation. Again, this is only true if the expression only contains functions and symbols with a direct translation from and to each system. Furthermore, if a test case reaches a fixed point, it is equivalent (checked by \Maple's \textit{simplify} function or manually) to the input expression.
+%Almost all test cases are reaching a fixed point representation. Starting from semantic \LaTeX, the first fixed point is reached at step 2 in semantic \LaTeX, because of \Maple's internal changes. If the structure of the semantic \LaTeX{} input is already identical to the internal structure of \Maple's representation and the expression only contains functions and symbols with an available direct translation from and to each system, the input expression is already the fixed point representation. For example, consider the semantic \LaTeX{} expression in step 2 in table~\ref{tab:fixpoint} as the input expression. In that case the input is already a fixed point. Starting a round trip test from \Maple, the first fixed point representation is reached in step 1 in semantic \LaTeX, because \Maple's changes has already been performed after the first translation. Again, this is only true if the expression only contains functions and symbols with a direct translation from and to each system. Furthermore, if a test case reaches a fixed point, it is equivalent (checked by \Maple's \textit{simplify} function or manually) to the input expression.
 
-There is currently only one exception known where a round trip test does not reach a fixed point representation at all: Legendre's incomplete elliptic integrals~\parencite[(19.2.4-7)]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
+There is currently only one exception known where a round trip test does not reach a fixed point representation: Legendre's incomplete elliptic integrals~\parencite[eq. 19.2.4-7]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
 \begin{eqnarray}
 \verb|\EllIntF@{\phi}{k}| & \overset{\langMaple}{\mapsto} & \verb|EllipticF(sin(phi),k)|,\\
-\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|.
+\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|,
 \end{eqnarray}
 
-A round trip translation for this function produces an infinite chain of sine and inverse sine calls. The problem is that the round trip tests prevent simplifications in \Maple{} during the translation process (see \cref{subsec:maple-probs}). This problem could be resolved by allowing automatic evaluations in the round trip tests. However, currently we do not allow those evaluations because the changes can be serious, which makes it hard to follow possible errors.
+and round trip translations will produce infinite chains of sine and inverse sine calls. Since there are no evaulations involved, these chains will not be reduced during the translations. %The problem is that the round trip tests prevent simplifications in \Maple{} during the translation process (see \cref{subsec:maple-probs}). This problem could be resolved by allowing automatic evaluations in the round trip tests. However, currently we do not allow those evaluations because the changes can be serious, which makes it hard to follow possible errors.
 
-The round trip tests are very successful, but they only detect errors in string representations. However, because of the simplification techniques of fixed points, we are able to at least detect logical errors in one system: \Maple. On the other hand, these tests cannot determine logical errors in the translations between the two systems - but this is the critical part we want to verify. Consider defining a forward and backward translation for the sine function obviously wrong as
+The round trip tests are very successful, but they only detect errors in string representations. However, because of the simplification techniques of fixed points, we are able to at least detect logical errors in one system: \Maple. On the other hand, these tests cannot determine logical errors in the translations between the two systems. Consider we mistakenly defined an \textit{inappropriate} forward and backward translation for the sine function
 \begin{eqnarray}
 \verb|\sin@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|cos(phi)|,\label{eq:wrong-trans-1}\\
 \verb|\cos@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|sin(phi)|.\label{eq:wrong-trans-2}
 \end{eqnarray}
-In that case the round trip test would not detect any errors and reach a fixed point representation, because the simplification techniques only simplify two representations in the same system but cannot compare the representation in one system to those in the other. Therefore, we implemented tests for equations rather than general formulae.
+In that case the round trip test would not detect any errors and reach a fixed point representation, because the simplification techniques only simplify two representations in the same system but cannot compare the representation in one system to those in the other.
 
-\section{Function Relation Tests}\label{sec:relation-tests}
-In addition to the correctness of string representations, it is more important to validate whether a translation is \textit{appropriate}. Special functions are highly related to each other. The theory of special functions researches these relations and other properties of the functions. The \gls{dlmf} is a compendium of special functions and lists a lot of those relations. The translation of such relations to another system and the following analysis of the relations with the translated formulae would form a very effective test.
+\subsection{Function Relation Tests}\label{sec:relation-tests}
+%In addition to the correctness of string representations, it is more important to validate whether a translation is \textit{appropriate}. Special functions are highly related to each other. The theory of special functions researches these relations and other properties of the functions. 
 
-With this technique we can detect translation errors such as in (\ref{eq:wrong-trans-1} and \ref{eq:wrong-trans-2}). Consider the \gls{dlmf} equation for the sine and cosine function~\parencite[(4.21.2)]{NIST:DLMF}
+The \gls*{dlmf} is a compendium of special functions and orthogonal polynomials and lists several relations between the functions and polynomials. The idea of this evaluation approach is to translate an entire relation and test whether the relation remains valid after perfoming the translations.
+
+With this technique we can detect translation errors such as in (\ref{eq:wrong-trans-1} and \ref{eq:wrong-trans-2}). Consider the \gls*{dlmf} equation for the sine and cosine function~\parencite[eq 4.21.2]{NIST:DLMF}
 \begin{equation}
 \sin \left(u+v\right) = \sin{u}\cos{v} + \cos{u}\sin{v}.
 \end{equation}
@@ -103,38 +117,37 @@ This produces the equation in \Maple
 \end{equation}
 which is wrong. Since the expression is correct before the translation, we conclude an error during the translation process.
 
-However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls{cas} have trouble to test even simple equations. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \textit{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \textit{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. We implement some tricks to help \textit{simplify}: pre-conversion of the functions of the expression to other special functions is able to help \textit{simplify}, because the algorithms in the background can use different simplification methods for different functions. For example, the user can use the \Maple{} function \textit{convert} to convert the expression
+However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls*{cas} have trouble to test even simple equations. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \textit{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \textit{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. Because of implementation details, there are some techniques that helps \Maple{} to find possible simplifications. For example we can force \Maple{} to convert the formula
 \begin{equation}
 \sinh{x} + \sin{x}
 \end{equation}
-to an equivalent representation using the exponential function:
+to an equivalent representation using the exponential representations
 \begin{equation}
 \frac{1}{2}\expe^x - \frac{1}{2}\expe^{-x} - \frac{1}{2} \iunit \left( \expe^{\iunit x}-\expe^{-\iunit x} \right).
 \end{equation}
-With such pre-conversions we are able to improve the simplification process in \Maple. However, the limitations of the \textit{simplify} function are still the weakest part of this verification approach. Consider the equation~(\ref{eq:branch-cut-issue}) from \cref{subsec:branch-cut-issues}. 
+With such pre-conversions we are able to improve the simplification process in \Maple. However, the limitations of the \textit{simplify} function are still the weakest part of this verification approach. Consider the complex example~\parencite[eq. 12.7.10]{NIST:DLMF}
 \begin{equation}\label{eq:branch-cut-near}
-\displaystyle U(0,z) = \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right)
+\displaystyle U(0,z) = \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right),
 \end{equation}
-As already discussed, the modified Bessel function of the second kind~\parencite[(12.7.10)]{NIST:DLMF} has its branch cut in \Maple{} at $z < 0$. However, the argument of $K$ contains $z^2$. For now, just focus on
-\begin{equation}\label{eq:besselK}
-K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right)
-\end{equation}
-Because of $z^2$, if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of (\ref{eq:besselK}) would be no longer on the principal branch. However, \Maple{} will still compute (\ref{eq:besselK}) on the principal branch independently of the value of $z$. Hence, a translation
+where $U(0,z)$ is the parabolic cylinder function and $K_\nu(z)$ the modified Bessel function of the second kind. Both functions are well-defined in both systems and we can define a \textit{direct} translation for~\eqref{eq:branch-cut-near}. 
+The modified Bessel function of the second kind has its branch cut in \Maple{} and in the \gls*{dlmf} at $z < 0$. However, the argument of $K$ contains $z^2$. If $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of the right-hand side of~\eqref{eq:branch-cut-near} would be no longer on the principal branch. However, \Maple{} will still compute the principal values independently of the value of $z$. Hence, a translation
 \begin{equation}
 \verb|\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}| \overset{\langMaple}{\mapsto} \verb|BesselK(1/4,(1/4)*z^2)|
 \end{equation}
-is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one has to use analytic continuation for the right-hand side of equation (\ref{eq:branch-cut-near}). In subsection~\ref{subsec:branch-cut-issues} we also shown that the complete right-hand side of equation~(\ref{eq:branch-cut-near}) has three branch cuts, caused by the square root function and the $z^2$ argument of the modified Bessel function of the second kind. Such complex examples cannot be simplified yet.
+is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one has to use analytic continuation for the right-hand side of equation (\ref{eq:branch-cut-near}). %In subsection~\ref{subsec:branch-cut-issues} we also shown that the complete right-hand side of equation~(\ref{eq:branch-cut-near}) has three branch cuts, caused by the square root function and the $z^2$ argument of the modified Bessel function of the second kind. Such complex examples cannot be simplified yet.
 
-However, this validation approach is powerful and runs automatically. We use this approach to verify a large set of test cases extracted directly from the \gls{dlmf}, see \cref{sec:test-summary}.
+%However, this validation approach is powerful and runs automatically. We use this approach to verify a large set of test cases extracted directly from the \gls*{dlmf}, see \cref{sec:test-summary}.
 
-\section{Numerical Tests}\label{sec:numerical-tests}
-Another approach of verification are numerical tests. In principle, we follow the same approach as the relation tests in \cref{sec:relation-tests}, but rather than using the simplification functions we compare the left-hand side and right-hand side for actual values. 
+To evaluate such complex cases, the equivalence checks of \gls*{cas} are insufficient. Therefore we implement numerical tests as an additional step.
 
-For example, reconsider equation~(\ref{eq:branch-cut-near}) from \parencite[(12.7.10)]{NIST:DLMF}. Define the difference of right-hand side and left-hand side
+\subsection{Numerical Tests}\label{sec:numerical-tests}
+%Another approach of verification are numerical tests. In principle, we follow the same approach as the relation tests in \cref{sec:relation-tests}, but rather than using the simplification functions we compare the left-hand side and right-hand side for actual values. 
+
+Consider the differences of the left- and right-hand side of equation~\eqref{eq:branch-cut-near}
 \begin{equation}\label{eq:difference}
-D(z) := U(0,z) - \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right),
+D(z) := U(0,z) - \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right).
 \end{equation}
-and compute $D(z)$ for some values of $z$. Table~\ref{tab:computations-for-difference} presents four computations for $D(z)$, one value for each quadrant in the complex plane.
+Table~\ref{tab:computations-for-difference} presents four computations for $D(z)$, one value for each quadrant in the complex plane.
 \begin{table}[ht]
 \centering
 \begin{tabular}{rcc}
@@ -151,33 +164,51 @@ and compute $D(z)$ for some values of $z$. Table~\ref{tab:computations-for-diffe
 \label{tab:computations-for-difference}
 \end{table}
 
-The values are computed with the default precision of $10$ significant digits. Caused by the machine accuracy, the first and last values are different from zero. In such cases, we can increase the precision to figure out if it is an accuracy issue or $D(z)$ is really different from zero at those points. Increasing the precision of the computation for the first value $z = 1+\iunit$ up to $100$ significant digits returns $3\cdot 10^{-100} \iunit$ and can therefore be considered as zero (we get the same results for $z = 1-\iunit$). Hence, table~\ref{tab:computations-for-difference} shows us what we already know. The second and third values are computed on the principal branch of the modified Bessel function of the second kind and therefore produces a difference between the left-hand side and right-hand side of equation~(\ref{eq:branch-cut-near}).
+Considering machine accuracy and the default precision of $10$ significant digits, we can regard the first and last values as zero differences. While this evaluation is very powerful, it has a significant problem. Even when all tested values return a value differ from zero, it does not proof the equivalence of~\eqref{eq:branch-cut-near}. However, when the values are different from zero it does proof an error in one of the four cases~\parencite{NumericalTests:Paper}
+\begin{enumerate}
+\item the numerical engine tests invalid combinations of values;
+\item the translation is incorrect;
+\item there may be an error in the \gls*{dlmf} source; or
+\item there may be an error in \Maple.
+\end{enumerate}
 
-This approach of verification is very powerful, because it can verify not only our translations but also equations in a mathematical compendium. This has been demonstrated by discovering an overall sign error of the \gls{dlmf} equation~(\ref{eq:signerror}), see \cref{sec:test-summary}.
+%The values are computed with the default precision of $10$ significant digits. Caused by the machine accuracy, the first and last values are different from zero. In such cases, we can increase the precision to figure out if it is an accuracy issue or $D(z)$ is really different from zero at those points. Increasing the precision of the computation for the first value $z = 1+\iunit$ up to $100$ significant digits returns $3\cdot 10^{-100} \iunit$ and can therefore be considered as zero (we get the same results for $z = 1-\iunit$). Hence, table~\ref{tab:computations-for-difference} shows us what we already know. The second and third values are computed on the principal branch of the modified Bessel function of the second kind and therefore produces a difference between the left-hand side and right-hand side of equation~(\ref{eq:branch-cut-near}).
 
-However, this approach has also a significant problem. It is easy to see that something went wrong, but very hard to proof equivalence. Obviously, only four tested values are not sufficient to proof the equivalence. How many and which values do we need for a comprehensive result? Reformulating this question to a general problem brings us to: 
-\begin{quote}
-\textit{How can we discretize equations down to a finite set of test points such that the probability of equivalence for the continues equation is high if the equation is valid for the finite set of test points?}
-\end{quote}
-As far as we know, there is no answer to this question yet. This is one reason why we do not implement an automatic process of numerical tests yet. Another reason are constraints. Constraints are not as easy to translate as general formulae. They often contain quantifiers or logical operators which are difficult to translate in the current state of the program. However constraints are necessary for numerical tests. 
+%This approach of verification is very powerful, because it can verify not only our translations but also equations in a mathematical compendium. This has been demonstrated by discovering an overall sign error of the \gls*{dlmf} equation~(\ref{eq:signerror}), see \cref{sec:test-summary}.
 
-\section{DLMF Test Suite}\label{sec:test-summary}
-To verify our translations with the approaches described above we create test suites by extracting equations and formulae from the sources of the \gls{dlmf}. We start with a small test suite of 110\footnote{The set of test cases is available at\newline \url{https://gist.github.com/AndreG-P/f48121d70fbd2a57b2cf6d88019ddadf}} equations and provide a more detailed look to those tests. We are able to translate 108 of those 110 cases. 
+%However, this approach has also a significant problem. It is easy to see that something went wrong, but very hard to proof equivalence. Obviously, only four tested values are not sufficient to proof the equivalence. How many and which values do we need for a comprehensive result? Reformulating this question to a general problem brings us to: 
+%\begin{quote}
+%\textit{How can we discretize equations down to a finite set of test points such that the probability of equivalence for the continues equation is high if the equation is valid for the finite set of test points?}
+%\end{quote}
+%As far as we know, there is no answer to this question yet. This is one reason why we do not implement an automatic process of numerical tests yet. Another reason are constraints. Constraints are not as easy to translate as general formulae. They often contain quantifiers or logical operators which are difficult to translate in the current state of the program. However constraints are necessary for numerical tests. 
 
-Two of the test cases (lines 42 and 43) contain macros we are not able to translate yet. Those macros are \verb|\subplus| and \verb|\CFK|, which are used for continued fractions. They have been created for another translation project~\parencite[§5]{CICM:Paper} for continued fractions defined in the \textit{Handbook of Continued Fractions for Special Functions} (2008) \parencite{CF:Handbook}. The conversion process for the \gls{cfsf} \parencite{CF:Maple} dataset from \Maple{} and the \gls{ecf} \parencite{CF:eCF,eCF:FinalReport} dataset from Wolfram uses special file types. Therefore, our translator is not able to handle those macros yet.
+\subsection{Results}\label{sec:test-summary}
+There are 685 \Macro s\footnote{The macros are still work in progress and therefore the total number is constantly changing.} in total and 665 of them were implemented in the translator engine. We defined forward translations to \Maple{} for 201 and backward translations from \Maple{} for 195 functions. 
 
-However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\parencite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls{dlmf} has fixed the wrong equation with version 1.0.16.}
+The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4.087 equations from \gls*{dlmf} and apply our round-trip and relation tests on them. The translator was able to translate 2.405 (58.8\footnote{All percentages are approximately calculated.}\%) of the extracted equations without errors. 660 (27.4\%) of the successfully translated expressions were verified by the simplification techniques of \Maple. We apply additional numerical tests for the remaining 1.745 equations. For 418 (24\%) cases the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper}.
+
+The evaluation techniques has proven to be very powerful also for evaluating \gls*{cas} and mathematical online compendia such as the \gls*{dlmf}. During the evaluations we were able to detect several errors in the translation and evaluation engine. However, even errors in the \gls*{dlmf} were discovered.
+
+The numerical test engine was able to discover a sign error in equation~\parencite[eq. 14.5.14]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The error were reported on 10th April 2017.}
 \begin{equation}\label{eq:signerror}
 \displaystyle \mathsf{Q}^{-1/2}_{\nu}\left(\cos\theta\right)=-\left(\frac{\pi}{2\sin\theta}\right)^{1/2}\frac{\cos\left(\left(\nu+\frac{1}{2}\right)\theta\right)}{\nu+\frac{1}{2}}.
 \end{equation}
-Besides this wrong equation, all of these manual numerical tests return zero for the difference between the left-hand side and right-hand side. Of course it is still not possible to conclude the equivalence based on our manual numerical tests, as explained above.
+The error can be found on~\parencite[p. 359]{NIST:Handbook} and has been fixed in the \gls*{dlmf} with version 1.0.16. The same engine also identified a missing comma in the constraint of~\parencite[eq. 10.16.7]{NIST:DLMF}. The original constraint was given by $2\nu \neq -1, -2 -3, \ldots$, with a missing comma after $-2$.
 
-Those 110 test cases are not sufficiently comprehensive for all of the functions of the \gls{dlmf}. Therefore, we create a larger dataset\footnote{We are planning to publish this dataset at \url{http://drmf.wmflabs.org}.} of 4,165 semantic \LaTeX{} formulae, which is extracted from all chapters of the \gls{dlmf}. 
+%To verify our translations with the approaches described above we create test suites by extracting equations and formulae from the sources of the \gls*{dlmf}. We start with a small test suite of 110\footnote{The set of test cases is available at\newline \url{https://gist.github.com/AndreG-P/f48121d70fbd2a57b2cf6d88019ddadf}} equations and provide a more detailed look to those tests. We are able to translate 108 of those 110 cases. 
 
-We are able to translate 2,232 (approx. 53.59\%) of those test cases. The \textit{simplify} function of \Maple{} returns zero for the difference for 490 of the translated 2,232 test cases. We increase the number to 713 with automatic pre-conversions helping the simplification process. With simplification over the division of the left-hand side by the right-hand side (rather than simplify the difference) we have three more verified translations and 716 in total. Therefore, 1,516 test cases were translated but the translation cannot be verified automatically yet.
+%Two of the test cases (lines 42 and 43) contain macros we are not able to translate yet. Those macros are \verb|\subplus| and \verb|\CFK|, which are used for continued fractions. They have been created for another translation project~\parencite[§5]{CICM:Paper} for continued fractions defined in the \textit{Handbook of Continued Fractions for Special Functions} (2008) \parencite{CF:Handbook}. The conversion process for the \gls*{cfsf} \parencite{CF:Maple} dataset from \Maple{} and the \gls*{ecf} \parencite{CF:eCF,eCF:FinalReport} dataset from Wolfram uses special file types. Therefore, our translator is not able to handle those macros yet.
 
-The translator cannot translate 1,933 test cases. First of all, 32 lines contain neither an equation nor a relation. Because we have created this dataset for our verification approaches, we do not translate those 32 lines at all. Most of the other failures are produced because of missing semantic information in the \LaTeX{} expression or the formulae contains a macro that cannot be translated in the current state of the program, such as in 978 lines that contain a macro that cannot be translated. For example, in 171 lines one of the symmetric elliptic integrals~\parencite[(19.16.1-6)]{NIST:DLMF} appears and we do not provide translation patterns for those integrals, because there is no direct translation possible yet. A workaround would be to allow translations based on the definitions, see~(\ref{eq:gudermannian}).
+%However, we translate 108 test cases and for 84 of them the simplification function of \Maple{} returns zero as the difference of the left-hand side and right-hand side. The 24 remaining cases are translated, but the simplification function is not able to simplify the difference to zero. Therefore, we try to improve this part. Line 46~\parencite[(18.5.10)]{NIST:DLMF} for example, can be simplified to zero, if $n$ is previously set to an arbitrary integer value. For all those 24 test cases, we perform also manual numerical tests, which reveal an overall sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in equation~(\ref{eq:signerror}). The \gls*{dlmf} has fixed the wrong equation with version 1.0.16.}
+%\begin{equation}\label{eq:signerror}
+%\displaystyle \mathsf{Q}^{-1/2}_{\nu}\left(\cos\theta\right)=-\left(\frac{\pi}{2\sin\theta}\right)^{1/2}\frac{\cos\left(\left(\nu+\frac{1}{2}\right)\theta\right)}{\nu+\frac{1}{2}}.
+%\end{equation}
+%Besides this wrong equation, all of these manual numerical tests return zero for the difference between the left-hand side and right-hand side. Of course it is still not possible to conclude the equivalence based on our manual numerical tests, as explained above.
 
-Other errors appear in 914 cases, where the semantic information is missing or is not unique. An example are 284 lines that use a potentially ambigious single quote (or prime) notation '\aSingleQuote' to identify derivatives of functions. 
+%Those 110 test cases are not sufficiently comprehensive for all of the functions of the \gls*{dlmf}. Therefore, we create a larger dataset\footnote{We are planning to publish this dataset at \url{http://drmf.wmflabs.org}.} of 4,165 semantic \LaTeX{} formulae, which is extracted from all chapters of the \gls*{dlmf}. 
 
-\cleardoublepage
+%We are able to translate 2,232 (approx. 53.59\%) of those test cases. The \textit{simplify} function of \Maple{} returns zero for the difference for 490 of the translated 2,232 test cases. We increase the number to 713 with automatic pre-conversions helping the simplification process. With simplification over the division of the left-hand side by the right-hand side (rather than simplify the difference) we have three more verified translations and 716 in total. Therefore, 1,516 test cases were translated but the translation cannot be verified automatically yet.
+
+%The translator cannot translate 1,933 test cases. First of all, 32 lines contain neither an equation nor a relation. Because we have created this dataset for our verification approaches, we do not translate those 32 lines at all. Most of the other failures are produced because of missing semantic information in the \LaTeX{} expression or the formulae contains a macro that cannot be translated in the current state of the program, such as in 978 lines that contain a macro that cannot be translated. For example, in 171 lines one of the symmetric elliptic integrals~\parencite[(19.16.1-6)]{NIST:DLMF} appears and we do not provide translation patterns for those integrals, because there is no direct translation possible yet. A workaround would be to allow translations based on the definitions, see~(\ref{eq:gudermannian}).
+
+%Other errors appear in 914 cases, where the semantic information is missing or is not unique. An example are 284 lines that use a potentially ambigious single quote (or prime) notation '\aSingleQuote' to identify derivatives of functions.

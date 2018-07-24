@@ -1,4 +1,4 @@
-\section{Translation Problems}
+\section{Translation Problems}\label{sec:problems}
 There are several potential problems to peform translations between systems that embed semantic information in the input. Those problems vary from simple cases, e.g., a function is not defined in system, to complex cases, e.g., different positioning of branch cuts for multivalued functions. This section will discuss the problems and workarounds.
 
 If a function is defined in one system but not in the other, we can translate the definition of the mathematical function. For example, the \textit{Gudermannian}~\parencite[eq. 4.23.10]{NIST:DLMF} $\Gudermannian{x}$ function is defined by
@@ -37,7 +37,35 @@ A translation become infeasible, because the macro do not explicitely defined th
 \end{equation}
 This example shows that the \Macro s are still work in progress and are getting constantly updated.
 
-A similar problem are multiplications, since they are rarely explicitely marked in \LaTeX{} expressions, e.g., scientists using whitespaces to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication sign (this macro will not be rendered). Since this macro is newly introduced and an automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} uses this macro yet. As a consequence, the translator has some simple rules to perform translations without explicitely marked translations with \verb|\idot|.
+A similar problem are multiplications, since they are rarely explicitely marked in \LaTeX{} expressions, e.g., scientists using whitespaces to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced and an automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} uses this macro yet. As a consequence, the translator has some simple rules to perform translations without explicitely marked translations with \verb|\idot|.
+
+Even we only allow the special dialect of \LaTeX{} using semantic macros not all expressions are unambigious. In table~\ref{tab:amb-latex} are four examples of ambiguous expressions. These expressions are unambigious for the \LaTeX{} compiler, since it only considers the very next token for power and subscripts. Our translator following the same rules to solve these issues.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc}
+	\hline
+	Ambiguous Input & \LaTeX{} Output\\
+	\hline
+	\verb|n^m!| & $n^m!$\\
+	\verb|a^bc^d| & $a^bc^d$\\
+	\verb|x^y^z| & Double superscript error\\
+	\verb|x_y_z| & Double subscript error\\
+	\hline
+\end{tabular}
+\caption{Ambiguous \LaTeX{} expressions and how \LaTeX{} displays them.}
+\label{tab:amb-latex}
+\end{table}
+
+Another more questionable translation decision are alphanumerical expressions. As explained in table~\ref{tab:allTypesTable}, the \gls*{pom}-tagger handles strings of letters and numbers differently, depending on the order of the symbols. The reason is, that an expression such as '$4b$' is usually considered to be a multiplication of $4$ and '$b$', while '$b4$' looks like indexing '$b$' by $4$. While the first example produces two nodes, namely $4$ and '$b$', the second example '$b4$' produces just a single alphanumerical node in the \gls*{pom-pt}. The translator interprets alphanumerical expressions as multiplications for two reasons. (1) we would assume that the inputs '$4b$' and '$b4$' are mathematically equivalent and (2) it is more common in mathematics to use single letter names for variables~\parencite{Notation:History}. Therefore we define the following definitions
+
+\begin{eqnarray*}
+\verb|4b| & \overset{\langMaple}{\mapsto} & \verb|4*b|,\\
+\verb|b4| & \overset{\langMaple}{\mapsto} & \verb|b*4|,\\
+\verb|energy| & \overset{\langMaple}{\mapsto} & \verb|e*n*e*r*g*y|.
+\end{eqnarray*}
+
+In general the translator is drafted to solve ambiguous expressions or automatically find a workaround to disambiguate the expression. Only if there is no way to solve the ambiguity with the defined rules, the translation process stops.
 
 \section{The Translator}
 %The first step for providing an automatic translation tool is to defining the translation for each function. We manually create a table of translations for each \Macro. Translations for generic \LaTeX{} functions, mathematical symbols, Greek letters and constants are organized in \gls{json} files for a better performance.
@@ -56,7 +84,7 @@ A similar problem are multiplications, since they are rarely explicitely marked 
 %	\label{tab:placeholder_ex1}
 %\end{table}
 
-All translations are defined by a library that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as placeholders to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in table~\ref{tab:placeholder_ex2}
+All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as placeholders to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in table~\ref{tab:placeholder_ex2}.
 
 %Placeholders gives us the opportunity to define the order of the arguments and handle nested function calls. The order of arguments can differ between the systems. For example, if a function possesses parameters written in sub- and superscripts, \Maple{} and \Mathematica{} usually put the parameters in the subscript before the parameters in the superscripts. The notation in the \Macro s uses the reversed order. Table~\ref{tab:JacobiP-usecase} in the introduction shows an example of such different orders. The translation patterns for the Jacobi polynomial are illustrated in table~\ref{tab:placeholder_ex2}.
 \begin{table}[ht]
@@ -75,18 +103,18 @@ All translations are defined by a library that defines translation patterns for 
 	\label{tab:placeholder_ex2}
 \end{table}
 
-In some special cases, these placeholders causes trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
-\begin{equation}
+These placeholders causes trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
+\begin{equation*}
 \verb|diff(f, [x$n])|,
-\end{equation}
+\end{equation*}
 where $f$ as an algebraic expression or an equation, $x$ the name of the differentiation variable and $n$ for the $n$-th order differentiation. A translation for $\frac{d^2x^2}{dx^2}$ should be like this
-\begin{equation}
+\begin{equation*}
 \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
-\end{equation}
+\end{equation*}
 but would end up as
-\begin{equation}
-\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff($1, [$2$$0])|.
-\end{equation}
+\begin{equation*}
+\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
+\end{equation*}
 
 %Replace the placeholders sequentially by the arguments ends in
 %\begin{eqnarray*}
@@ -96,10 +124,7 @@ but would end up as
 %\text{Replace index 2 by $x$\hphantom{$^2$}}& \rightarrow &\verb|diff(x^2, [xx])|.
 %\end{eqnarray*}
 
-We can solve this issue by using paranthesis in such cases, e.g., 
-\begin{equation}
-\verb|diff($1, [$2$($0)])|.
-\end{equation}
+We can solve this issue by using paranthesis in such cases, e.g., \verb|diff($1, [$2$($0)])|.
 
 %A special problem can be binary operators. A good example is the multiplication sign. In \LaTeX{} most scientist would use white spaces or \verb|\cdot| to indicate a multiplication (using none of them can cause ambiguities, see \ref{subsec:ambiguities}). Similar to that approach, \Mathematica{} also understands white spaces and asterisks as multiplications. When we translate semantic \LaTeX{} expressions to \Maple, we use the {\sf 1D \Maple{}} representation (see subsection~\ref{subsec:maple}), where an asterisk becomes mandatory for multiplications. White spaces would produce a syntactical error in this input format. On the other hand, white spaces in \LaTeX{} do not necessarily indicate a multiplication. It could also be used to improve the readability. Whether a white space indicates a multiplication or not is a semantic information in the expression. We introduce a new \DLMF{} macro that indicates a multiplication, but not gets rendered. This macro is \verb|\idot|, for an invisible dot.
 
@@ -116,7 +141,7 @@ We can solve this issue by using paranthesis in such cases, e.g.,
 
 The \Macro s also allow to specify optional arguments to distinguish between standard and other version of functions. The Legendre and associated Legendre function of the first kind are examples for such cases. The library that defines translations for each macro using the macro name as a primary key to identify the translation. The Legendre and associated Legendre function of the first kind both using the same macro \verb|\LegendreP|. To distuingish such cases we using a special syntax such cases, shown in table~\ref{tab:legendreP-lex}.
 
-\begin{table}[ht]
+\begin{table}[ht!]
 	\centering
 	\begin{tabular}{ll}
 		\hline
@@ -126,7 +151,7 @@ The \Macro s also allow to specify optional arguments to distinguish between sta
 		\verb|X1:\LegendrePX\LegendreP[\mu]{\nu}@{x}| & \verb|LegendreP($1, $0, $2)|\\
 		\hline
 	\end{tabular}
-	\caption{Entry of the translation library example of the Legendre and associated Legendre function of the first kind. The prefix notation \texttt{X<d>:<name>X} defines the translation for \texttt{<name>} with \texttt{<d>}-number of optional arguments.}
+	\caption{Example entries of the Legendre and associated Legendre function in the translation library. The prefix notation \texttt{X<d>:<name>X} defines the translation for \texttt{<name>} with \texttt{<d>}-number of optional arguments.}
 	\label{tab:legendreP-lex}
 \end{table}
 
@@ -137,7 +162,7 @@ The translator using the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named
 
 %Table~\ref{tab:sine-lex-example} presents the entry for the sine function in the \verb|DLMF-macros-lexicon.txt|. The \verb|global-lexicon.txt| file is the main dictionary of the \gls{mlp} and combines the whole knowledge of the parser in one file. This lexicon files also help to translate ambiguous expressions. We will discuss some of these decision in the following sections. However, it is important to mention that a successful translation strongly depends on the comprehensive database of the lexicon files.
 
-\begin{table}
+\begin{table}[ht!]
 	\centering
 	\begin{tabular}{lll}
 	\hline
