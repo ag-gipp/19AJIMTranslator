@@ -19,11 +19,11 @@ Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal d
 
 %The \Maple{} \gls*{dag} can be visualized in a graph, such as in figure~\ref{fig:maple-dag}. But the internal representation looks a bit different.
 
-\begin{wrapfigure}{r}{0.62\textwidth}
+\begin{wrapfigure}{r}{0.61\textwidth}
 	\vspace{-22pt}
 	\centering
-	\includegraphics[clip, trim=0.1cm 0.1cm 0.1cm 0.1cm, scale=0.5]{DAGreal.pdf}
-	\vspace{-26pt}
+	\includegraphics[clip, trim=0.5cm 0.5cm 0.5cm 0.5cm, scale=0.5]{DAGreal.pdf}
+	\vspace{-5pt}
 	\caption{The internal \Maple{} DAG representation of $x^2+x$.}
 	\label{fig:internal-maple-dag}
 	\vspace{-15pt}
@@ -107,7 +107,7 @@ The translator using the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:Programmin
 
 %Firstly, we summarize all known changes and evaluations \Maple{} automatically performs on input expressions.
 
-\Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with figure~\ref{internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
+\Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with figure~\ref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
 
 \begin{itemize}
 \item \Maple{} evaluates input expressions immediately.
