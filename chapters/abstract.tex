@@ -1,11 +1,11 @@
 \begin{abstract}
 \glsresetall
 \noindent
-This paper presents a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. The representatives for the \gls*{cas} are \Maple{} and \Mathematica{}, while the representative \gls*{wp} is \LaTeX.
+We present a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. We chosen \Maple{} and \Mathematica{} for the \gls*{cas}, and \LaTeX as our \gls*{wp}.
 %
-The \gls*{nist} in the U.S.~has developed a set of semantic \LaTeX{} macros for \gls*{opsf}. The \gls*{dlmf} use these semantic macros to provide a semantically enhanced mathematical online compendium. This kind of semantic macros provides exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, it does not need to match the semantics in another representation for the same formula. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
-This paper presents an automatic translation system and discusses the problems and suggests solutions. 
+Bruce Miller in the U.S.~has developed a set of semantic \LaTeX{} macros for \gls*{opsf}. The \gls*{nist} \gls*{dlmf} uses these semantic macros to provide a semantically enhanced mathematical online compendium. These semantic macros usally provide exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, the semantics in another representation for the same formula may differ, such as in domains of variables. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
+We discuss difficulties related to an automatic translation system, and suggest possible solutions. 
 %
 Furthermore, this paper introduces new evaluation approaches for the developed translation tool. 
-With the help of the automatic translation tool, the evaluation experiments were able to discover errors in the \gls*{dlmf} and in the \gls*{cas} Maple.
+With the help of our automatic translation tool, the evaluation experiments were able to discover errors in the \gls*{dlmf} and in Maple.
 \end{abstract}
