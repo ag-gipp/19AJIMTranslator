@@ -239,7 +239,7 @@ While \LaTeX{} focuses on displaying mathematics, a \gls*{cas} concentrates on c
 
 Translations from generic \LaTeX{} to \gls*{cas} are difficult to realize since the full semantic information is not easily constructed from the input. Bruce Miller at the \gls*{nist} has created a set of semantic \LaTeX{} macros~\parencite{DLMF:Macros}. Each macro ties specific character sequences to a well-defined mathematical object and is linked with the corresponding definition in the \gls*{dlmf}. The \gls*{drmf} is an outgrowth of the \gls*{dlmf} with the goal to facilitate interaction among a community of mathematicians and scientists~\parencites{DRMF:14}{DRMF:15}. The \gls*{drmf} extends the set of semantic macros. These macros embed necessary semantic information into \LaTeX{} expressions. One example of such a macro is given Table~\ref{tab:JacobiP-usecase} for the semantic \LaTeX{} representation for the Jacobi polynomial. The macros provide isolated access to important parts of the mathematical function, such as the arguments. 
 
-Even with embedded semantic information, a translation between systems can be difficult. A typical example of complex problems occur for multivalued functions~\parencite{AISC:MultivaluedFunctions}. A \gls*{cas} usually defines \textit{branch cuts} to compute principal values of multivalued functions~\parencite{Maple:Cuts}, which makes the implementation of a theoretically continued function to a discontinuous presentation of it. In general, positioning branch cuts follows conventions, but can be positioned arbitrarily in many cases. Communicating and explaining the decision of defined branch cuts is a critical issue for \gls*{cas} and can vary between various systems~\parencite{Branches:acot}. Figure~\ref{fig:acot-cut-compare} illustrates two examples of different branch cut positioning for the inverse trigonometric arccotangent function. While \Maple{} defines the branch cut at ${[-\iunit\infty, -\iunit]}$, ${[\iunit,\iunit\infty]}$ (Figure~\ref{fig:acot-cut1}), \Mathematica{} defines the branch cut at ${[-\iunit, \iunit]}$ (figure~\ref{fig:acot-cut2}).
+Even with embedded semantic information, a translation between systems can be difficult. A typical example of complex problems occur for multivalued functions~\parencite{AISC:MultivaluedFunctions}. A \gls*{cas} usually defines \textit{branch cuts} to compute principal values of multivalued functions~\parencite{Maple:Cuts}, which makes the implementation of a theoretically continued function to a discontinuous presentation of it. In general, positioning branch cuts follows conventions, but can be positioned arbitrarily in many cases. Communicating and explaining the decision of defined branch cuts is a critical issue for \gls*{cas} and can vary between various systems~\parencite{Branches:acot}. Figure~\ref{fig:acot-cut-compare} illustrates two examples of different branch cut positioning for the inverse trigonometric arccotangent function. While \Maple{} defines the branch cut at ${[-\iunit\infty, -\iunit]}$, ${[\iunit,\iunit\infty]}$ (Figure~\ref{fig:acot-cut1}), \Mathematica{} defines the branch cut at ${[-\iunit, \iunit]}$ (Figure~\ref{fig:acot-cut2}).
 
 \begin{figure}[ht]
     \centering
@@ -248,7 +248,7 @@ Even with embedded semantic information, a translation between systems can be di
     \hspace{0.5cm}
     \subfloat[The real part of arccotangent with a branch cut at ${[-\iunit, \iunit]}$.]{        \includegraphics[width=0.45\textwidth]{acotCut2.png}
         \label{fig:acot-cut2}    }
-    \caption{Two plots for the real part of the arccotangent function with a branch cut at $[-\iunit\infty, -\iunit]$, $[\iunit,\iunit\infty]$ in figure~\protect\subref{fig:acot-cut1} and at $[-\iunit, \iunit]$ in figure~\protect\subref{fig:acot-cut2}, respectively. (Plotted with \Maple{} 2016)}
+    \caption{Two plots for the real part of the arccotangent function with a branch cut at $[-\iunit\infty, -\iunit]$, $[\iunit,\iunit\infty]$ in Figure~\protect\subref{fig:acot-cut1} and at $[-\iunit, \iunit]$ in Figure~\protect\subref{fig:acot-cut2}, respectively. (Plotted with \Maple{} 2016)}
     \label{fig:acot-cut-compare}
 \end{figure}
 
@@ -535,9 +535,9 @@ The \gls*{bnf} grammar defines some basic grammatical rules for generic \LaTeX{}
 	\cline{2-4}
 	\multicolumn{1}{l|}{} & Radical with a specified index & $n$-th root with two children. & \texttt{\tbs sqrt[a]\{b\}} has two children ($a$ and $b$).\\
 	\cline{2-4}
-	\multicolumn{1}{l|}{} & Underscore & The underscore '\_' for subscripts. & The sequence $a$\_$b$ has two children ($a$ and '\_'). The underscore itself '\_' has one child ($b$).\\
+	\multicolumn{1}{l|}{} & Underscore & The underscore `\_' for subscripts. & The sequence $a$\_$b$ has two children ($a$ and `\_'). The underscore itself `\_' has one child ($b$).\\
 	\cline{2-4}
-	\multicolumn{1}{l|}{} & Caret & The caret '\^{}' to for superscripts or exponents. Similar to the underscore. & The sequence $a$\^{}$b$ has two children ($a$ and '\^{}'). The caret itself '\^{}' has one child ($b$).\\
+	\multicolumn{1}{l|}{} & Caret & The caret `\^{}' to for superscripts or exponents. Similar to the underscore. & The sequence $a$\^{}$b$ has two children ($a$ and `\^{}'). The caret itself `\^{}' has one child ($b$).\\
 	\hline
 	\hline
 	\multicolumn{1}{Y{1.5cm}|}{\textbf{$r$ is a leaf}} & \Macro{} & A semantic \LaTeX{} macro & \texttt{\tbs JacobiP}, etc.\\
@@ -546,7 +546,7 @@ The \gls*{bnf} grammar defines some basic grammatical rules for generic \LaTeX{}
 	\cline{2-4}
 	\multicolumn{1}{l|}{} & Alphanumerical Expressions & Letters, numbers and general strings. & Depends on the order of symbols. $ab3$ is alphanumerical, while $4b$ are two nodes ($4$ and $b$).\\
 	\cline{2-4}
-	\multicolumn{1}{l|}{} & Symbols & All kind of symbols & '$@$', '$*$', '$+$', '$!$', etc.\\
+	\multicolumn{1}{l|}{} & Symbols & All kind of symbols & `$@$', `$*$', `$+$', `$!$', etc.\\
 	\hline
 \end{tabularx}
 \caption{A table of all kinds of nodes in a PoM syntax tree. Note that this table groups some kinds for a better overview. For a complete list and a more detailed version see~\parencite{POM-Tagger}.}
@@ -569,7 +569,7 @@ This approach seems to work for most of semantic \LaTeX{} expressions. However, 
 	\hline
 \end{tabular}
 \vspace{-5pt}
-\caption{The mathematical expression '$(a+b) \cdot x$' in infix, prefix, postfix and functional notation.}
+\caption{The mathematical expression `$(a+b) \cdot x$' in infix, prefix, postfix and functional notation.}
 \label{tab:notations}
 \end{minipage}
 \vspace{-5pt}
@@ -671,7 +671,7 @@ The \verb|SequenceTranslator| also handle positions of multiplication symbols. T
 
 Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has. In consequence, it also processes the following siblings to translate the arguments. There are some special cases about the next node right after the macro occurs. This node can be
 \begin{itemize}
-\item an exponent, such as for '\verb|^2|';
+\item an exponent, such as for `\verb|^2|';
 \item an optional parameter in square brackets;
 \item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above;
 \item an $@$ symbols if none of the above;
@@ -719,7 +719,7 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 	\hline
 	Type & Explanation\\
 	\hline
-	SUM & Sums. Internally stored with factors for each summand, i.e., '$x+y$' would be stored as '$x \cdot 1 + y \cdot 1$'.\\
+	SUM & Sums. Internally stored with factors for each summand, i.e., `$x+y$' would be stored as `$x \cdot 1 + y \cdot 1$'.\\
 	PROD & Products.\\
 	EXPSEQ & Expression sequence is a kind of list. The arguments of functions are stored in such sequences.\\
 	INTPOS & Positive integers.\\
@@ -743,7 +743,7 @@ The translator using the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:Programmin
 \begin{itemize}
 \item \Maple{} evaluates input expressions immediately.
 \item There is no data type to represent square roots such as $\sqrt{x}$ (or $n$-th roots). Therefore, \Maple{} stores roots as an exponentiation with a fractional exponent. For example, $\sqrt{x}$ is stored as $x^{\frac{1}{2}}$.
-\item There is no data type for subtractions, only for sums. Negative terms are changed to absolute values times '$-1$'. For example, $x-y$ is stored as $x + y \cdot (-1)$. 
+\item There is no data type for subtractions, only for sums. Negative terms are changed to absolute values times `$-1$'. For example, $x-y$ is stored as $x + y \cdot (-1)$. 
 \item Floating point numbers are stored in the scientific notation with a mantissa and an exponent in the base $10$. For example, $3.1$ is internally represented as $31 \cdot 10^{-1}$.
 \item There is only a data type for rational numbers (fractions with integer numerator and positive denominator), but not for general fractions, such as $\frac{x+y}{z}$. This will be automatically changed to $(x+y)\cdot z^{-1}$.
 \end{itemize}
