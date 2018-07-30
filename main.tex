@@ -45,11 +45,11 @@
 
 \addbibresource{./bibliography/Bibliography.bib} 
 \hypersetup{
-	pdftitle	= {Semantic Preserving Bijective Mappings for Representations of Special Functions in Computer Algebra Systems and Word Processors - Exemplified using the DLMF/DRMF, the Word Processor LaTeX and the Computer Algebra Systems Maple and Mathematica},
+	pdftitle	= {Semantic Preserving Bijective Mappings for Representations of Special Functions in Computer Algebra Systems and Word Processors - Exemplified using the DLMF/DRMF, the Word Processor \LaTeX and the Computer Algebra Systems Maple and Mathematica},
 	pdfsubject={Master's Thesis in Mathematics, Technische Universität Berlin, July 2017.},
 	pdfauthor	= {Andr\'e Greiner-Petter},
 	pdfcreator	= {Andr\'e Greiner-Petter},
-	pdfkeywords	= {Special Functions, LaTeX, Translation},
+	pdfkeywords	= {Special Functions, \LaTeX, Translation},
 }
 
 \addto\captionsenglish{
@@ -198,14 +198,16 @@
 \glsresetall
 \noindent
 We present a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. We have chosen \Maple{} and \Mathematica{} for the \gls*{cas}, and \LaTeX{} as our \gls*{wp}.
-Bruce Miller in the U.S.~has developed a set of semantic \LaTeX{} macros for \gls*{opsf}. The \gls*{nist} \gls*{dlmf} uses these semantic macros to provide a semantically enhanced mathematical online compendium. These semantic macros usally provide exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, the semantics in another representation for the same formula may differ, such as in domains of variables. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
+Bruce Miller at the \gls*{nist} has developed a set of semantic \LaTeX{} macros for \gls*{opsf} for the
+\gls*{dlmf}.
+The \gls*{dlmf} uses these semantic macros to provide a semantically enhanced mathematical online compendium. These semantic macros usally provide exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, the semantics in another representation for the same formula may differ, such as in domains of variables. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
 We discuss difficulties related to an automatic translation system, and suggest possible solutions. 
 Furthermore, this paper introduces new evaluation approaches for the developed translation tool. 
 With the help of our automatic translation tool, the evaluation experiments were able to discover errors in the \gls*{dlmf} and in Maple.
 \end{abstract} \glsresetall
 
 \noindent
-{\it \bf Keywords:} LaTeX, Computer Algebra System (CAS), Translation, Presentation to Computation (P2C)
+{\it \bf Keywords:} \LaTeX, Computer Algebra System (CAS), Translation, Presentation to Computation (P2C)
 
 \section{Introduction}
 A typical workflow of a scientist who writes a scientific publication is to use a \gls*{wp} to write the paper and one or more \gls*{cas} for verification, analysis and visualization. Especially in the \gls*{stem} literature, \LaTeX\footnote{Note that technically \LaTeX{} is not a \gls*{wp} (\url{https://www.latex-project.org/about/}, seen 07/2017) like \textit{Microsoft Word}. However, since \LaTeX{} (an extension of \TeX) is the de facto standard for writing articles in \gls*{stem}, and we only focus on mathematical writing in this paper, we have categorize \LaTeX{} as a \gls*{wp} as well.} has become the de facto standard for writing scientific publications over the past 30 years~\parencites{Knuth}[559]{DigitalTypo}{LATEX:Standard}. \LaTeX{} enables printing of mathematical formulae in a structure similar to handwritten style. For example, consider the specific Jacobi polynomial~\parencite[18.3 in table 1]{NIST:DLMF}
