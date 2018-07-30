@@ -1,16 +1,16 @@
 \section{Translation Problems}\label{sec:problems}
-There are several potential problems to perform translations between systems that embed semantic information in the input. Those problems vary from simple cases, e.g., a function is not defined in the system, too complex cases, e.g., different positioning of branch cuts for multivalued functions. This section will discuss the problems and workarounds.
+There are several potential problems for performing translations between systems that embed semantic information in the input. These problems vary from simple cases, e.g., a function is not defined in the system, to complex cases, e.g., different positioning of branch cuts for multivalued functions. This section will discuss the problems and our workarounds.
 
-If a function is defined in one system but not in the other, we can translate the definition of the mathematical function. For example, the \textit{Gudermannian}~\parencite[eq. 4.23.10]{NIST:DLMF} $\Gudermannian{x}$ function is defined by
+If a function is defined in one system but not in the other, we can translate the definition of the mathematical function. For example, the \textit{Gudermannian}~\parencite[(4.23.10)]{NIST:DLMF} $\Gudermannian{x}$ function is defined by
 \begin{equation}\label{eq:gudermannian}
-\Gudermannian{x} := \atan{\sinh{x}} \quad x \in \Real.
+\Gudermannian{x} := \atan{\sinh{x}}, \quad x \in \Real,
 \end{equation}
-and linked with the semantic macro \verb|\Gudermannian| in the \gls*{dlmf} but does not exist in \Maple. We can perform a translation for the definition~\ref{eq:gudermannian} instead of macro itself
+and linked to the semantic macro \verb|\Gudermannian| in the \gls*{dlmf} but does not exist in \Maple. We can perform a translation for the definition~\eqref{eq:gudermannian} instead of macro itself
 \begin{equation}\label{eq:guder-trans}
 \verb|\Gudermannian{x}| \overset{\langMaple}{\mapsto} \texttt{arctan(sinh(x))}.
 \end{equation}
 
-Since those translations are nonintuitive, describing explanations become necessary for the translation process. A special logging function takes care of each translation and provide details after a successful translation process. Section~\ref{sec:forward-translation} explains this task further.
+Since translations such as these are nonintuitive, describing explanations become necessary for the translation process. A special logging function takes care of each translation and provide details after a successful translation process. \Cref{sec:forward-translation} explains this task further.
 
 Providing detailed information also solves the problem for multiple alternative translations. In some cases, a semantic macro has two alternative representations in the \gls*{cas} or vice versa. In such cases, the translator picks one of the alternatives and informs the user about the decision.
 
@@ -21,31 +21,31 @@ In case of differences between defined branch cuts we can also use alternative t
 & \overset{\langMaple}{\mapsto} & \verb|I/2*ln((z-I)/(z+I))|.\label{eq:acot-alternatives-2}
 \end{eqnarray}
 
-The direct translation~(\ref{eq:acot-alternatives}) has the branch cut issue, while the alternative translations~(\ref{eq:acot-alternatives-1}) and~(\ref{eq:acot-alternatives-2}) using other functions instead of the arccotangent function. The arctangent function~(\ref{eq:acot-alternatives-1}) and the natural logarithm~(\ref{eq:acot-alternatives-2}) have the same positioned branch cuts in the \gls*{dlmf} and in \Maple. In consequence, translation~(\ref{eq:acot-alternatives-1}) solves the issue, as long as the user do not evaulate the function at $z = 0$, while translation~(\ref{eq:acot-alternatives-2}) solves the issue except for $z = -\iunit$.
+The position of the branch cut of the arccotangent function differs after translation~\eqref{eq:acot-alternatives}, which may lead to incorrect calculations later on. The alternative translations~\eqref{eq:acot-alternatives-1} and~\eqref{eq:acot-alternatives-2} use other functions instead of the arccotangent function. The arctangent function~\eqref{eq:acot-alternatives-1} and the natural logarithm~(\ref{eq:acot-alternatives-2}) have the same positioned branch cuts as in the \gls*{dlmf} and in \Maple. In consequence, translation~(\ref{eq:acot-alternatives-1}) solves the issue, as long as the user do not evaulate the function at $z = 0$, while translation~(\ref{eq:acot-alternatives-2}) solves the issue except at $z = -\iunit$.
 
-Other problematic cases for translations are the \Macro s itself. In some cases, they do not provide sufficient semantic information to perform translations. One example is the \textit{Wronskian} symbol. For two differentiable functions the \textit{Wronskian} is defined as~\parencite[eq. 1.13.4]{NIST:DLMF}
+Other problematic cases for translations are the \Macro s themselves. In some cases, they do not provide sufficient semantic information to perform translations. One example is the \textit{Wronskian} determinant. For two differentiable functions, the \textit{Wronskian} is defined as~\parencite[(1.13.4)]{NIST:DLMF}
 \begin{equation*}
 	\mathscr{W} \left\{ w_1(z), w_2(z) \right\} = w_1(z)w_2'(z) - w_2(z)w_1'(z).
 \end{equation*}
-In semantic \LaTeX{} it is used with
+In semantic \LaTeX{} it is currently implemented using
 \begin{equation}
 	\verb|\Wronskian@{w_1(z), w_2(z)}|.
 \end{equation}
-A translation become infeasible, because the macro do not explicitely defined the variable of the functions $w_1$ and $w_2$. For a correct translation, the \gls*{cas} needs to be aware of the used variable $z$. We solved this issue by creating a new macro
+A translation become unfeasible because the macro does not explicitely define the variable of differentiation for the functions $w_1$ and $w_2$. For a correct translation, the \gls*{cas} needs to be aware of the used variable $z$. We solved this issue by creating a new macro, e.g.,
 \begin{equation}
 	\verb|\Wron{z}@{w_1(z)}{w_2(z)}|.
 \end{equation}
-This example shows that the \Macro s are still work in progress and are getting constantly updated.
+This example demonstrates that the \Macro s are still a work in progress and are getting constantly updated.
 
-A similar problem is multiplications since they are rarely explicitly marked in \LaTeX{} expressions, e.g., scientists using whitespaces to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced and automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} uses this macro yet. As a consequence, the translator has some simple rules to perform translations without explicitly marked translations with \verb|\idot|.
+A similar problem is multiplications since they are rarely explicitly marked in \LaTeX{} expressions, e.g., scientists using whitespaces to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced by contributers of the \gls*{drmf} team, and automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} use this macro. As a consequence, the translator has some simple rules to perform translations without explicitly marked translations with \verb|\idot|.
 
-Even we only allow the special dialect of \LaTeX{} using semantic macros not all expressions are unambiguous. In table~\ref{tab:amb-latex} are four examples of ambiguous expressions. These expressions are unambiguous for the \LaTeX{} compiler since it only considers the very next token for power and subscripts. Our translator following the same rules to solve these issues.
+The \Macro s do not garantee entirely disambiguated expressions. In~\Cref{tab:amb-latex} there are four examples of potentially ambiguous expressions. These expressions are unambiguous for the \LaTeX{} compiler since it only considers the very next token for superscripts and subscripts. Our translator follows the same rules to solve these issues.
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{cc}
 	\hline
-	Ambiguous Input & \LaTeX{} Output\\
+	Potentially Ambiguous Input & \LaTeX{} Output\\
 	\hline
 	\verb|n^m!| & $n^m!$\\
 	\verb|a^bc^d| & $a^bc^d$\\
@@ -53,11 +53,11 @@ Even we only allow the special dialect of \LaTeX{} using semantic macros not all
 	\verb|x_y_z| & Double subscript error\\
 	\hline
 \end{tabular}
-\caption{Ambiguous \LaTeX{} expressions and how \LaTeX{} displays them.}
+\caption{Potentially ambiguous \LaTeX{} expressions and how \LaTeX{} displays them.}
 \label{tab:amb-latex}
 \end{table}
 
-Another more questionable translation decision is alphanumerical expressions. As explained in table~\ref{tab:allTypesTable}, the \gls*{pom}-tagger handles strings of letters and numbers differently, depending on the order of the symbols. The reason is, that an expression such as '$4b$' is usually considered to be a multiplication of $4$ and '$b$,' while '$b4$' looks like indexing '$b$' by $4$. While the first example produces two nodes, namely $4$ and '$b$', the second example '$b4$' produces just a single alphanumerical node in the \gls*{pom-pt}. The translator interprets alphanumerical expressions as multiplications for two reasons. (1) We would assume that the inputs '$4b$' and '$b4$' are mathematically equivalent and (2) it is more common in mathematics to use single letter names for variables~\parencite{Notation:History}. Therefore we define the following definitions
+Another more questionable translation decision are alphanumerical expressions. As explained in~\Cref{tab:allTypesTable}, the \gls*{pom}-tagger handles strings of letters and numbers differently, depending on the order of the symbols. The reason is, that an expression such as `$4b$' is usually considered to be a multiplication of $4$ and `$b$,' while `$b4$' looks like indexing `$b$' by $4$. While the first example produces two nodes, namely $4$ and `$b$', the second example `$b4$' produces just a single alphanumerical node in the \gls*{pom-pt}. The translator interprets alphanumerical expressions as multiplications for two reasons: (1) we would assume that the inputs `$4b$' and `$b4$' are mathematically equivalent; and (2) it is more common in mathematics to use single letter names for variables~\parencite{Notation:History}. Therefore we define the following definitions
 
 \begin{eqnarray*}
 \verb|4b| & \overset{\langMaple}{\mapsto} & \verb|4*b|,\\
@@ -65,10 +65,10 @@ Another more questionable translation decision is alphanumerical expressions. As
 \verb|energy| & \overset{\langMaple}{\mapsto} & \verb|e*n*e*r*g*y|.
 \end{eqnarray*}
 
-In general, the translator is drafted to solve ambiguous expressions or automatically find a work-around to disambiguate the expression. Only if there is no way to solve the ambiguity with the defined rules, the translation process stops.
+In general, the translator is drafted to solve ambiguous expressions or automatically find a work-around to disambiguate the expression. Only in case there is no way to solve the ambiguity with the defined rules, the translation process stops.
 
 \section{The Translator}
-All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as placeholders to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in table~\ref{tab:placeholder_ex2}.
+All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as placeholders to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
 
 \begin{table}[ht]
 	\centering
@@ -82,7 +82,7 @@ All translations are defined by a library (\gls*{csv} and \gls*{json} files) tha
 		Semantic \LaTeX & \verb|\JacobiP{$1}{$2}{$0}@{$3}|\\
 		\hline
 	\end{tabular}
-	\caption{Forward and backward translation patterns of the Jacobi polynomial. The pattern for the backward translation is the same for \Maple{} and \Mathematica.}
+	\caption{Forward and backward translation patterns for the Jacobi polynomial example~\eqref{eq:P} in this manuscript. The pattern for the backward translation is the same for \Maple{} and \Mathematica.}
 	\label{tab:placeholder_ex2}
 \end{table}
 
@@ -90,7 +90,7 @@ These placeholders causes trouble when the \gls*{cas} uses the symbol \verb|$| f
 \begin{equation*}
 \verb|diff(f, [x$n])|,
 \end{equation*}
-where $f$ as an algebraic expression or an equation, $x$ the name of the differentiation variable and $n$ for the $n$-th order differentiation. A translation for $\frac{d^2x^2}{dx^2}$ should be like this
+where $f$ is an algebraic expression or an equation, $x$ is the name of the differentiation variable, and $n$ is an integer representing the $n$-th order differentiation\footnote{\url{https://www.maplesoft.com/support/help/maple/view.aspx?path=diff}, seen 07/2018}. A translation for $\frac{d^2x^2}{dx^2}$ should look like this
 \begin{equation*}
 \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
 \end{equation*}
@@ -99,10 +99,9 @@ but would end up as
 \verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
 \end{equation*}
 
-We can solve this issue by using paranthesis in such cases, e.g., \verb|diff($1, [$2$($0)])|.
+We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
 
-
-The \Macro s also allow to specify optional arguments to distinguish between standard and another version of functions. The Legendre and associated Legendre function of the first kind are examples for such cases. The library that defines translations for each macro using the macro name as a primary key to identify the translation. The Legendre and associated Legendre function of the first kind both using the same macro \verb|\LegendreP|. To distinguish such cases, we are using a special syntax such cases, shown in table~\ref{tab:legendreP-lex}.
+The \Macro s also allow one to specify optional arguments to distinguish between standard and another version of these functions. The Legendre and associated Legendre function of the first kind are examples of such cases. The library that defines translations for each macro uses the macro name as the primary key to identify the translations. The Legendre and associated Legendre function of the first kind both use the same macro \verb|\LegendreP|. To distinguish such cases, we use a special syntax for such cases, shown in~\Cref{tab:legendreP-lex}.
 
 \begin{table}[ht!]
 	\centering
@@ -118,7 +117,7 @@ The \Macro s also allow to specify optional arguments to distinguish between sta
 	\label{tab:legendreP-lex}
 \end{table}
 
-The translator using the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} to parse \LaTeX{} expressions into a parsed tree. The \gls*{pom}-Tagger is an \texttt{LL}-Praser defined by a context-free grammar in \gls*{bnf}. Each token will be tagged by meta information defined in lexicon files. We extend the lexicon files to provide also the information that is necessary for the translation process. An example of an entry of the lexicon file is given in table~\ref{tab:sine-lex-example}.
+The translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} to parse \LaTeX{} expressions into a parsed tree. The \gls*{pom}-Tagger is an \texttt{LL}-Parser defined by a context-free grammar in \gls*{bnf}. Each token will be tagged by meta information defined in lexicon files. We extend the lexicon files to provide also the information that is necessary for the translation process. An example of an entry of the lexicon file is given in~\Cref{tab:sine-lex-example}.
 
 \begin{table}[ht!]
 	\centering
@@ -127,7 +126,7 @@ The translator using the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named
 	\multicolumn{3}{l}{Symbol: \texttt{\textbackslash sin}} \\
 	\! & \multicolumn{2}{l}{Feature Set: dlmf-macro} \\
 	\! & \! & DLMF: \verb|\sin@@{z}|\\
-	\! & \! & DLMF-Link: dlmf.nist.gov/4.14\# E1\\
+	\! & \! & DLMF-Link: dlmf.nist.gov/4.14.E1\\
 	\! & \! & Meanings: Sine\\
 	\! & \! & Number of Parameters: 0\\
 	\! & \! & Number of Variables: 1\\
@@ -140,6 +139,6 @@ The translator using the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named
 	\! & \! & \hspace{32pt} language/ref/Sin.html\\
 	\hline
 	\end{tabular}
-	\caption{The entry of the sine function in the lexicon file.}
+	\caption{The entry of the trigonometric sine function in the lexicon file.}
 	\label{tab:sine-lex-example}
 \end{table}

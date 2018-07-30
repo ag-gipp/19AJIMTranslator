@@ -13,7 +13,7 @@ Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal d
 
 Each node in the \gls*{dag} stores its children and has a header, which defines the type and the length of the node. Consider the polynomial $x^2+x$. Figure~\ref{fig:internal-maple-dag} illustrates the internal \gls*{dag} representation with headers and arguments.
 
-One can access the internal data structure of expressions via the \texttt{ToInert} command. The returned \inertF{} is a nested list representation as a tree equivalent\footnote{A tree equivalent of a \gls*{dag} splitting nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in table~\ref{tab:maple-types}.
+One can access the internal data structure of expressions via the \texttt{ToInert} command. The returned \inertF{} is a nested list representation as a tree equivalent\footnote{A tree equivalent of a \gls*{dag} splitting nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
 
 \begin{table}[h]
 \centering
@@ -41,7 +41,7 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 The translator using the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel and get access to the \inertF{} of inputs.
 
 \subsection{Automatic Changes of Inputs in Maple}\label{subsec:maple-probs}
-\Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with figure~\ref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
+\Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with \Cref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
 
 \begin{itemize}
 \item \Maple{} evaluates input expressions immediately.
@@ -74,9 +74,9 @@ Since we want to keep a translated expression similar to the input expression, w
 \item We introduced the new internal data types \texttt{MYFLOAT} and \texttt{DIVIDE} to translate floats and fractions in more convenient notations.
 \end{itemize}
 
-The translation process then follows the same principle as for the forward translations. Since the syntax tree of \Maple{} is an expression tree, we do not need to implement special reordering or grouping algorithms to perform backward translations. Translations for functions are also realized via patterns and placeholders. Figure~\ref{fig:backward-trans} illustrates the backward translation process for the Jacobi polynomial example from table~\ref{tab:JacobiP-usecase}.
+The translation process then follows the same principle as for the forward translations. Since the syntax tree of \Maple{} is an expression tree, we do not need to implement special reordering or grouping algorithms to perform backward translations. Translations for functions are also realized via patterns and placeholders. Figure~\ref{fig:backward-trans} illustrates the backward translation process for the Jacobi polynomial example from \Cref{tab:JacobiP-usecase}.
 
-\begin{figure}[!htp]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[clip, trim=0.1cm 0.1cm 0.1cm 0.1cm, scale=0.7]{MapleTranslation.pdf}
 	\caption{A scheme of the backward translation process from \Maple{} for the Jacobi polynomial $P_n^{(\alpha , \beta)}(\cos(a\Theta))$. The input string is converted by the \Maple{} kernel into the nested list representation. This list is translated by subtranslators (blue and red arrows). A function translation (bold blue arrows) is again realized by translation patterns to define the position of the arguments (red arrows).}
