@@ -227,11 +227,11 @@
 
 
 \section{Introduction}
-A typical workflow of a scientist who writes a scientific publication is to use a \gls*{wp} to write the paper and one or more \gls*{cas} for verification, analysis and visualization. Especially in the \gls*{stem} literature, \LaTeX\footnote{Note that technically \LaTeX{} is not a \gls*{wp} (\url{https://www.latex-project.org/about/}, seen 07/2017) like \textit{Microsoft Word}. However, since \LaTeX{} (an extension of \TeX) is the de facto standard for writing articles in \gls*{stem}, and we only focus on mathematical writing in this paper, we have categorize \LaTeX{} as a \gls*{wp} as well.} has become the de facto standard for writing scientific publications over the past 30 years~\parencites{Knuth}[559]{DigitalTypo}{LATEX:Standard}. \LaTeX{} enables printing of mathematical formulae in a structure similar to handwritten style. For example, consider the specific Jacobi polynomial~\parencite[18.3 in table 1]{NIST:DLMF}
+A typical workflow of a scientist who writes a scientific publication is to use a \gls*{wp} to write the paper and one or more \gls*{cas} for verification, analysis and visualization. Especially in the \gls*{stem} literature, \LaTeX\footnote{Note that technically \LaTeX{} is not a \gls*{wp} (\url{https://www.latex-project.org/about/}, seen 07/2017) like \textit{Microsoft Word}. However, since \LaTeX{} (an extension of \TeX) is the de facto standard for writing articles in \gls*{stem}, and we only focus on mathematical writing in this paper, we have categorized \LaTeX{} as a \gls*{wp} as well.} has become the de facto standard for writing scientific publications over the past 30 years~\parencites{Knuth}[559]{DigitalTypo}{LATEX:Standard}. \LaTeX{} enables printing of mathematical formulae in a structure similar to handwritten style. For example, consider the specific Jacobi polynomial~\parencite[Table 18.3.1]{NIST:DLMF}
 \begin{equation}\label{eq:P}
 P_n^{(\alpha , \beta)}(\cos(a\Theta)),
 \end{equation}
-where $\alpha, \beta > -1$, and $n$ is a nonnegative integer. 
+where $n$ is a nonnegative integer, $\alpha, \beta > -1$, and $a,\Theta\in{\mathbf R}$.
 This mathematical expression is written in \LaTeX{} as
 \begin{equation*}
 \verb|P_n^{(\alpha,\beta)}(\cos(a\Theta))|.
@@ -296,7 +296,7 @@ as \textit{inappropriate}. Note that it is not always as easy as in this example
 \verb|\cos@{z}| \overset{\langMaple}{\mapsto} \verb|(exp(I*z)+exp(-I*z))/2|
 \end{equation*}
 is not a \textit{direct} translation.
-Note that partial results of this paper have been published in~\parencite{CICM:Paper}.
+Note that partial results of this paper has been published in~\parencite{CICM:Paper}.
  
 \section{Related Work}\label{sec:related-work}
 Since \LaTeX{} became the de facto standard for writing papers in mathematics, most of the \gls*{cas} provide simple functions to import and export mathematical \LaTeX{} expressions\footnote{The selected \gls*{cas} Maple, Mathematica, Matlab, and SageMath provide import and/or export functions for \LaTeX:\\
