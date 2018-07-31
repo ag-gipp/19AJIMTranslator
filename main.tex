@@ -213,11 +213,11 @@
 \begin{abstract}
 \glsresetall
 \noindent
-\textbf{Purpose:} Modern mathematicians and scientist of math-related disciplines use \gls*{wp} to write and \gls*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{wp} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{wp}.
+\textbf{Purpose:} Modern mathematicians and scientists of math-related disciplines use \gls*{wp} to write and \gls*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{wp} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{wp}.
  
-\noindent\textbf{Approach:} The \gls*{nist} developed a collection of special \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
+\noindent\textbf{Approach:} Bruce Miller at the \gls*{nist} developed a collection of semantic \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{nist} \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
  
-\noindent\textbf{Findings:} We created 396 mappings and translated 58.8\% of the \gls*{dlmf} (2,405 expressions) successfully between \Maple{} and \gls*{dlmf}. For a significant percentage, the definitions in \Maple{} and the \gls*{dlmf} were different. Consequently, an atomic symbol in one system maps to a composite expression in the other system. The translator was also successfully used for automatic verification processes of mathematical online compendia and \gls*{cas}. Our evaluation techniques discovered two errors in the \gls*{dlmf} and one bug in \Maple.
+\noindent\textbf{Findings:} We created 396 mappings and translated 58.8\% of the \gls*{dlmf} (2,405 expressions) successfully between \Maple{} and \gls*{dlmf}. For a significant percentage, the definitions in \Maple{} and the \gls*{dlmf} were different. Consequently, an atomic symbol in one system maps to a composite expression in the other system. The translator was also successfully used for automatic verification of mathematical online compendia and \gls*{cas}. Our evaluation techniques discovered two errors in the \gls*{dlmf} and one defect in \Maple.
  
 \noindent\textbf{Originality:} This paper introduces the first translation tool for special functions between \LaTeX{} and \gls*{cas}. The approach improves error-prone manual translations and can be used to verify mathematical online compendia and \gls*{cas}.
 \end{abstract} \glsresetall
@@ -970,6 +970,8 @@ The tasks for future work are diverse. The main task is to improve the translato
 
 The translator was designed to be easily extendable. This allows one to implement translations for other \gls*{cas} without much effort.
 The biggest weakness of the translator is still the semantic macros {\bf [HSC: I don't understand what this sentence means. I think you need to be more specific here. The way it is written it doesn't make sense.]}. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
+
+{\bf [HSC: The link in the NIST:DLMF reference is broken (see below), and I don't know how to fix it. By the way, I made some changes the the way that it is referred to in the text, because I did not like that Olver et al was being referred to, since it is a web site. However, it is still not being displayed properly. For instance, the Version number is not being displayed and also the link is broken. Can someone try to fix this? I do not know Biber, so this is probably the reason for this mess.]}
 
 \emergencystretch=1em
 \printbibliography
