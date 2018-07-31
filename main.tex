@@ -197,13 +197,13 @@
 \begin{abstract}
 \glsresetall
 \noindent
-We present a translation tool between representations of semantically enriched mathematical formulae in a \gls*{wp} and its corresponding representations in a \gls*{cas}. We have chosen \Maple{} and \Mathematica{} for the \gls*{cas}, and \LaTeX{} as our \gls*{wp}.
-Bruce Miller at the \gls*{nist} has developed a set of semantic \LaTeX{} macros for \gls*{opsf} for the
-\gls*{dlmf}.
-The \gls*{dlmf} uses these semantic macros to provide a semantically enhanced mathematical online compendium. These semantic macros usally provide exclusive access to the semantic information of the functions. However, even if the semantics of a representation of one formula is unique, the semantics in another representation for the same formula may differ, such as in domains of variables. While some distinctions are obvious, such as syntactical characteristics, others are more difficult to examine, such as differences in definitions, which leads to error-prone manual translations.
-We discuss difficulties related to an automatic translation system, and suggest possible solutions. 
-Furthermore, this paper introduces new evaluation approaches for the developed translation tool. 
-With the help of our automatic translation tool, the evaluation experiments were able to discover errors in the \gls*{dlmf} and in Maple.
+\textbf{Purpose:} Modern mathematicians and scientist of math-related disciplines use \gls*{wp} to write and \gls*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{wp} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{wp}.
+ 
+\noindent\textbf{Approach:} The \gls*{nist} developed a collection of special \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
+ 
+\noindent\textbf{Findings:} We created 396 mappings and translated 58.8\% of the \gls*{dlmf} (2,405 expressions) successfully between \Maple{} and \gls*{dlmf}. For a significant percentage, the definitions in Maple and the \gls*{dlmf} were different. Consequently, an atomic symbol in one system maps to a composite expression in the other system. The translator was also successfully used for automatic verification processes of mathematical online compendia and \gls*{cas}. Our evaluation techniques discovered two errors in the \gls*{dlmf} and one bug in \Maple.
+ 
+\noindent\textbf{Originality:} This paper introduces the first translation tool for special functions between \LaTeX{} and \gls*{cas}. The approach improves error-prone manual translations and can be used to verify mathematical online compendia and \gls*{cas}.
 \end{abstract} \glsresetall
 
 \noindent
