@@ -653,9 +653,12 @@ Algorithm~\ref{alg:translation} does not allow this translation right now. It ha
 
 \subsection{Subtranslators}\label{sec:subtranslators}
 
-A \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol an open bracket (parentheses, square brackets and so on) the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the \verb|SequenceTranslator| also checks balances of parentheses in expressions. An expression such as `$(a]$' is producing a mismatched parentheses error. On the other hand, this is a problem for interval expressions such as `$[a,b)$'. In the current version, the program cannot distinguish between mismatched parentheses and half-opened, half-closed intervals. Whether an expression is an interval or another expression is difficult to decide and can depend on the context. Also, the parenthesis checker could simply be deactivated to allow mismatched parentheses in an expression. But this functionality is not implemented yet.
+A \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol is an open bracket (parentheses, square brackets and so on) the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the \verb|SequenceTranslator| also checks balancing of parentheses in expressions. An expression such as `$(a]$' is producing a mismatched parentheses error. On the other hand, this is a problem for interval expressions such as `$[a,b)$'. In the current version, the program cannot distinguish between mismatched parentheses and half-opened, half-closed intervals. Whether an expression is an interval or another expression is difficult to decide and can depend on the context. Also, the parentheses checker could simply be deactivated to allow mismatched parentheses in an expression. But this functionality is not implemented yet. {\bf [HSC: This can be solved by the use of interval macros. e.g., 
+\verb|\intcc@{a}{b} = [a,b]|, \verb|\intoc@{a}{b}=(a,b]|, \verb|\intco@{a}{b}=[a,b)|, \verb|\intoo@{a}{b}=(a,b)|,
+with a double \verb|@@| notation you could do other notations such as \verb|\intoo@@{a}{b}=]a,b[|]}
 
-The \verb|SequenceTranslator| also handle positions of multiplication symbols. There are a couple of obvious choices to translate multiplication signs. The most common symbol for multiplications is still the white space or none symbol at all, as explained previously. Consider the simple expression `$2n\pi$'. The \gls*{pom-pt} generates a sequence node with three children, namely $2$, $n$ and $\pi$. This sequence should be interpreted as a multiplication of the three elements. The \verb|SequenceTranslator| checks the types of the current and next nodes in the tree to decide if it should add a multiplication symbol or not. For example, if the current or next node is an operator, a relation symbol or an ellipsis, there will be no multiplication symbol added. However, this approach implies an important property. The translator interprets all sequences of nodes as multiplications as long as it is not defined otherwise. This potentially produces strange effects. Consider an expression such as `$f(x)$'. Translate this to \Maple{} will be \verb|f*(x)|. But we do not consider this translation to be wrong, because there is a semantic macro to represent functions. In this case, the user should use \verb|\f{f}@{x}| instead of \verb|f(x)| to distinguish between $f$ as a function call and $f$ as a symbol.
+
+The \verb|SequenceTranslator| also handles positions of multiplication symbols. There are a couple of obvious choices to translate multiplication. The most common symbol for multiplications is still the white space or none symbol {\bf [HSC: What is a none symbol?]} at all, as explained previously. Consider the simple expression `$2n\pi$'. The \gls*{pom-pt} generates a sequence node with three children, namely $2$, $n$ and $\pi$. This sequence should be interpreted as a multiplication of the three elements. The \verb|SequenceTranslator| checks the types of the current and next nodes in the tree to decide if it should add a multiplication symbol or not. For example, if the current or next node is an operator, a relation symbol or an ellipsis, there will be no multiplication symbol added. However, this approach implies an important property. The translator interprets all sequences of nodes as multiplications as long as it is not defined otherwise. This potentially produces strange effects. Consider an expression such as `$f(x)$'. Translate this to \Maple{} will be \verb|f*(x)|. But we do not consider this translation to be wrong, because there is a semantic macro to represent functions. In this case, the user should use \verb|\f{f}@{x}| instead of \verb|f(x)| to distinguish between $f$ as a function call and $f$ as a symbol.
 
 \begin{algorithm}[!ht]
 \caption{The translate function of the MacroTranslator. This code ignores error handling.}\label{alg:macro-translation}
@@ -696,16 +699,18 @@ The \verb|SequenceTranslator| also handle positions of multiplication symbols. T
 	\end{algorithmic}
 \end{algorithm}
 
-Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has. In consequence, it also processes the following siblings to translate the arguments. There are some special cases about the next node right after the macro occurs. This node can be
+Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has. In consequence, it also processes the following siblings to translate the arguments. There are some special cases about the next node right after the macro occurs. This node can be
 \begin{itemize}
 \item an exponent, such as for `\verb|^2|';
 \item an optional parameter in square brackets;
 \item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above;
-\item an $@$ symbols if none of the above;
-\item or a variable in curly brackets (a \textit{sequence} node) if none of the above.
+\item `$@$' symbols if none of the above {\bf [HSC: it was originally written ``an @ symbols'' which doesn't make
+sense, please rewrite if wrong.]}; or
+\item a variable in curly brackets (a \textit{sequence} node) if none of the above.
 \end{itemize}
 
-An exponent will be translated and shifted to the end of the translated semantic macro, since it is more common to write the exponent after the arguments of a function in \gls*{cas}. Therefore, the function translates and stores the exponent in Line~\ref{line:next_caret}. One could ask what happens when there is an exponent given before and after the arguments. The \verb|MacroTranslator| only translates the following siblings until each argument is translated. The first exponent will be shifted to the end. If right after the translated macro (with all arguments) follows another exponent, we interpret it as another exponent for the whole previous expression. In that case, it would be the macro with the first translated exponent. Table~\ref{tab:multi-expo} shows an example for the trigonometric cosine function with multiple exponents. 
+An exponent will be translated and shifted to the end of the translated semantic macro, 
+since one usually writes the exponent after the arguments of a function in \gls*{cas}. Hence, the function translates and stores the exponent in Line~\ref{line:next_caret}. One could ask what happens when there is an exponent given before and after the arguments. The \verb|MacroTranslator| only translates the following siblings until each argument is translated. The first exponent will be shifted to the end. If right after the translated macro (with all arguments) follows another exponent, we interpret it as another exponent for the whole previous expression. In that case, it would be the macro with the first translated exponent. Table~\ref{tab:multi-expo} shows an example for the trigonometric cosine function with multiple exponents. 
 \begin{table}[ht]
 \centering
 \begin{tabular}{lc}
@@ -724,7 +729,7 @@ As you can see, the input expression in semantic \LaTeX{} is interpreted as
 \left( \cos(x)^2 \right)^2.
 \end{equation}
  \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
-Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allow different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} using \gls*{dag} as syntax trees.
+Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
 \begin{wrapfigure}{r}{0.61\textwidth}
 	\vspace{-22pt}
@@ -738,8 +743,7 @@ Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal d
 
 Each node in the \gls*{dag} stores its children and has a header, which defines the type and the length of the node. Consider the polynomial $x^2+x$. Figure~\ref{fig:internal-maple-dag} illustrates the internal \gls*{dag} representation with headers and arguments.
 
-One can access the internal data structure of expressions via the \texttt{ToInert} command. The returned \inertF{} is a nested list representation as a tree equivalent\footnote{A tree equivalent of a \gls*{dag} splitting nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
-
+One can access the internal data structure of expressions via the \texttt{ToInert} command. The returned \inertF{} is a nested list representation as a tree equivalent {\bf [HSC: I don't understand the previous sentence. Please rewrite.]}\footnote{A tree equivalent of a \gls*{dag} splitting nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
 \begin{table}[h]
 \centering
 \begin{tabular}{cp{10cm}}
@@ -761,8 +765,7 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 \caption{A subset of important internal \Maple{} data types. See~\parencite{MAPLE:ProgrammingGuide} for a complete list.}
 \label{tab:maple-types}
 \end{table}
-
-The translator using the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel and get access to the \inertF{} of inputs.
+The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel and get access {\bf [HSC: and get access?? please rewrite.]}{\bf [HSC: and get access?? please rewrite.]}  to the \inertF{} of inputs.
 
 \subsection{Automatic Changes of Inputs in Maple}\label{subsec:maple-probs}
 \Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with \Cref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
@@ -771,8 +774,8 @@ The translator using the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:Programmin
 \item \Maple{} evaluates input expressions immediately.
 \item There is no data type to represent square roots such as $\sqrt{x}$ (or $n$-th roots). Therefore, \Maple{} stores roots as an exponentiation with a fractional exponent. For example, $\sqrt{x}$ is stored as $x^{\frac{1}{2}}$.
 \item There is no data type for subtractions, only for sums. Negative terms are changed to absolute values times `$-1$'. For example, $x-y$ is stored as $x + y \cdot (-1)$. 
-\item Floating point numbers are stored in the scientific notation with a mantissa and an exponent in the base $10$. For example, $3.1$ is internally represented as $31 \cdot 10^{-1}$.
-\item There is only a data type for rational numbers (fractions with integer numerator and positive denominator), but not for general fractions, such as $\frac{x+y}{z}$. This will be automatically changed to $(x+y)\cdot z^{-1}$.
+\item Floating point numbers are stored using scientific notation with a mantissa and an exponent in the base $10$. For example, $3.1$ is internally represented as $31 \cdot 10^{-1}$.
+\item There is only a data type for rational numbers (fractions with an integer numerator and a positive integer denominator), but not for general fractions, such as $\frac{x+y}{z}$. This will be automatically changed to $(x+y)\cdot z^{-1}$.
 \end{itemize}
 
 There are unevaluation quotes implemented to avoid evaluations on input expression. Table~\ref{tab:unevaluation-quotes} gives an example how those unevaluation quotes work.
@@ -794,8 +797,8 @@ Stored expression: & 1 & \texttt{sin(Pi)+1}\\
 Since we want to keep a translated expression similar to the input expression, we implemented some cosmetic rules for the backward translations that solve or reduce the effects from the list of changes above. 
 \begin{itemize}
 \item We use unevaluation quotes to suppress evaluations of the input.
-\item We perform reordering of factors and summands so that negative factors appear in front of the summand. This gives us the opportunity to translate $x - y$ to $x - y$ instead of $x + y \cdot (-1)$.
-\item We introduced the new internal data types \texttt{MYFLOAT} and \texttt{DIVIDE} to translate floats and fractions in more convenient notations.
+\item We perform a reordering of factors and summands so that negative factors appear in front of the summand. This gives us the opportunity to translate $x - y$ to $x - y$ instead of $x + y \cdot (-1)$.
+\item We introduced new internal data types \texttt{MYFLOAT} and \texttt{DIVIDE} to translate floats and fractions in more convenient notations.
 \end{itemize}
 
 The translation process then follows the same principle as for the forward translations. Since the syntax tree of \Maple{} is an expression tree, we do not need to implement special reordering or grouping algorithms to perform backward translations. Translations for functions are also realized via patterns and placeholders. Figure~\ref{fig:backward-trans} illustrates the backward translation process for the Jacobi polynomial example from \Cref{tab:JacobiP-usecase}.
@@ -803,7 +806,7 @@ The translation process then follows the same principle as for the forward trans
 \begin{figure}[t!]
 	\centering
 	\includegraphics[clip, trim=0.1cm 0.1cm 0.1cm 0.1cm, scale=0.7]{MapleTranslation.pdf}
-	\caption{A scheme of the backward translation process from \Maple{} for the Jacobi polynomial $P_n^{(\alpha , \beta)}(\cos(a\Theta))$. The input string is converted by the \Maple{} kernel into the nested list representation. This list is translated by subtranslators (blue and red arrows). A function translation (bold blue arrows) is again realized by translation patterns to define the position of the arguments (red arrows).}
+	\caption{A scheme of the backward translation process from \Maple{} for the Jacobi polynomial expression $P_n^{(\alpha , \beta)}(\cos(a\Theta))$. The input string is converted by the \Maple{} kernel into the nested list representation. This list is translated by subtranslators (blue and red arrows). A function translation (bold blue arrows) is again realized using translation patterns to define the position of the arguments (red arrows).}
 	\label{fig:backward-trans}
 \end{figure}
  
@@ -811,12 +814,12 @@ The translation process then follows the same principle as for the forward trans
 We implemented three approaches to evaluate whether a translation was \textit{appropriate} or \textit{inappropriate}.
 \begin{enumerate}
 \item \textbf{Round Trip Tests}: translates expressions back and forth and analyzing the changes.
-\item\label{approach-2} \textbf{Function Relation Tests (Symbolical)}: translate mathematically proven equivalent expressions from one system to a \gls*{cas} and evaluate whether the relation remains valid via symbolical equivalence checks.
+\item\label{approach-2} \textbf{Function Relation Tests (Symbolical)}: translates mathematically proven equivalent expressions from one system to a \gls*{cas} and evaluate whether the relation remains valid via symbolical equivalence checks.
 \item \textbf{Numerical Tests}: take the same equations from Approach~\ref{approach-2} but evaluates them on specific numerical values to test equivalence.
 \end{enumerate}
 
 \subsection{Round Trip Tests}\label{sec:round-trip}
-A round trip test always starts with a valid expression either in semantic \LaTeX{} or in \Maple. A translation from one system to another is called \textbf{a step}. A complete round trip translation (two steps) is called \textbf{one cycle}. A \textbf{fixed point representation} (or short fixed point) in a round trip translation process is a string representation that is identical to all string representations in the following cycles.
+A round trip test always starts with a valid expression either in semantic \LaTeX{} or in \Maple. A translation from one system to another is called a \textbf{step}. A complete round trip translation (two steps) is called \textbf{one cycle}. A \textbf{fixed point representation} (or short fixed point) in a round trip translation process is a string representation that is identical to all string representations in the following cycles.
 
 Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reaches a fixed point. The test formula is
 \begin{equation}
@@ -840,24 +843,24 @@ Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reach
 \label{tab:fixpoint}
 \end{table}
 
-Step 4 is identical to step 2, and since the translator is a deterministic algorithm it can be easily shown that step 2 and step 3 are fixed-point representations for semantic \LaTeX{} and \Maple.
+Step 4 is identical to step 2, and since the translator is a deterministic algorithm, it can be easily shown that step 2 and step 3 are fixed-point representations for semantic \LaTeX{} and \Maple.
 
 There is currently only one exception known where a round trip test does not reach a fixed point representation: Legendre's incomplete elliptic integrals~\parencite[(19.2.4-7)]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
 \begin{eqnarray}
 \verb|\EllIntF@{\phi}{k}| & \overset{\langMaple}{\mapsto} & \verb|EllipticF(sin(phi),k)|,\\
-\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|,
+\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|.
 \end{eqnarray}
-
 The round-trip translations produce infinite chains of sine and inverse sine calls because there are no evaluations involved. 
+
 The round trip tests are very successful, but they only detect errors in string representations. However, because of the simplification techniques of fixed points, we are able to at least detect logical errors in one system: \Maple. On the other hand, these tests cannot determine logical errors in the translations between the two systems. Consider we mistakenly defined an \textit{inappropriate} forward and backward translation for the sine function
 \begin{eqnarray}
 \verb|\sin@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|cos(phi)|,\label{eq:wrong-trans-1}\\
 \verb|\cos@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|sin(phi)|.\label{eq:wrong-trans-2}
 \end{eqnarray}
-In that case the round trip test would not detect any errors and reach a fixed point representation, because the simplification techniques only simplify two representations in the same system but cannot compare the representation in one system to those in the other.
+In that case the round trip test would not detect any errors and reach a fixed point representation, because the simplification techniques only simplify two representations in the same system but cannot compare the representation in one system to those in the other {\bf [HSC: This sentence is too long and rambles on and is not easy to read Can you break it into two sentences and rewrite them so that it is easier to read?]}.
 
 \subsection{Function Relation Tests}\label{sec:relation-tests}
-The \gls*{dlmf} is a compendium of special functions and orthogonal polynomials and lists several relations between the functions and polynomials. The idea of this evaluation approach is to translate an entire relation and test whether the relation remains valid after performing the translations.
+The \gls*{dlmf} is a compendium for special functions and orthogonal polynomials and lists several relations between the functions and polynomials. The idea of this evaluation approach is to translate an entire relation and test whether the relation remains valid after performing the translations.
 
 With this technique we can detect translation errors such as in \eqref{eq:wrong-trans-1} and \eqref{eq:wrong-trans-2}. Consider the \gls*{dlmf} equation for the sine and cosine function~\parencite[(4.21.2)]{NIST:DLMF}
 \begin{equation}
@@ -875,24 +878,24 @@ This produces the equation in \Maple
 \end{equation}
 which is wrong. Since the expression is correct before the translation, we conclude an error during the translation process.
 
-However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls*{cas} have trouble to test even simple equations. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \textit{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \textit{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. Because of implementation details, there are some techniques that helps \Maple{} to find possible simplifications. For example we can force \Maple{} to convert the formula
+However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls*{cas} often have difficulties testing simple equations {\bf [HSC: Can you give an example of this?]}. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \texttt{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \texttt{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. Because of implementation details, there are some techniques that helps \Maple{} to find possible simplifications. For example we can force \Maple{} to convert the formula
 \begin{equation}
 \sinh{x} + \sin{x}
 \end{equation}
-to an equivalent representation using the exponential representations
+to an equivalent representation using their exponential representations, namely
 \begin{equation}
 \frac{1}{2}\expe^x - \frac{1}{2}\expe^{-x} - \frac{1}{2} \iunit \left( \expe^{\iunit x}-\expe^{-\iunit x} \right).
 \end{equation}
-With such pre-conversions we are able to improve the simplification process in \Maple. However, the limitations of the \textit{simplify} function are still the weakest part of this verification approach. Consider the complex example~\parencite[(12.7.10)]{NIST:DLMF}
+With such pre-conversions, we are able to improve the simplification process in \Maple. However, the limitations of the \texttt{simplify} function are still the weakest part of this verification approach. Consider the complex example~\parencite[(12.7.10)]{NIST:DLMF}
 \begin{equation}\label{eq:branch-cut-near}
 \displaystyle U(0,z) = \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right),
 \end{equation}
-where $U(0,z)$ is the parabolic cylinder function and $K_\nu(z)$ the modified Bessel function of the second kind. Both functions are well-defined in both systems and we can define a \textit{direct} translation for~\eqref{eq:branch-cut-near}. 
-The modified Bessel function of the second kind has its branch cut in \Maple{} and in the \gls*{dlmf} at $z < 0$. However, the argument of $K$ contains $z^2$. If $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of the right-hand side of~\eqref{eq:branch-cut-near} would be no longer on the principal branch. However, \Maple{} will still compute the principal values independently of the value of $z$. Hence, a translation
+where $U(0,z)$ is the parabolic cylinder function and $K_\nu(z)$ is the modified Bessel function of the second kind. Both functions are well-defined in both systems and we can define a \textit{direct} translation for~\eqref{eq:branch-cut-near}. 
+The modified Bessel function of the second kind has its branch cut in \Maple{} and in the \gls*{dlmf} at $z < 0$. However, the argument of $K$ contains a $z^2$. If $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ the value of the right-hand side of~\eqref{eq:branch-cut-near} would be no longer on the principal branch. However, \Maple{} will still compute the principal values independently of the value of $z$. Hence, a translation
 \begin{equation}
 \verb|\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}| \overset{\langMaple}{\mapsto} \verb|BesselK(1/4,(1/4)*z^2)|
 \end{equation}
-is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one has to use analytic continuation for the right-hand side of (\ref{eq:branch-cut-near}). 
+is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one should instead use the analytic continuation for the right-hand side of (\ref{eq:branch-cut-near}). 
 To evaluate such complex cases, the equivalence checks of \gls*{cas} are insufficient. Therefore we implement numerical tests as an additional step.
 
 \subsection{Numerical Tests}\label{sec:numerical-tests}
@@ -917,7 +920,7 @@ Table~\ref{tab:computations-for-difference} presents four computations for $D(z)
 \label{tab:computations-for-difference}
 \end{table}
 
-Considering machine accuracy and the default precision of $10$ significant digits, we can regard the first and last values as zero differences. While this evaluation is very powerful, it has a significant problem. Even when all tested values return zero, it does not proof the equivalence of~\eqref{eq:branch-cut-near}. However, when the values are different from zero, it does proof an error in one of the four cases~\parencite{NumericalTests:Paper}
+Considering machine accuracy and the default precision to $10$ significant digits, we can regard the first and last values as zero differences. While this evaluation is very powerful, it has a significant problem. Even when all tested values return zero, it does not prove the equivalence of~\eqref{eq:branch-cut-near}. However, when the values are different from zero, it does indicate that there might be an error satisfying one of the four cases~\parencite{NumericalTests:Paper}:
 \begin{enumerate}
 \item the numerical engine tests invalid combinations of values;
 \item the translation is incorrect;
@@ -926,11 +929,12 @@ Considering machine accuracy and the default precision of $10$ significant digit
 \end{enumerate}
 
 \subsection{Results}\label{sec:test-summary}
-There are 685 \Macro{}s\footnote{The DLMF/DRMF semantic macros are still a work in progress, and the total number is constantly changing.} in total, and 665 of them were implemented in the translator engine. We defined forward translations to \Maple{} for 201 and backward translations from \Maple{} for 195 functions. 
+There are 685 \Macro{}s\footnote{The DLMF/DRMF semantic macros are still a work in progress, and the total number is constantly changing.} in total, and 665 of them were implemented in the translator engine. We defined forward translations to \Maple{} for 201 of the macros and backward translations from \Maple{} for 195 functions. 
 
-The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4.087 equations from \gls*{dlmf} and apply our round-trip and relation tests on them. The translator was able to translate 2.405\footnote{All percentages are approximately calculated.} (58.8\%) of the extracted equations without errors. 660 (27.4\%) of the successfully translated expressions were verified by the simplification techniques of \Maple. We apply additional numerical tests for the remaining 1.745 equations. For 418 (24\%) cases the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper}.
+The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4087 equations from the \gls*{dlmf} and apply our round-trip and relation tests on them. The translator was able to translate 2405\footnote{All percentages are approximately calculated.} (58.8\%) of the extracted equations without errors. 660 (27.4\%) of the successfully translated expressions were verified by the simplification techniques of \Maple. We apply additional numerical tests for the remaining 1745 equations. For 418 (24\%) cases the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper} {\bf [HSC: Why is this rendered as (ibid.)? Remove when fixed.]}.
 
-The evaluation techniques have proven to be very powerful also for evaluating \gls*{cas} and online mathematical compendia such as the \gls*{dlmf}. During the evaluations, we were able to detect several errors in the translation and evaluation engine, and also discovered two errors in the \gls*{dlmf} and one error in \Maple's \texttt{simplify}-function.
+
+The evaluation techniques has proven to be very powerful for evaluating \gls*{cas} and online mathematical compendia such as the \gls*{dlmf}. During the evaluations, we were able to detect several errors in the translation and evaluation engine, and also discovered two errors in the \gls*{dlmf} and one error in \Maple's \texttt{simplify} function.
 
 The numerical test engine was able to discover a sign error in equation~\parencite[(14.5.14)]{NIST:DLMF}\footnote{The equation had originally been stated as shown in (\ref{eq:signerror}). The error was reported on 10th April 2017.}
 \begin{equation}\label{eq:signerror}
@@ -939,7 +943,8 @@ The numerical test engine was able to discover a sign error in equation~\parenci
 The error can be found on~\parencite[p. 359]{NIST:Handbook} and has been fixed in the \gls*{dlmf} with version 1.0.16. The same engine also identified a missing comma in the constraint of~\parencite[(10.16.7)]{NIST:DLMF}. The original constraint was given by $2\nu \neq -1, -2 -3, \ldots$, with a missing comma after the $-2$.
 
 We have also noticed that our testing procedure is able to identify errors in CAS procedures,
-namely the \Maple{} {\tt simplify} procedure. The left-hand side of \cite[(7.18.4)]{NIST:DLMF} is given by 
+namely the \Maple{} {\tt simplify} procedure. The left-hand side of~\parencite[(7.18.4)]{NIST:DLMF} 
+{\bf [HSC: Why is this rendered as ibid? Remove when fixed.]} is given by 
 \begin{equation*}
 \frac{{\mathrm{d}}^{n}}{{\mathrm{d}z}^{n}}\left(e^{z^{2}}\operatorname{erfc}z\right),
 \end{equation*}
