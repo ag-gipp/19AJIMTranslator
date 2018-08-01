@@ -29,11 +29,12 @@
 \usepackage{fancyhdr}
 
 
-\usepackage{graphicx}           \usepackage{subfig}             \usepackage{wrapfig}			\graphicspath{ {./images/} }    
+\usepackage{graphicx}
+\usepackage{subfig} 
+\usepackage{wrapfig}	
+\graphicspath{ {./images/} } 
 
 \usepackage[export]{adjustbox}  
-
-\usepackage{styles/thesistitle} 
 
 \usepackage{cleveref}			
 
@@ -55,11 +56,7 @@
 
 \addbibresource{./bibliography/Bibliography.bib} 
 \hypersetup{
-	pdftitle	= {Semantic Preserving Bijective Mappings for Representations of Special Functions in Computer Algebra Systems and Word Processors - Exemplified using the DLMF/DRMF, the Word Processor \LaTeX and the Computer Algebra Systems Maple and Mathematica},
-	pdfsubject={Master's Thesis in Mathematics, Technische Universität Berlin, July 2017.},
-	pdfauthor	= {Andr\'e Greiner-Petter},
-	pdfcreator	= {Andr\'e Greiner-Petter},
-	pdfkeywords	= {Special Functions, \LaTeX, Translation},
+	pdftitle	= {Semantic Preserving Bijective Mappings for Representations of Special Functions in Computer Algebra Systems and Word Processors}
 }
 
 \addto\captionsenglish{
@@ -68,9 +65,8 @@
 \apptocmd{\UrlBreaks}{\do\f\do\m}{}{}
 \setcounter{biburllcpenalty}{9000}\setcounter{biburlucpenalty}{9000}
 
-
-
-\renewcommand{\algorithmicrequire}{\textbf{Input:}} \renewcommand{\algorithmicensure}{\textbf{Output:}} \newcommand{\NULL}{\textbf{null}}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}} \renewcommand{\algorithmicensure}{\textbf{Output:}}
+\newcommand{\NULL}{\textbf{null}}
 \renewcommand{\Return}{\textbf{return}}
 
 \newcommand{\DLMF}{DLMF}
@@ -89,8 +85,6 @@
 \newcommand{\langMathe}{\mathfrak{M}_{athematica}}
 
 \newcommand{\inertF}{\texttt{InertForm}}
-
-
 
 \newcommand{\raw}[1]{\texttt{#1}}
 \newcommand{\trans}[3]{\mathrm{tr}_{#2}^{#1}\left(#3\right)}
@@ -179,26 +173,13 @@
 \newcommand{\ph}[1]{\mathrm{ph}\!\left(#1\right)}
 
 
-%
- 
+%%%%%%%%%%%%%%%%%%%%%%%%% INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \title{
     Semantic Preserving Bijective Mappings for Representations of Special Functions between Computer Algebra Systems and Word Processors
 }
-\author{Andr\'e Greiner-Petter\textsuperscript{1}}
-\author{Moritz Schubotz\textsuperscript{1}}
-\author{Howard S.~Cohl\textsuperscript{2}}
-\author{Bela Gipp\textsuperscript{1}}
 
-\affil{
-	\textsuperscript{1}Information Science Group, University of Konstanz, Germany\\
-	\url{{first.last}@uni-konstanz.de}
-}
-
-\affil{
-	\textsuperscript{2}Applied and Computational Mathematics Division,\\
-	National Institute of Standards and Technology, Mission Viejo, CA, USA,\\
-	\url{howard.cohl@nist.gov}
-}
+%\input{authors.tex} %TODO anonymous authors for double blinded review
+\author{Anonymous Authors}
 
 \date{} 
 
@@ -225,7 +206,7 @@
 \end{abstract} \glsresetall
 
 \noindent
-{\it \bf Keywords:} \LaTeX, Computer Algebra System (CAS), Translation, Presentation to Computation (P2C)
+{\it \bf Keywords:} \LaTeX, Computer Algebra System (CAS), Translation, Presentation to Computation (P2C), Special Functions
 
 
 \section{Introduction}
@@ -583,8 +564,8 @@ Subsection~\ref{sec:subtranslators} discusses these classes in more detail.
 \end{table} 
 This approach seems to work for most semantic \LaTeX{} expressions. However, there is one problem with this straightforward approach which was mentioned shortly mentioned in~\Cref{sec:problems}. There are many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the simple expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{Warsaw Notation} or \textit{prefix notation}} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between their operands. This only makes sense as long as the operator is a binary operator.
 
-\begin{wrapfigure}[4]{r}{0.38\textwidth}
-\vspace{-10pt}
+\begin{wrapfigure}[10]{r}{0.38\textwidth} % optional parameter gives "# of narrow lines", very useful! 
+\vspace{-8pt}
 \begin{minipage}{0.38\textwidth}
 \center
 \begin{tabular}{lc}
@@ -597,11 +578,11 @@ This approach seems to work for most semantic \LaTeX{} expressions. However, the
 	Functional & $\cdot(+(a, b), x)$\\
 	\hline
 \end{tabular}
-\vspace{-5pt}
+%\vspace{-5pt}
 \caption{The mathematical expression `$(a+b) \cdot x$' in infix, prefix, postfix and functional notation.}
 \label{tab:notations}
 \end{minipage}
-\vspace{-5pt}
+%\vspace{-5pt}
 \end{wrapfigure}
 
 In mathematical expressions, notations are mostly mixed, depending on the case and number of operands. For example, infix notation is common for binary operators ($+$, $-$, $\cdot$, $\mod$, etc.), while functional notations are conveniently used for any kind of functions ($\sin$, $\cos$, etc.). Sometimes the same symbol is used in different notations to distinguish different meanings. For example, the `$-$' as a unary operator is used in prefix notation to indicate the negative value of its operand, such as in `$-2$'. Of course, `$-$' can also be the binary operator for subtraction, which is commonly used in infix notation. An example for the postfix notation is factorial, such as `$2!$'.
@@ -729,20 +710,20 @@ As you can see, the input expression in semantic \LaTeX{} is interpreted as
  \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
 Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
-\begin{wrapfigure}{r}{0.61\textwidth}
-	\vspace{-22pt}
+\begin{wrapfigure}[7]{r}{0.61\textwidth}
+	\vspace{-15pt}
 	\centering
 	\includegraphics[clip, trim=0.5cm 0.5cm 0.5cm 0.5cm, scale=0.5]{DAGreal.pdf}
 	\vspace{-5pt}
 	\caption{The internal \Maple{} DAG representation of $x^2+x$.}
 	\label{fig:internal-maple-dag}
-	\vspace{-15pt}
+	%\vspace{-15pt}
 \end{wrapfigure}
 
 Each node in the \gls*{dag} stores its children and has a header, which defines the type and the length of the node. Consider the polynomial $x^2+x$. Figure~\ref{fig:internal-maple-dag} illustrates the internal \gls*{dag} representation with headers and arguments.
 
 One can access the internal data structure of expressions via the \texttt{ToInert} command, which returns the \inertF. The \inertF{} format is a nested list\footnote{The nested list is a tree representation of a \gls*{dag} that splits nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{cp{10cm}}
 	\hline
