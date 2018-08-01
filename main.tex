@@ -886,11 +886,11 @@ is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one should 
 To evaluate such complex cases, the equivalence checks of \gls*{cas} are insufficient. Therefore we implement numerical tests as an additional step.
 
 \subsection{Numerical Tests}\label{sec:numerical-tests}
-Consider the differences of the left- and right-hand side of equation~\eqref{eq:branch-cut-near}
+Consider the difference of the left- and right-hand sides of equation~\eqref{eq:branch-cut-near}, namely
 \begin{equation}\label{eq:difference}
 D(z) := U(0,z) - \sqrt{\frac{z}{2\cpi}} K_{\frac{1}{4}}\left(\frac{1}{4}z^2\right).
 \end{equation}
-Table~\ref{tab:computations-for-difference} presents four computations for $D(z)$, one value for each quadrant in the complex plane.
+Table~\ref{tab:computations-for-difference} presents four numerical evaluations for $D(z)$, one value for each quadrant in the complex plane.
 \begin{table}[ht]
 \centering
 \begin{tabular}{rcc}
@@ -903,7 +903,7 @@ Table~\ref{tab:computations-for-difference} presents four computations for $D(z)
 	$1-\iunit$ & & $2 \cdot 10^{-10} + 2 \cdot 10^{-10} \iunit$\\
 	\hline
 \end{tabular}
-\caption{Four computations of $D(z)$ in \Maple.}
+\caption{Four numerical evaluations of $D(z)$ in \Maple.}
 \label{tab:computations-for-difference}
 \end{table}
 
