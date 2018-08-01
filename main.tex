@@ -39,8 +39,10 @@
 
 \usepackage[
 	backend		= biber,
-	style		= authoryear-ibid,
-	giveninits	= true, 	uniquename	= init, 	natbib		= true,
+	style		= authoryear,
+	giveninits	= true, 	
+	uniquename	= init, 	
+	natbib		= true,
 	url			= false,
 	isbn			= false,
 	doi			= false,
@@ -384,7 +386,7 @@ Another more questionable translation decision are alphanumerical expressions. A
 \verb|energy| & \overset{\langMaple}{\mapsto} & \verb|e*n*e*r*g*y|.
 \end{eqnarray*}
 
-In general, the translator is drafted to translate ambiguous expressions or automatically find a work-around to disambiguate the expression {\bf [HSC: I don't undestand this sentence. drafted? Please rewrite]}. Only in case there is no way to solve the ambiguity with the defined rules, the translation process stops.
+In general, the translator is designed to find a work-around for disambiguating expressions. Only in case there is no way to solve the ambiguity with the defined rules, the translation process stops.
 
 \section{The Translator}
 All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as placeholders to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
@@ -653,12 +655,9 @@ Algorithm~\ref{alg:translation} does not allow this translation right now. It ha
 
 \subsection{Subtranslators}\label{sec:subtranslators}
 
-A \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol is an open bracket (parentheses, square brackets and so on) the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the \verb|SequenceTranslator| also checks balancing of parentheses in expressions. An expression such as `$(a]$' is producing a mismatched parentheses error. On the other hand, this is a problem for interval expressions such as `$[a,b)$'. In the current version, the program cannot distinguish between mismatched parentheses and half-opened, half-closed intervals. Whether an expression is an interval or another expression is difficult to decide and can depend on the context. Also, the parentheses checker could simply be deactivated to allow mismatched parentheses in an expression. But this functionality is not implemented yet. {\bf [HSC: This can be solved by the use of interval macros. e.g., 
-\verb|\intcc@{a}{b} = [a,b]|, \verb|\intoc@{a}{b}=(a,b]|, \verb|\intco@{a}{b}=[a,b)|, \verb|\intoo@{a}{b}=(a,b)|,
-with a double \verb|@@| notation you could do other notations such as \verb|\intoo@@{a}{b}=]a,b[|]}
+A \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol is an open bracket (parentheses, square brackets and so on) the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the \verb|SequenceTranslator| also checks balancing of parentheses in expressions. An expression such as `$(a]$' is producing a mismatched parentheses error. On the other hand, this is a problem for interval expressions such as `$[a,b)$'. In the current version, the program cannot distinguish between mismatched parentheses and half-opened, half-closed intervals. Whether an expression is an interval or another expression is difficult to decide and can depend on the context. Also, the parentheses checker could simply be deactivated to allow mismatched parentheses in an expression. Another option is to use of interval macros. e.g., \verb|\intcc@{a}{b} = [a,b]|.
 
-
-The \verb|SequenceTranslator| also handles positions of multiplication symbols. There are a couple of obvious choices to translate multiplication. The most common symbol for multiplications is still the white space or none symbol {\bf [HSC: What is a none symbol?]} at all, as explained previously. Consider the simple expression `$2n\pi$'. The \gls*{pom-pt} generates a sequence node with three children, namely $2$, $n$ and $\pi$. This sequence should be interpreted as a multiplication of the three elements. The \verb|SequenceTranslator| checks the types of the current and next nodes in the tree to decide if it should add a multiplication symbol or not. For example, if the current or next node is an operator, a relation symbol or an ellipsis, there will be no multiplication symbol added. However, this approach implies an important property. The translator interprets all sequences of nodes as multiplications as long as it is not defined otherwise. This potentially produces strange effects. Consider an expression such as `$f(x)$'. Translate this to \Maple{} will be \verb|f*(x)|. But we do not consider this translation to be wrong, because there is a semantic macro to represent functions. In this case, the user should use \verb|\f{f}@{x}| instead of \verb|f(x)| to distinguish between $f$ as a function call and $f$ as a symbol.
+The \verb|SequenceTranslator| also handles positions of multiplication symbols. There are a couple of obvious choices to translate multiplication. The most common symbol for multiplications is still the white space (or no space between the tokens), as explained previously. Consider the simple expression `$2n\pi$'. The \gls*{pom-pt} generates a sequence node with three children, namely $2$, $n$ and $\pi$. This sequence should be interpreted as a multiplication of the three elements. The \verb|SequenceTranslator| checks the types of the current and next nodes in the tree to decide if it should add a multiplication symbol or not. For example, if the current or next node is an operator, a relation symbol or an ellipsis, there will be no multiplication symbol added. However, this approach implies an important property. The translator interprets all sequences of nodes as multiplications as long as it is not defined otherwise. This potentially produces strange effects. Consider an expression such as `$f(x)$'. Translate this to \Maple{} will be \verb|f*(x)|. But we do not consider this translation to be wrong, because there is a semantic macro to represent functions. In this case, the user should use \verb|\f{f}@{x}| instead of \verb|f(x)| to distinguish between $f$ as a function call and $f$ as a symbol.
 
 \begin{algorithm}[!ht]
 \caption{The translate function of the MacroTranslator. This code ignores error handling.}\label{alg:macro-translation}
@@ -704,8 +703,7 @@ Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| withou
 \item an exponent, such as for `\verb|^2|';
 \item an optional parameter in square brackets;
 \item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above;
-\item `$@$' symbols if none of the above {\bf [HSC: it was originally written ``an @ symbols'' which doesn't make
-sense, please rewrite if wrong.]}; or
+\item `$@$' symbols if none of the above; or
 \item a variable in curly brackets (a \textit{sequence} node) if none of the above.
 \end{itemize}
 
@@ -743,7 +741,7 @@ Instead of writing a custom \Maple{} syntax parser, we using \Maple's internal d
 
 Each node in the \gls*{dag} stores its children and has a header, which defines the type and the length of the node. Consider the polynomial $x^2+x$. Figure~\ref{fig:internal-maple-dag} illustrates the internal \gls*{dag} representation with headers and arguments.
 
-One can access the internal data structure of expressions via the \texttt{ToInert} command. The returned \inertF{} is a nested list representation as a tree equivalent {\bf [HSC: I don't understand the previous sentence. Please rewrite.]}\footnote{A tree equivalent of a \gls*{dag} splitting nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
+One can access the internal data structure of expressions via the \texttt{ToInert} command, which returns the \inertF. The \inertF{} format is a nested list\footnote{The nested list is a tree representation of a \gls*{dag} that splits nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
 \begin{table}[h]
 \centering
 \begin{tabular}{cp{10cm}}
@@ -765,7 +763,7 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 \caption{A subset of important internal \Maple{} data types. See~\parencite{MAPLE:ProgrammingGuide} for a complete list.}
 \label{tab:maple-types}
 \end{table}
-The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel and get access {\bf [HSC: and get access?? please rewrite.]}{\bf [HSC: and get access?? please rewrite.]}  to the \inertF{} of inputs.
+The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel implementation.
 
 \subsection{Automatic Changes of Inputs in Maple}\label{subsec:maple-probs}
 \Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with \Cref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
@@ -857,7 +855,7 @@ The round trip tests are very successful, but they only detect errors in string 
 \verb|\sin@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|cos(phi)|,\label{eq:wrong-trans-1}\\
 \verb|\cos@{\phi}| & \overset{\langMaple}{\leftrightarrow} & \verb|sin(phi)|.\label{eq:wrong-trans-2}
 \end{eqnarray}
-In that case the round trip test would not detect any errors and reach a fixed point representation, because the simplification techniques only simplify two representations in the same system but cannot compare the representation in one system to those in the other {\bf [HSC: This sentence is too long and rambles on and is not easy to read Can you break it into two sentences and rewrite them so that it is easier to read?]}.
+In that case the round trip test would not detect any errors but reaches a fixed point representation.
 
 \subsection{Function Relation Tests}\label{sec:relation-tests}
 The \gls*{dlmf} is a compendium for special functions and orthogonal polynomials and lists several relations between the functions and polynomials. The idea of this evaluation approach is to translate an entire relation and test whether the relation remains valid after performing the translations.
@@ -878,7 +876,11 @@ This produces the equation in \Maple
 \end{equation}
 which is wrong. Since the expression is correct before the translation, we conclude an error during the translation process.
 
-However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls*{cas} often have difficulties testing simple equations {\bf [HSC: Can you give an example of this?]}. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \texttt{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \texttt{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. Because of implementation details, there are some techniques that helps \Maple{} to find possible simplifications. For example we can force \Maple{} to convert the formula
+However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions is hard to solve and \gls*{cas} often have difficulties testing simple equations symbolically. For example, equation~\parencite[(4.35.34)]{NIST:DLMF}
+\begin{equation*}
+\sinh \left( x+\iunit \cdot y \right) = \sinh x \cos y + \iunit \cosh x \sin y,
+\end{equation*}
+as a difference of the left- and right-hand side cannot be simplified to zero by default. Furthermore, this approach only checks forward translations because there is no way to check equivalence of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \texttt{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \texttt{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. This simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where the simplification fails. Because of implementation details, there are some techniques that helps \Maple{} to find possible simplifications. For example we can force \Maple{} to convert the formula
 \begin{equation}
 \sinh{x} + \sin{x}
 \end{equation}
@@ -931,7 +933,7 @@ Considering machine accuracy and the default precision to $10$ significant digit
 \subsection{Results}\label{sec:test-summary}
 There are 685 \Macro{}s\footnote{The DLMF/DRMF semantic macros are still a work in progress, and the total number is constantly changing.} in total, and 665 of them were implemented in the translator engine. We defined forward translations to \Maple{} for 201 of the macros and backward translations from \Maple{} for 195 functions. 
 
-The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4087 equations from the \gls*{dlmf} and apply our round-trip and relation tests on them. The translator was able to translate 2405\footnote{All percentages are approximately calculated.} (58.8\%) of the extracted equations without errors. 660 (27.4\%) of the successfully translated expressions were verified by the simplification techniques of \Maple. We apply additional numerical tests for the remaining 1745 equations. For 418 (24\%) cases the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper} {\bf [HSC: Why is this rendered as (ibid.)? Remove when fixed.]}.
+The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4087 equations from the \gls*{dlmf} and apply our round-trip and relation tests on them. The translator was able to translate 2405\footnote{All percentages are approximately calculated.} (58.8\%) of the extracted equations without errors. 660 (27.4\%) of the successfully translated expressions were verified by the simplification techniques of \Maple. We apply additional numerical tests for the remaining 1745 equations. For 418 (24\%) cases the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper}.
 
 
 The evaluation techniques has proven to be very powerful for evaluating \gls*{cas} and online mathematical compendia such as the \gls*{dlmf}. During the evaluations, we were able to detect several errors in the translation and evaluation engine, and also discovered two errors in the \gls*{dlmf} and one error in \Maple's \texttt{simplify} function.
@@ -943,8 +945,7 @@ The numerical test engine was able to discover a sign error in equation~\parenci
 The error can be found on~\parencite[p. 359]{NIST:Handbook} and has been fixed in the \gls*{dlmf} with version 1.0.16. The same engine also identified a missing comma in the constraint of~\parencite[(10.16.7)]{NIST:DLMF}. The original constraint was given by $2\nu \neq -1, -2 -3, \ldots$, with a missing comma after the $-2$.
 
 We have also noticed that our testing procedure is able to identify errors in CAS procedures,
-namely the \Maple{} {\tt simplify} procedure. The left-hand side of~\parencite[(7.18.4)]{NIST:DLMF} 
-{\bf [HSC: Why is this rendered as ibid? Remove when fixed.]} is given by 
+namely the \Maple{} {\tt simplify} procedure. The left-hand side of~\parencite[(7.18.4)]{NIST:DLMF} is given by 
 \begin{equation*}
 \frac{{\mathrm{d}}^{n}}{{\mathrm{d}z}^{n}}\left(e^{z^{2}}\operatorname{erfc}z\right),
 \end{equation*}
@@ -962,16 +963,14 @@ as of the publication of this manuscript.
 
 
 \section{Conclusion \& Future Work}\label{ch:conc-future-work}
-The results and conclusions of the translations of the formula set from the \DLMF{} are diverse. Some test cases have shown us that the set of semantic macros are not perfect yet and need to be improved. This is seen in the example of the macro definition for the Wronskian determinant. However, simply adding more and more macros to improve the set is not the right decision. In that case, we would end up in something similar to \sTeX, which is overloaded and too complicated to use. If the system is no longer handy, it will not be used {\bf [HSC: I don't agree with this paragraph at all. In fact, I think we've had this discussion already in the past and it was resolved. It needs to be resolved again. There are many examples where enhancing macros is a benefit. Not only that, we've discussed this recently in our publications. This needs to be fixed prior to submission. I vote for removing this paragraph altogether until we can resolve this issue.]}
+%The results and conclusions of the translations of the formula set from the \DLMF{} are diverse. Some test cases have shown us that the set of semantic macros are not perfect yet and need to be improved. This is seen in the example of the macro definition for the Wronskian determinant. However, simply adding more and more macros to improve the set is not the right decision. In that case, we would end up in something similar to \sTeX, which is overloaded and too complicated to use. If the system is no longer handy, it will not be used {\bf [HSC: I don't agree with this paragraph at all. In fact, I think we've had this discussion already in the past and it was resolved. It needs to be resolved again. There are many examples where enhancing macros is a benefit. Not only that, we've discussed this recently in our publications. This needs to be fixed prior to submission. I vote for removing this paragraph altogether until we can resolve this issue.]} {\bf [AGP: Since the paper in it's current state is quite long and the section works well without this paragraph, I just commented it out and avoid the discussion here...]}
 
-On the other hand, the translator concept has proven itself by discovering errors in the online \gls*{dlmf} compendia. The test cases have also shown how difficult it is to validate a translated expression and have uncovered the problems of translations between two systems with different sets of supported functions. Our validation techniques also assume the correctness of the simplification and computational algorithms in \gls*{cas}. However, combining those techniques and automatically running translation checks, not only can discover errors in mathematical compendia but can also detect errors in simplifications or computations of the \gls*{cas}.
+The translator concept has proven itself by discovering errors in the online \gls*{dlmf} compendia. The test cases have also shown how difficult it is to validate a translated expression and have uncovered the problems of translations between two systems with different sets of supported functions. Our validation techniques also assume the correctness of the simplification and computational algorithms in \gls*{cas}. However, combining those techniques and automatically running translation checks, not only can discover errors in mathematical compendia but can also detect errors in simplifications or computations of the \gls*{cas}.
 
 The tasks for future work are diverse. The main task is to improve the translator by implementing more functions and features. For example, for the current state, only translations to \Maple's standard function library were implemented. \Maple{} allows one to load extra packages dynamically and therefore support an enhanced set of functions. This feature would drastically increase the number of possible translations. With such improvements, further work on evaluation techniques become worthwhile to evaluate the \gls*{dlmf} and \gls*{cas}.
 
 The translator was designed to be easily extendable. This allows one to implement translations for other \gls*{cas} without much effort.
-The biggest weakness of the translator is still the semantic macros {\bf [HSC: I don't understand what this sentence means. I think you need to be more specific here. The way it is written it doesn't make sense.]}. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
-
-{\bf [HSC: The link in the NIST:DLMF reference is broken (see below), and I don't know how to fix it. By the way, I made some changes the the way that it is referred to in the text, because I did not like that Olver et al was being referred to, since it is a web site. However, it is still not being displayed properly. For instance, the Version number is not being displayed and also the link is broken. Can someone try to fix this? I do not know Biber, so this is probably the reason for this mess.]}
+An extensive weakness is the dependency on the special macros from the \gls*{dlmf}. The translator is not able to translate functions without using these macros. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
 
 \emergencystretch=1em
 \printbibliography
