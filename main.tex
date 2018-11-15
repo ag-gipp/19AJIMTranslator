@@ -479,42 +479,20 @@ Since the \gls*{bnf} does not define rules for semantic macros, each argument of
 	\vspace{-10pt}
 \end{figure}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-\vspace{-20pt}
-\begin{minipage}{0.5\textwidth}
-\begin{algorithm}[H]
-\caption{Simple translation algorithm for the POM-Parse Tree}\label{alg:simple-translation}
-	\begin{algorithmic}[1]
-	\Require Root $r$ of the parse tree $T$
-	\Procedure{translate}{$r$}
-	\If{$r$ is leaf}
-		\State {\scriptsize TRANSLATE\_LEAF}($r$);
-	\Else
-		\ForAll{children $v_n$ of $r$}
-			\State {\scriptsize TRANSLATE}($v_n$);
-		\EndFor
-	\EndIf
-	\EndProcedure
-	\end{algorithmic}
-\end{algorithm}
-\end{minipage}
-\vspace{-14pt}
-\end{wrapfigure}
-
 \Cref{fig:syntax-tree-usecase} visualizes the \gls*{pom-pt} of the Jacobi polynomial example from~\Cref{tab:JacobiP-usecase}. Because of the differences to expression trees, a backward conversion of the \gls*{pom-pt} to a string representation can be difficult, especially for finding necessary or unnecessary parentheses. Therefore we create the \gls*{teo}. The \gls*{teo} is a list containing already translated subexpressions.
 
-With these tools, we can translate a \LaTeX{} expression by translating the \gls*{pom-pt} node by node and perform group or reordering operations for some special cases. The algorithm is realized in a simple recursive structure. The Algorithm~\ref{alg:simple-translation} explains the translation process. Whenever the algorithm finds a leaf, it can translate this single term. If the node is not a leaf, it starts to translate all children of the node recursively. 
+With these tools, we can translate a \LaTeX{} expression by translating the \gls*{pom-pt} node by node and perform group or reordering operations for some special cases. The algorithm is realized in a simple recursive structure. Whenever the algorithm finds a leaf, it can translate this single term. If the node is not a leaf, it starts to translate all children of the node recursively. This idea seems to be a practical and elegant solution but it has a significant drawback, it cannot be used to translate functions. Since the arguments of functions are following siblings in the \gls*{pom-pt}, the algorithm needs to look ahead when a leaf is a known function, e.g., in the case of a semantic macro with arguments (see~\Cref{fig:syntax-tree-usecase}). Algorithm~\ref{alg:translation} is an improved version with look ahead functionality.
 
 \begin{algorithm}[t]
-\caption{Abstract translation algorithm to translate MLP-Parse trees.}\label{alg:translation}
+\caption{Abstract translation algorithm to translate PPT.}\label{alg:translation}
 	\begin{algorithmic}[1]
-	\Require Root $r$ of a POM-Parse tree $T$. List \textit{following\_siblings} with the following siblings of $r$. The list can be empty.
+	\Require Root $r$ of a PoM-Parse tree $T$. List \textit{following\_siblings} with the following siblings of $r$. The list can be empty.
 	\Procedure{abstract\_translator}{$r$, \textit{following\_siblings}}
 	\If{$r$ is leaf}
 		\State {\scriptsize TRANSLATE\_LEAF}($r$, \textit{following\_siblings});\label{line:transLeaf}
 	\Else
-		\State \textit{siblings} $ = r$.getChildren(); \Comment{\textit{siblings} is a list of children}
-		\State {\scriptsize ABSTRACT\_TRANSLATOR}(\textit{siblings}.removeFirst(), \textit{siblings});\label{line:transSeq}
+		\State \textit{children} $ = r$.getChildren(); \Comment{\textit{children} is a list of nodes}
+		\State {\scriptsize ABSTRACT\_TRANSLATOR}(\textit{children}.removeFirst(), \textit{children});\label{line:transSeq}
 	\EndIf
 	\If{\textit{following\_siblings} is not empty}\label{line:ifNotEmpty}
 		\State $r =$ \textit{following\_siblings}.removeFirst();
@@ -523,9 +501,6 @@ With these tools, we can translate a \LaTeX{} expression by translating the \gls
 	\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
-
-
-This approach is not completely feasible since the algorithm needs to look ahead and check the following siblings in some cases, e.g., in the case of a semantic macro with arguments (see~\Cref{fig:syntax-tree-usecase}). The {\footnotesize \verb|TRANSLATE_LEAF|} function needs to know the following siblings of the current node. Algorithm~\ref{alg:translation} explains a more detailed but abstract version of the final algorithm of the presented translation tool. 
 
 If the root $r$ is a leaf, it still can be translated as a leaf. Eventually, some of the following siblings are needed to translate $r$. The list of \textit{following\_siblings} in Line~\ref{line:transLeaf} might be reduced to avoid multiple translations for one node. If $r$ is not a leaf, it contains one or more children. Therefore, we can call the {\footnotesize \verb|ABSTRACT_TRANSLATOR|} recursively for the children. Once we have translated $r$, we can go a step further and translate the next node. Line~\ref{line:ifNotEmpty} checks if there are following siblings left and calls the {\footnotesize \verb|ABSTRACT_TRANSLATOR|} recursively in such cases. Translated expressions are stored by the \gls*{teo} object. Algorithm~\ref{alg:translation} is a simplified version of the translator process. The \Cref{line:transLeaf,line:transSeq} process the translations for each node. \Cref{tab:allTypesTable} gives an overview of all the different node types the root $r$ can be. A more detailed explanation of the types can be found in~\parencite{POM-Tagger}.
 
@@ -571,7 +546,10 @@ Subsection~\ref{sec:subtranslators} discusses these classes in more detail.
 \caption{A table of all kinds of nodes in a PoM syntax tree. Note that this table groups some types together for a better overview. For a complete list and a more detailed version see~\parencite{POM-Tagger}.}
 \label{tab:allTypesTable}
 \end{table} 
-This approach seems to work for most semantic \LaTeX{} expressions. However, there is one problem with this straightforward approach which was mentioned in~\Cref{sec:problems}. There are many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the simple expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{Warsaw Notation} or \textit{prefix notation}} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense as long as the operator is a binary operator.
+
+The look ahead functionality seems to solve the problems for functions. But there is another problem that was not mentioned in \Cref{sec:problems}, because it seems to be not a problem previously. In some cases the arguments of a function do not follow but precede the function node. 
+
+If we take a closer look to mathematical notations we discover many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{Warsaw Notation} or \textit{prefix notation}} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense as long as the operator is a binary operator.
 
 \begin{wrapfigure}[10]{r}{0.38\textwidth} % optional parameter gives "# of narrow lines", very useful! 
 \vspace{-8pt}
@@ -596,14 +574,14 @@ This approach seems to work for most semantic \LaTeX{} expressions. However, the
 
 In mathematical expressions, notations are mostly mixed, depending on the case and number of operands. For example, infix notation is common for binary operators ($+$, $-$, $\cdot$, $\mod$, etc.), while functional notations are conveniently used for any kind of functions ($\sin$, $\cos$, etc.). Sometimes the same symbol is used in different notations to distinguish different meanings. For example, the `$-$' as a unary operator is used in prefix notation to indicate the negative value of its operand, such as in `$-2$'. Of course, `$-$' can also be the binary operator for subtraction, which is commonly used in infix notation. An example for the postfix notation is factorial, such as `$2!$'.
 
-Most programming languages (and \gls*{cas} as well) internally use prefix or postfix notation and do not mix the notations in one expression, since it is more convenient to parse expressions in uniform notations. However, the common practice in science is to use mixed notations in expressions. Since the \gls*{pom} has rarely implemented mathematical grammatical rules yet, it takes the input as it is and does not build an expression tree. Therefore, it parses all four examples from~\Cref{tab:notations} to four different \gls*{pom-pt}s rather than to one unique expression tree. In general, this is not a problem for our translation process since most \gls*{cas} are familiar with most common notations. Therefore, the translator does not need to know that `$a$' and `$b$' are the operands of the binary operator `$+$' in `$a+b$.' The translator could simply translate the symbols in `$a+b$' in the same order as they appear in the expression and the \gls*{cas} would understand it. However, this simple approach generates two problems.
+Most programming languages (and \gls*{cas} as well) internally use prefix or postfix notation and do not mix the notations in one expression, since it is more convenient to parse expressions in uniform notations. However, the common practice in science is to use mixed notations in expressions. Since the \gls*{pom} has rarely implemented mathematical grammatical rules yet, it takes the input as it is and does not build an expression tree. Therefore, it parses all four examples from~\Cref{tab:notations} to four different \gls*{pom-pt}s rather than to one unique expression tree. In general, this is not a problem for our translation process since most \gls*{cas} are familiar with most common notations. Therefore, the translator does not need to know that `$a$' and `$b$' are the operands of the binary operator `$+$' in `$a+b$.' The translator could simply translate the symbols in `$a+b$' in the same order as they appear in the expression and the \gls*{cas} would understand it. However, there are two new problems with this approach.
 \begin{enumerate}\item \label{prob:1} The translated expression is only syntactically correct if the input expression was syntactically correct.
 \item \label{prob:2} We cannot translate expressions to \gls*{cas} which use non-standard notations.
 \end{enumerate}
 
-Problem~\ref{prob:1} should be obvious. Since we want to develop a translation tool and not a verification tool for mathematical \LaTeX{} expressions, we can assume syntactically correct input expressions and produce errors otherwise. Problem~\ref{prob:2} is more difficult to solve. If a user wants to support a \gls*{cas} that uses prefix or postfix notation by default, the translator would fail in its current state. Supporting \gls*{cas} with another notation would be a part of future work.
+Problem~\ref{prob:1} should be obvious. Since we want to develop a translation tool and not a verification tool for mathematical \LaTeX{} expressions, we can assume syntactically correct input expressions and produce errors otherwise. Problem~\ref{prob:2} is more complex. If a user wants to support a \gls*{cas} that uses prefix or postfix notation by default, the translator would fail in its current state. Supporting \gls*{cas} with another notation would be a part of future work.
 
-Nonetheless, adopting different notations, in some situations, could also solve potential ambiguities. Consider the two potentially ambiguous examples in~\Cref{tab:amb_ex}. While a scientist would probably just ask for the right interpretation of the first example, \Maple{} automatically computes the first interpretation. On the other hand, \LaTeX{} automatically disambiguates the first example by only recognizing the very next element (single symbols or sequences in curly brackets) for the superscript and therefore displays the second interpretation. The second example is already interpreted as the double factorial function of $n$, since this notation is the standard interpretation in science. We wrote the second interpretation as the standard way in science to make it even more obvious. However, surprisingly, \Maple{} computes the first interpretation again rather than the common standard interpretation.
+Nonetheless, adopting different notations, in some situations, could also solve potential ambiguities. Consider the two potentially ambiguous examples in~\Cref{tab:amb_ex}. While a scientist would probably just ask for the right interpretation of the first example, \Maple{} automatically computes the first interpretation. On the other hand, \LaTeX{} automatically disambiguates the first example by only recognizing the very next element (single symbols or sequences in curly brackets) for the superscript and therefore displays the second interpretation. The second example should not be misinterpreted, since this notation is the standard interpretation in science for the double factorial. We wrote the second interpretation with parentheses point it out more precisely. However, surprisingly, \Maple{} computes the first interpretation (the factorial of the factorial of $n$) again rather than the common standard interpretation.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lccc}
