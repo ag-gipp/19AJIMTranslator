@@ -28,7 +28,6 @@
 \setlength{\headheight}{14pt}
 \usepackage{fancyhdr}
 
-
 \usepackage{graphicx}
 \usepackage{subfig} 
 \usepackage{wrapfig}	
@@ -299,13 +298,10 @@ Another approach tries to avoid translation problems by allowing computations di
 
 There exist two approaches for marking up mathematical \TeX/\LaTeX{} documents semantically with \TeX{} macros. Namely, \sTeX{}~\parencite{sTeX} developed by Kohlhase and the \Macro s developed by Miller~\parencite{DLMF:Macros}. This paper shows that it is possible to develop a context-free translation tool using the semantic macros introduced by these two projects. The goal of \sTeX{} was to markup the functional structure of mathematical documents so that they can be exported to the \gls*{omdoc} format. The macro set developed by Miller introduces new macros for special functions, orthogonal polynomials, and mathematical constants. Each of these macros ties specific character sequences to a well-defined mathematical object and is linked with the corresponding definition in the \gls*{dlmf} or \gls*{drmf}. Therefore, we call these semantic macros \Macro s. These semantic macros are internally used in the \gls*{dlmf} and the \gls*{drmf}. We gave the \Macro{} set the favor for developing the translation engine because it provides \gls*{dlmf} definitions for a comprehensive number of functions. In contrast, \sTeX{} does not focus on the semantics of functions, is too complex to use, and defines diverse macros for symbols and concepts that \gls*{cas} usually does not support.
 
- 
-
-
-
 \section{Translation Problems}\label{sec:problems}
 There are several potential problems for performing translations between systems that embed semantic information in the input. These problems vary from simple cases, e.g., a function is not defined in the system, to complex cases, e.g., different positioning of branch cuts for multivalued functions. This section will discuss the problems and our workarounds.
 
+\subsection{Different Sets of Defined Functions}
 If a function is defined in one system but not in the other, we can translate the definition of the mathematical function. For example, the \textit{Gudermannian}~\parencite[(4.23.10)]{NIST:DLMF} $\Gudermannian{x}$ function is defined by
 \begin{equation}\label{eq:gudermannian}
 \Gudermannian{x} := \atan{\sinh{x}}, \quad x \in \Real,
@@ -320,6 +316,7 @@ Since translations such as these are nonintuitive, describing explanations becom
 
 Providing detailed information also solves the problem for multiple alternative translations. In some cases, a semantic macro has two alternative representations in the \gls*{cas} or vice versa. In such cases, the translator picks one of the alternatives and informs the user about the decision.
 
+\subsection{Positions of Branch Cuts}
 In case of differences between defined branch cuts we can also use alternative translations to solve the problems. Consider the mentioned case of the arccotangent function~\parencite{Branches:acot} that has different positioned branch cuts in \Maple{} compared to the \gls*{dlmf} or \Mathematica{} definitions. Alternative but mathematically equivalent translations are
 \begin{eqnarray}
 \verb|\acot@{z}| & \overset{\langMaple}{\mapsto} & \verb|arccot(z)|,\label{eq:acot-alternatives}\\
@@ -330,6 +327,7 @@ In case of differences between defined branch cuts we can also use alternative t
 \vspace{-0.2cm}
 The position of the branch cut of the arccotangent function differs after translation~\eqref{eq:acot-alternatives}, which may lead to incorrect calculations later on. The alternative translations~\eqref{eq:acot-alternatives-1} and~\eqref{eq:acot-alternatives-2} use other functions instead of the arccotangent function. The arctangent function~\eqref{eq:acot-alternatives-1} and the natural logarithm~(\ref{eq:acot-alternatives-2}) have the same positioned branch cuts as in the \gls*{dlmf} and in \Maple. In consequence, translation~(\ref{eq:acot-alternatives-1}) solves the issue, as long as the user does not evaulate the function at $z = 0$, while translation~(\ref{eq:acot-alternatives-2}) solves the issue except at $z = -\iunit$.
 
+\subsection{Insufficient Semantic Information}
 Other problematic cases for translations are the \Macro s themselves. In some cases, they do not provide sufficient semantic information to perform translations. One example is the \textit{Wronskian} determinant. For two differentiable functions, the \textit{Wronskian} is defined as~\parencite[(1.13.4)]{NIST:DLMF}
 \begin{equation*}
 	\mathscr{W} \left\{ w_1(z), w_2(z) \right\} = w_1(z)w_2'(z) - w_2(z)w_1'(z).
@@ -344,6 +342,7 @@ A translation becomes unfeasible because the macro does not explicitely define t
 \end{equation}
 This example demonstrates that the \Macro s are still a work in progress and are getting constantly updated.
 
+\subsection{Ambiguous Expressions}
 A similar problem is multiplications since they are rarely explicitly marked in \LaTeX{} expressions, e.g., scientists using whitespaces to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced by contributers of the \gls*{drmf} team, and automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} use this macro. As a consequence, the translator has some simple rules to perform translations without explicitly marked translations with \verb|\idot|.
 
 The \Macro s do not guarantee entirely disambiguated expressions. In~\Cref{tab:amb-latex} there are four examples of potentially ambiguous expressions. These expressions are unambiguous for the \LaTeX{} compiler since it only considers the very next token for superscripts and subscripts. Our translator follows the same rules to solve these issues.
