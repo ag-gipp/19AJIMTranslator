@@ -374,6 +374,8 @@ Another more questionable translation decision is alphanumerical expressions. As
 In general, the translator is designed to find a work-around for disambiguating expressions. Only if there is no way to solve the ambiguity with the defined rules, the translation process stops.
 
 \section{The Translator}
+The translator analyzes a parse tree to perform translations. For generating a parse tree of \LaTeX{} expressions, the translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.}. The \gls*{pom}-Tagger is an \texttt{LL}-Parser defined by a context-free grammar in \gls*{bnf}. Each token will be tagged by meta information defined in manually cultivated lexicon files. \gls*{cas} define their own syntax parser. We were able to use \Maple's internal data structure to get a parse tree of the input.
+
 All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as a placeholder to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
 
 \begin{table}[ht]
@@ -392,22 +394,7 @@ All translations are defined by a library (\gls*{csv} and \gls*{json} files) tha
 	\label{tab:placeholder_ex2}
 \end{table}
 
-These placeholders cause trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
-\begin{equation*}
-\verb|diff(f, [x$n])|,
-\end{equation*}
-where $f$ is an algebraic expression or an equation, $x$ is the name of the differentiation variable, and $n$ is an integer representing the $n$-th order differentiation\footnote{\url{https://www.maplesoft.com/support/help/maple/view.aspx?path=diff}, seen 07/2018}. A translation for $\frac{d^2x^2}{dx^2}$ should look like this
-\begin{equation*}
-\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
-\end{equation*}
-but would end up as
-\begin{equation*}
-\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
-\end{equation*}
-
-We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
-
-The \Macro s also allow one to specify optional arguments to distinguish between standard and another version of these functions. The Legendre and associated Legendre functions of the first kind are examples of such cases. The library that defines translations for each macro uses the macro name as the primary key to identify the translations. The Legendre and associated Legendre function of the first kind both use the same macro \verb|\LegendreP|. To distinguish such cases, we use a special syntax for such cases, shown in~\Cref{tab:legendreP-lex}.
+The \Macro s also allow one to specify optional arguments to distinguish between standard and another version of these functions. The Legendre and associated Legendre functions of the first kind are examples of such cases. The library that defines translations for each macro uses the macro name as the primary key to identify the translations. The Legendre and associated Legendre function of the first kind both use the same macro \verb|\LegendreP|. To distinguish such cases, we use a special syntax, shown in~\Cref{tab:legendreP-lex}.
 
 \begin{table}[ht!]
 	\centering
@@ -423,7 +410,7 @@ The \Macro s also allow one to specify optional arguments to distinguish between
 	\label{tab:legendreP-lex}
 \end{table}
 
-The translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} to parse \LaTeX{} expressions into a parsed tree. The \gls*{pom}-Tagger is an \texttt{LL}-Parser defined by a context-free grammar in \gls*{bnf}. Each token will be tagged by meta information defined in lexicon files. We extend the lexicon files to provide also the information that is necessary for the translation process. An example of an entry of the lexicon file is given in~\Cref{tab:sine-lex-example}.
+We integrated the defined translation patterns in the library also into the lexicon files of the \gls*{pom}-Tagger. Thus the tagger also tags a token by its translation patterns to other languages. \Cref{tab:sine-lex-example} gives an example of an entry of the lexicon file.
 
 \begin{table}[ht!]
 	\centering
@@ -447,7 +434,25 @@ The translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named 
 	\end{tabular}
 	\caption{The entry of the trigonometric sine function in the lexicon file.}
 	\label{tab:sine-lex-example}
-\end{table} \section{Forward Translations}\label{sec:forward-translation}
+\end{table}
+
+\subsection{Escape the Placeholder Symbol}
+The used placeholders cause trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
+\begin{equation*}
+\verb|diff(f, [x$n])|,
+\end{equation*}
+where $f$ is an algebraic expression or an equation, $x$ is the name of the differentiation variable, and $n$ is an integer representing the $n$-th order differentiation\footnote{\url{https://www.maplesoft.com/support/help/maple/view.aspx?path=diff}, seen 07/2018}. A translation for $\frac{d^2x^2}{dx^2}$ should look like this
+\begin{equation*}
+\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
+\end{equation*}
+but would end up as
+\begin{equation*}
+\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
+\end{equation*}
+
+We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
+
+\section{Forward Translations}\label{sec:forward-translation}
 An abstract translator class analyzes each node of the parsed tree and delegates them to specialized subtranslators. In this process, an object called \gls*{teo} is built. This \gls*{teo} is needed to rebuild a string representation of the mathematical expression after all nodes of the parsed tree were translated.
 
 The parsed tree generated by the \gls*{pom}-tagger is not a mathematical expression tree. The \gls*{pom} project aims to disambiguate mathematical \LaTeX{} expressions and generates an expression tree. However, in the current state, many expressions cannot be disambiguated yet. In consequence, the \gls*{pom}-tagger generates a raw parsed tree where each token in the \LaTeX{} expression is a node in the tree. We call this parsed tree the \gls*{pom-pt}.
