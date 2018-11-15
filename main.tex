@@ -374,7 +374,7 @@ Another more questionable translation decision is alphanumerical expressions. As
 In general, the translator is designed to find a work-around for disambiguating expressions. Only if there is no way to solve the ambiguity with the defined rules, the translation process stops.
 
 \section{The Translator}
-The translator analyzes a parse tree to perform translations. For generating a parse tree of \LaTeX{} expressions, the translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.}. The \gls*{pom}-Tagger is an \texttt{LL}-Parser defined by a context-free grammar in \gls*{bnf}. Each token will be tagged by meta information defined in manually cultivated lexicon files. \gls*{cas} define their own syntax parser. We were able to use \Maple's internal data structure to get a parse tree of the input.
+The translator analyzes a parse tree to perform translations. For generating a parse tree of \LaTeX{} expressions, the translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.}. \gls*{cas} define their own syntax parser. We were able to use \Maple's internal data structure to get a parse tree of the input. \Cref{sec:forward-translation} and \Cref{sec:backward-translation} will explain the parsing and translation process in detail.
 
 All translations are defined by a library (\gls*{csv} and \gls*{json} files) that defines translation patterns for each function and symbol. The pattern uses \verb|$i| as a placeholder to define the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
 
@@ -410,7 +410,26 @@ The \Macro s also allow one to specify optional arguments to distinguish between
 	\label{tab:legendreP-lex}
 \end{table}
 
-We integrated the defined translation patterns in the library also into the lexicon files of the \gls*{pom}-Tagger. Thus the tagger also tags a token by its translation patterns to other languages. \Cref{tab:sine-lex-example} gives an example of an entry of the lexicon file.
+\subsection{Escape the Placeholder Symbol}
+The used placeholders cause trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
+\begin{equation*}
+\verb|diff(f, [x$n])|,
+\end{equation*}
+where $f$ is an algebraic expression or an equation, $x$ is the name of the differentiation variable, and $n$ is an integer representing the $n$-th order differentiation\footnote{\url{https://www.maplesoft.com/support/help/maple/view.aspx?path=diff}, seen 07/2018}. A translation for $\frac{d^2x^2}{dx^2}$ should look like this
+\begin{equation*}
+\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
+\end{equation*}
+but would end up as
+\begin{equation*}
+\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
+\end{equation*}
+
+We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
+
+\section{Forward Translations}\label{sec:forward-translation}
+As a pre-processing step, we use the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} for parsing semantic \LaTeX{} expressions. The \gls*{pom}-Tagger is defined by a context-free grammar in \gls*{bnf} and is an \texttt{LL}-Parser, i.e., it parses the input from \textbf{L}eft to right and assigns the \textbf{L}eftmost (first applicable) drivation rule defined by the grammar to an expression. In other words, the \gls*{pom}-Tagger scans the input for \textit{terms} and groups them into subexpressions if suitable, where \textit{terms} are non-terminal symbols in the context of \gls*{bnf}. If a node in the generated parse tree matches a pre-defined symbol, it will be tagged by mata information that are defined in manually cultivated lexicon files. 
+
+We integrated the defined translation patterns from our library also into these lexicon files. Thus the tagger also tags a node in the parse tree by its translation patterns. \Cref{tab:sine-lex-example} gives an example of an entry of the lexicon file.
 
 \begin{table}[ht!]
 	\centering
@@ -436,26 +455,7 @@ We integrated the defined translation patterns in the library also into the lexi
 	\label{tab:sine-lex-example}
 \end{table}
 
-\subsection{Escape the Placeholder Symbol}
-The used placeholders cause trouble when the \gls*{cas} uses the symbol \verb|$| for other reasons, e.g., the differentiation in \Maple{} is defined by
-\begin{equation*}
-\verb|diff(f, [x$n])|,
-\end{equation*}
-where $f$ is an algebraic expression or an equation, $x$ is the name of the differentiation variable, and $n$ is an integer representing the $n$-th order differentiation\footnote{\url{https://www.maplesoft.com/support/help/maple/view.aspx?path=diff}, seen 07/2018}. A translation for $\frac{d^2x^2}{dx^2}$ should look like this
-\begin{equation*}
-\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [x$2])|
-\end{equation*}
-but would end up as
-\begin{equation*}
-\verb|\deriv[2]{x^2}{x}| \overset{\langMaple}{\mapsto} \verb|diff(x^2, [xx])|.
-\end{equation*}
-
-We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
-
-\section{Forward Translations}\label{sec:forward-translation}
-An abstract translator class analyzes each node of the parsed tree and delegates them to specialized subtranslators. In this process, an object called \gls*{teo} is built. This \gls*{teo} is needed to rebuild a string representation of the mathematical expression after all nodes of the parsed tree were translated.
-
-The parsed tree generated by the \gls*{pom}-tagger is not a mathematical expression tree. The \gls*{pom} project aims to disambiguate mathematical \LaTeX{} expressions and generates an expression tree. However, in the current state, many expressions cannot be disambiguated yet. In consequence, the \gls*{pom}-tagger generates a raw parsed tree where each token in the \LaTeX{} expression is a node in the tree. We call this parsed tree the \gls*{pom-pt}.
+The parsed tree generated by the \gls*{pom}-Tagger is not a mathematical expression tree. The \gls*{pom} project aims to disambiguate mathematical \LaTeX{} expressions and generates an expression tree. However, in the current state, many expressions cannot be disambiguated yet. In consequence, the \gls*{pom}-tagger generates a raw parsed tree where each token in the \LaTeX{} expression is a node in the tree. We call this parsed tree the \gls*{pom-pt}.
 
 {\sloppy The overall forward translation process is explained in~\Cref{fig:forward-trans}. All translation patterns and related information are stored in the DLMF/DRMF tables. These tables are converted by the \verb|lexicon-creator| to the \verb|DLMF-macros-lexicon| lexicon file. Together with the \verb|global|-\verb|lexicon| file, the \gls*{pom-pt} will be created by the \gls*{pom}-tagger. The \verb|latex-converter| takes a string representation of a semantic \LaTeX{} expression and uses the \gls*{pom} engine as well as our \verb|Translator| to create an appropriate string representation for a specified \gls*{cas}.}
 
@@ -501,7 +501,7 @@ Since the \gls*{bnf} does not define rules for semantic macros, each argument of
 \vspace{-14pt}
 \end{wrapfigure}
 
-\Cref{fig:syntax-tree-usecase} visualizes the \gls*{pom-pt} of the Jacobi polynomial example from~\Cref{tab:JacobiP-usecase}. Because of the differences to expression trees, a backward conversion of the \gls*{pom-pt} to a string representation can be difficult, especially for finding necessary or unnecessary parentheses. Therefore we create the \gls*{teo}.
+\Cref{fig:syntax-tree-usecase} visualizes the \gls*{pom-pt} of the Jacobi polynomial example from~\Cref{tab:JacobiP-usecase}. Because of the differences to expression trees, a backward conversion of the \gls*{pom-pt} to a string representation can be difficult, especially for finding necessary or unnecessary parentheses. Therefore we create the \gls*{teo}. The \gls*{teo} is a list containing already translated subexpressions.
 
 With these tools, we can translate a \LaTeX{} expression by translating the \gls*{pom-pt} node by node and perform group or reordering operations for some special cases. The algorithm is realized in a simple recursive structure. The Algorithm~\ref{alg:simple-translation} explains the translation process. Whenever the algorithm finds a leaf, it can translate this single term. If the node is not a leaf, it starts to translate all children of the node recursively. 
 
@@ -568,7 +568,7 @@ Subsection~\ref{sec:subtranslators} discusses these classes in more detail.
 	\multicolumn{1}{l|}{} & Symbols & All kind of symbols & `$@$', `$*$', `$+$', `$!$', etc.\\
 	\hline
 \end{tabularx}
-\caption{A table of all kinds of nodes in a PoM syntax tree. Note that this table groups some kinds for a better overview. For a complete list and a more detailed version see~\parencite{POM-Tagger}.}
+\caption{A table of all kinds of nodes in a PoM syntax tree. Note that this table groups some types together for a better overview. For a complete list and a more detailed version see~\parencite{POM-Tagger}.}
 \label{tab:allTypesTable}
 \end{table} 
 This approach seems to work for most semantic \LaTeX{} expressions. However, there is one problem with this straightforward approach which was mentioned in~\Cref{sec:problems}. There are many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the simple expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{Warsaw Notation} or \textit{prefix notation}} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense as long as the operator is a binary operator.
@@ -716,7 +716,8 @@ As you can see, the input expression in semantic \LaTeX{} is interpreted as
 \begin{equation}\label{eq:multi-expo}
 \left( \cos(x)^2 \right)^2.
 \end{equation}
- \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
+
+\section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
 Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
 \begin{wrapfigure}[7]{r}{0.61\textwidth}
