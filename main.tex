@@ -711,6 +711,8 @@ Translated \Maple{} Expression & \verb|((cos(x))^(n))^m|\\
 \end{table}
 
 \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
+In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree than follows the same principle as for the forward translations.
+
 Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
 \begin{wrapfigure}[7]{r}{0.61\textwidth}
@@ -750,8 +752,6 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel implementation.
 
 \subsection{Automatic Changes of Inputs in Maple}\label{subsec:maple-probs}
-In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree than follows the same principle as for the forward translations.
-
 \Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with \Cref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
 
 \begin{itemize}
