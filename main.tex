@@ -1,14 +1,15 @@
 \documentclass[a4paper,11pt]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel} \usepackage[T1]{fontenc} 
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
 \usepackage{hyperref}			
-\usepackage[acronym, nomain]{glossaries} \usepackage{amsthm}
+\usepackage[acronym, nomain]{glossaries} 
+\usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{mathrsfs}
 \usepackage{parskip}		
-\usepackage{txfonts}            
-\usepackage{xcolor}				
+\usepackage{txfonts}			
 \usepackage{enumitem}			
 \usepackage{algorithm}
 \usepackage{algpseudocode} 
@@ -19,7 +20,20 @@
 \usepackage{csquotes}
 \usepackage{layout}
 \usepackage{textcomp} 
-\usepackage{authblk} 
+\usepackage{authblk}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage{lstomdoc}
+\lstset{language=MathML,%basicstyle=\sf\footnotesize,
+	columns=fullflexible,
+    belowcaptionskip=0em,
+    belowskip=-1.5em,
+    alsoletter={'},
+    stringstyle = {\color{Blue}},
+    keywordstyle = {\color{OliveGreen!70!LimeGreen}},
+    keywordstyle = [2]{\color{Fuchsia}},
+    morekeywords = [2]{cd,definitionURL,id,xmlns}
+}
 
 \usepackage{sectsty}
 \subsectionfont{\normalfont\large\itshape}
@@ -297,6 +311,8 @@ The semantics must be well known before an expression can be translated. There a
 Another approach tries to avoid translation problems by allowing computations directly via the \LaTeX{} compiler, e.g., \textit{LaTeXCalc}~\parencite{LatexCalc}. Those packages are limited to the abilities of the compiler and therefore are not as powerful as \gls*{cas}. A workaround for this case is \textit{sagetex}~\parencite{Sagetex}, which is a \LaTeX{} package interface for the open source \gls*{cas} \textit{sage}\footnote{An abbreviation for \textit{SageMath}.}. This package allows \textit{sage} commands in \TeX{-}files and uses \textit{sage} in the background to compute the commands. In this scenario, a writer still needs to manually translate expressions to the syntax of \textit{sage}, but it is possible to integrate \gls*{cas} expression directly into \TeX{} documents.
 
 There exist two approaches for marking up mathematical \TeX/\LaTeX{} documents semantically with \TeX{} macros. Namely, \sTeX{}~\parencite{sTeX} developed by Kohlhase and the \Macro s developed by Miller~\parencite{DLMF:Macros}. This paper shows that it is possible to develop a context-free translation tool using the semantic macros introduced by these two projects. The goal of \sTeX{} was to markup the functional structure of mathematical documents so that they can be exported to the \gls*{omdoc} format. The macro set developed by Miller introduces new macros for special functions, orthogonal polynomials, and mathematical constants. Each of these macros ties specific character sequences to a well-defined mathematical object and is linked with the corresponding definition in the \gls*{dlmf} or \gls*{drmf}. Therefore, we call these semantic macros \Macro s. These semantic macros are internally used in the \gls*{dlmf} and the \gls*{drmf}. We gave the \Macro{} set the favor for developing the translation engine because it provides \gls*{dlmf} definitions for a comprehensive number of functions. In contrast, \sTeX{} does not focus on the semantics of functions, is too complex to use, and defines diverse macros for symbols and concepts that \gls*{cas} usually does not support.
+
+Miller also developed LaTeXML, a tool for converting \LaTeX{} expressions to MathML~\parencite{LaTeXML}. LaTeXML was used to generate the \gls*{dlmf} and is able to parse the \Macro s to content MathML. Even though many \gls*{cas} are able to import and export MathML, they fail for special functions. Schubotz et.~al recently performs benchmarks on several \LaTeX{} to MathML conversion tools, including LaTeXML, in~\parencite{DBLP:conf/jcdl/SchubotzGSMCG18}.\Cref{sec:trans-mml} also shows three examples of generated MathML by LaTeXML, \Maple, and \Mathematica. We did not use MathML as an intermediate format to perform translations between \LaTeX{} and \gls*{cas}, because of the problems content MathML has~\parencite{DBLP:conf/jcdl/SchubotzGSMCG18}.
 
 \section{Translation Problems}\label{sec:problems}
 There are several potential problems for performing translations between systems that embed semantic information in the input. These problems vary from simple cases, e.g., a function is not defined in the system, to complex cases, e.g., different positioning of branch cuts for multivalued functions. This section will discuss the problems and our workarounds.
@@ -927,12 +943,7 @@ Maplesoft has confirmed in a private communication that this is indeed a defect 
 Furthermore, although the nature of the defect changes, the defect still persists in \Maple{ 2018}
 as of the publication of this manuscript.
 
- 
-
-
 \section{Conclusion \& Future Work}\label{ch:conc-future-work}
-%The results and conclusions of the translations of the formula set from the \DLMF{} are diverse. Some test cases have shown us that the set of semantic macros are not perfect yet and need to be improved. This is seen in the example of the macro definition for the Wronskian determinant. However, simply adding more and more macros to improve the set is not the right decision. In that case, we would end up in something similar to \sTeX, which is overloaded and too complicated to use. If the system is no longer handy, it will not be used {\bf [HSC: I don't agree with this paragraph at all. In fact, I think we've had this discussion already in the past and it was resolved. It needs to be resolved again. There are many examples where enhancing macros is a benefit. Not only that, we've discussed this recently in our publications. This needs to be fixed prior to submission. I vote for removing this paragraph altogether until we can resolve this issue.]} {\bf [AGP: Since the paper in it's current state is quite long and the section works well without this paragraph, I just commented it out and avoid the discussion here...]}
-
 The translator concept has proven itself by discovering errors in the online \gls*{dlmf} compendia. The test cases have also shown how difficult it is to validate a translated expression and have uncovered the problems of translations between two systems with different sets of supported functions. Our validation techniques also assume the correctness of the simplification and computational algorithms in \gls*{cas}. However, combining those techniques and automatically running translation checks, not only can discover errors in mathematical compendia but can also detect errors in simplifications or computations of the \gls*{cas}.
 
 The tasks for future work are diverse. The main task is to improve the translator by implementing more functions and features. For example, for the current state, only translations to \Maple's standard function library were implemented. \Maple{} allows one to load extra packages dynamically and therefore support an enhanced set of functions. This feature would drastically increase the number of possible translations. With such improvements, further work on evaluation techniques become worthwhile to evaluate the \gls*{dlmf} and \gls*{cas}.
@@ -942,4 +953,63 @@ An extensive weakness is the dependency on the special macros from the \gls*{dlm
 
 \emergencystretch=1em
 \printbibliography
+
+\appendix
+\section*{Appendix}
+\section{Translations via MathML}\label{sec:trans-mml}
+The problems to use MathML data as an intermediate format can be demonstrated by using LaTeXML, \Maple, and \Mathematica{} to generate content MathML from their inputs. While the inputs for \gls*{cas} are unique, ideally all systems should produce the same content MathML data. Also, for semantic \LaTeX, LaTeXML should be able to generate the correct content MathML data. As an example we generated content MathML via LaTeXML for
+\begin{equation}\label{eq:jac-lml}
+\verb|\JacobiP{\alpha}{\beta}{n}@{\cos@{a\Theta}}|,
+\end{equation}
+and via \Maple{} and \Mathematica{} for the manually verified appropriated  translations of (\ref{eq:jac-lml})
+\begin{eqnarray}
+&& \verb|JacobiP(n,alpha,beta,cos(a*Theta))|,\text{ and}\label{eq:jac-map}\\
+&& \verb|JacobiP[n,\[Alpha],\[Beta],Cos[a \[CapitalTheta]]]|.\label{eq:jac-mat}
+\end{eqnarray}
+Listings~\ref{lst:latexml}-~\ref{lst:mathematica} shows the generated content MathML. As the listings show, all generated MathML distinguish to each other. The problems are not only flaws in their export implementations but also in the fact that even content MathML is not unique. Based on this fact and the differences in the generated content MathML between each system, we decided to not use MathML as an intermediate format.
+
+\begin{lstlisting}[label={lst:latexml},mathescape=true,caption=The generated content MathML for~(\ref{eq:jac-lml}) using LaTeXML with the command \texttt{latexmlc} and the set of semantic macros.]
+<math xmlns="http://www.w3.org/1998/Math/MathML" $\ldots$>
+  <semantics>
+    <apply>
+      <apply>
+        <csymbol cd="dlmf">Jacobi-polynomial-P</csymbol>
+        <ci>$\alpha$</ci>
+        <ci>$\beta$</ci>
+        <ci>$n$</ci>
+      </apply>
+      <ci>$x$</ci>
+    </apply>
+  </semantics>
+</math>
+\end{lstlisting}
+
+\vspace{0.4cm}
+\begin{lstlisting}[label={lst:maple},mathescape=true,caption=The content MathML for~(\ref{eq:jac-map}) generated by Maple 16 (including manually added linebreaks). We were using the \texttt{MathML[ExportContent]} command to produce the output.]
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <apply id='id6'>
+    <csymbol id='id1' 
+      definitionURL='http://www.maplesoft.com/MathML/JacobiP'>
+        JacobiP
+    </csymbol>
+    <ci id='id2'>n</ci>
+    <ci id='id3'>alpha</ci>
+    <ci id='id4'>beta</ci>
+    <ci id='id5'>x</ci>
+  </apply>
+</math>
+\end{lstlisting}
+
+\vspace{0.4cm}
+\begin{lstlisting}[label={lst:mathematica},mathescape=true,caption=The content MathML for~(\ref{eq:jac-mat}) generated by Mathematica. We were using the \texttt{ExportString} command to produce the output.]
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+ <apply>
+  <ci>JacobiP</ci>
+  <ci>n</ci>
+  <ci>&#945;</ci>
+  <ci>&#946;</ci>
+  <ci>x</ci>
+ </apply>
+</math>
+\end{lstlisting}
 \end{document}
