@@ -333,7 +333,7 @@ Since translations such as these are nonintuitive, describing explanations becom
 Providing detailed information also solves the problem for multiple alternative translations. In some cases, a semantic macro has two alternative representations in the \gls*{cas} or vice versa. In such cases, the translator picks one of the alternatives and informs the user about the decision.
 
 \subsection{Positions of Branch Cuts}
-In case of differences between defined branch cuts we can also use alternative translations to solve the problems. Consider the mentioned case of the arccotangent function~\parencite{Branches:acot} that has different positioned branch cuts in \Maple{} compared to the \gls*{dlmf} or \Mathematica{} definitions. Alternative but mathematically equivalent translations are
+In case of differences between defined branch cuts we can also use alternative translations to solve the problems. Consider the mentioned case of the arccotangent function~\parencite{Branches:acot} that has different positioned branch cuts in \Maple{} compared to the \gls*{dlmf} or \Mathematica{} definitions. As suggested by~\parencite{Branches:acot}, we can translate an alternative definition of the arccotangent function to avoid the branch cut issues. Considering the equations (23) and (25) in~\parencite{Branches:acot}, we can define three translations
 \begin{eqnarray}
 \verb|\acot@{z}| & \overset{\langMaple}{\mapsto} & \verb|arccot(z)|,\label{eq:acot-alternatives}\\
 & \overset{\langMaple}{\mapsto} & \verb|arctan(1/z)|,\label{eq:acot-alternatives-1}\\
