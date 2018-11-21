@@ -933,9 +933,9 @@ The error can be found on~\parencite[p. 359]{NIST:Handbook} and has been fixed i
 We have also noticed that our testing procedure is able to identify errors in CAS procedures,
 namely the \Maple{} {\tt simplify} procedure. The left-hand side of~\parencite[(7.18.4)]{NIST:DLMF} is given by 
 \begin{equation*}
-\frac{{\mathrm{d}}^{n}}{{\mathrm{d}z}^{n}}\left(e^{z^{2}}\operatorname{erfc}z\right),
+\frac{{\mathrm{d}}^{n}}{{\mathrm{d}z}^{n}}\left(e^{z^{2}}\operatorname{erfc}z\right), \quad n = {0,1,2,\ldots}
 \end{equation*}
-where $n \in \mathbb{N}_0$, $e$ is the base of the natural logarithm, and $\operatorname{erfc}$ is the
+where $e$ is the base of the natural logarithm, and $\operatorname{erfc}$ is the
 complementary error function. Our translation correctly produces 
 \begin{equation*}
 \verb|diff((exp((z)^(2))*erfc(z)), [z$(n))]|.
