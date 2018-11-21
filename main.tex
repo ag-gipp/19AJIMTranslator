@@ -563,6 +563,7 @@ Subsection~\ref{sec:subtranslators} discusses these classes in more detail.
 \label{tab:allTypesTable}
 \end{table} 
 
+\subsection{Problems with the Look Ahead Approach}
 The look ahead functionality seems to solve the problems for functions. But there is another problem that was not mentioned in \Cref{sec:problems}, because it seems to be not a problem previously. In some cases the arguments of a function do not follow but precede the function node. 
 
 If we take a closer look to mathematical notations we discover many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{prefix notation}, \textit{Warsaw Notation} or \textit{{\L}ukasiewicz notation}. It was invented by J. {\L}ukasiewicz 1924 to create a parenthesis-free notation~\parencite{Hamblin1962}. Note that this notation is indeed parenthesis-free as long as all operators have the same arity.} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}. Also invented by J. {\L}ukasiewicz. Same as \gls*{pol} it does not need parenthesis as long as all operators have the same arity.} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense as long as the operator is a binary operator.
