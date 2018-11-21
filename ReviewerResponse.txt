@@ -1,0 +1,17 @@
+We carefully proofread the entire paper again and implemented several minor changes. In the following we response specifically to the reviewers.
+
+Reviewer 1:
+As suggested, we made several changes to improve the structure of the paper. In detail we 
+•	added subsections in Section 3, 
+•	gave an overview of the idea of the translator in Section 4, 
+•	removed unnecessary Algorithm 1 in Section 5,
+•	added a subsection in Section 5 for a better outline, and 
+•	further explained Algorithm 3 (now Algorithm 2).
+We also explained the PoM-Tagger, its parsing process, and the lexicon files in more detail.
+Further, we added LaTeXML to the related work section and explained briefly why we did not choose MathML as an intermediate data format to perform translations by citing one of our previous publications: Schubotz et al. from 2018 (now included in our references). In this research project, we tested LaTeXML and other state of the art LaTeX to MathML conversion tools. We discovered several problems for those translations. So we decided to work with the PoM-Tagger instead of LaTeXML for our translations.
+Also, we did not add further comparisons with LaTeXML to our evaluations section. The reason is that CAS does not understand MathML that contains special functions. Thus we can only compare translations without function calls or implement a solution to overcome this issue for a decent comparison. But this project may legitimate a new publication by itself.
+
+Reviewer 2:
+For clarification, we decided to change the wording "Word Processor" to "Document Preparation System.” Since this is part of the title, we did not add that we focus on LaTeX to the title and hope that the Abstract will point that out in an acceptable manner.
+Also, instead of creating an Appendix, we decided to add short paragraphs that explain the purpose of the sections. We hope this helps the reader to decide whether he can skip the section, e.g., in case of his lack of interest in Maple “hackings,” or not. 
+In the new version of the paper, we implemented all suggested minor changes and added the idea of improved numerical tests by using the mentioned cut region detection to the future work section.

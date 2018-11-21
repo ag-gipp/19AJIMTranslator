@@ -655,7 +655,7 @@ The \verb|SequenceTranslator| also handles positions of multiplication symbols. 
 		\Statex Translated semantic macro.
 	
 	\Procedure{translate\_macro}{\textit{macro}, \textit{args}, \textit{lexicon}}
-	\State \textit{info} = \textit{lexicon}.getInfo(\textit{macro});
+	\State \textit{info} = \textit{lexicon}.getInfo(\textit{macro});\label{line:get_info}
 	\State \textit{argList} = new List(); \Comment{create a sorted list for the translated arguments.}
 	\State \textit{next} = \textit{args}.getNextElement();
 	\If{\textit{next} is caret}\label{line:next_caret}
@@ -674,8 +674,8 @@ The \verb|SequenceTranslator| also handles positions of multiplication symbols. 
 	\State \textit{argList}.add( {\scriptsize TRANSLATE\_VARIABLES}(\textit{args}, \textit{info}) ); \label{line:trans_vars} \Comment{number is given in \textit{info}.}
 	
 	\State \textit{pattern} = \textit{info}.getTranslationPattern();
-	\State \textit{translatedMacro} = \textit{pattern}.fillPlaceHolders(\textit{argList});
-	\If{\textit{power} is not \NULL}
+	\State \textit{translatedMacro} = \textit{pattern}.fillPlaceHolders(\textit{argList});\label{line:fill_pattern}
+	\If{\textit{power} is not \NULL}\label{line:shifted_exp}
 		\State \textit{translatedMacro}.add(\textit{power});
 	\EndIf
 	\State \Return\ \textit{translatedMacro};
@@ -683,28 +683,26 @@ The \verb|SequenceTranslator| also handles positions of multiplication symbols. 
 	\end{algorithmic}
 \end{algorithm}
 
-Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has. In consequence, it also processes the following siblings to translate the arguments. There are some special cases about the next node right after the macro occurs. This node can be
+The translation process of the \Macro 's is complex, so there is a special class, the \verb|MacroTranslator|, that handles those nodes in the \gls*{pom-pt}. Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has, in Line~\ref{line:get_info}. It also processes the following siblings to translate the arguments. The \verb|MacroTranslator| will be called in Line~\ref{line:transLeaf} in Algorithm~\ref{alg:translation}, since the macro is a leaf node in the \gls*{pom-pt}. The following cases describes the different kinds of the following siblings after a semantic macro node. Those can be
 \begin{itemize}
-\item an exponent, such as for `\verb|^2|';
-\item an optional parameter in square brackets;
-\item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above;
-\item `$@$' symbols if none of the above; or
-\item a variable in curly brackets (a \textit{sequence} node) if none of the above.
+\item an exponent, such as for `\verb|^2|' right after the macro node (Line~\ref{line:next_caret});
+\item an optional parameter in square brackets right after the macro node or after an exponent (Line~\ref{line:next_optional});
+\item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above and no `$@$' symbols were passed yet (Line~\ref{line:trans_paras});
+\item `$@$' symbols (Line~\ref{line:skip_ats}); or
+\item a variable in curly brackets (a \textit{sequence} node) after the `$@$' symbols were passed. (Line~\ref{line:trans_vars})
 \end{itemize}
 
-An exponent will be translated and shifted to the end of the translated semantic macro, 
-since one usually writes the exponent after the arguments of a function in \gls*{cas}. Hence, the function translates and stores the exponent in Line~\ref{line:next_caret}. One could ask what happens when there is an exponent given before and after the arguments. The \verb|MacroTranslator| only translates the following siblings until each argument is translated. The first exponent will be shifted to the end. If right after the translated macro (with all arguments) follows another exponent, we interpret it as another exponent for the whole previous expression. In that case, it would be the macro with the first translated exponent. Table~\ref{tab:multi-expo} shows an example for the trigonometric cosine function with multiple exponents. As illustrated in Table~\ref{tab:multi-expo}, the translator interprets the input as
-\begin{equation}\label{eq:multi-expo}
-\left( \cos(x)^n \right)^m.
-\end{equation}
- 
+All cases before the `$@$' symbols are optional. The \verb|MacroTranslator| removes all following siblings according to the number of expected parameters and variables. Parameter and variable nodes are translated separately. If an exponent was registered right after the semantic macro node, it will be shifted to the end in Line~\ref{line:shifted_exp}. The macro itself will be translated by putting all translated parameters and variables into the translation pattern (Line~\ref{line:fill_pattern}).
+
+Following siblings after the macro was translated (with all arguments) do not belong to the semantic macro. If the next node is an exponent the translated macro is the base. Table~\ref{tab:multi-expo} shows an example for the translation of the trigonometric cosine function with multiple exponents.
+
 \begin{table}[ht]
 \centering
-\begin{tabular}{lc}
+\begin{tabular}{lccc}
+ & Semantic \LaTeX & & \Maple{} \\
 \hline
-Displayed As & \rule{0pt}{0.9\normalbaselineskip} $\cos^n(x)^m$ \\
-Semantic \LaTeX & \verb|\cos^n@{x}^m| \\
-Translated \Maple{} Expression & \verb|((cos(x))^(n))^m|\\
+Text Representation & \rule{0pt}{1.0\normalbaselineskip} \verb|\cos^n@{x}^m| & $\overset{\langMaple}{\mapsto}$ & \verb|((cos(x))^(n))^m| \\
+Displayed As & \rule{0pt}{1.0\normalbaselineskip} $\cos^n(x)^m$ & & $\left( \cos(x)^n \right)^m$ \\
 \hline
 \end{tabular}
 \caption{A trigonometric cosine function example with exponents before and after the argument.}
