@@ -208,9 +208,9 @@
 \begin{abstract}
 \glsresetall
 \noindent
-\textbf{Purpose:} Modern mathematicians and scientists of math-related disciplines use \glspl*{dps} to write and \glspl*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{dps} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{dps}.
+\textbf{Purpose:} Modern mathematicians and scientists of math-related disciplines often use \glspl*{dps} to write and \glspl*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{dps} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{dps}.
  
-\noindent\textbf{Approach:} The \gls*{nist} developed a collection of special \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{nist} \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
+\noindent\textbf{Approach:} Bruce Miller at \gls*{nist} developed a collection of special \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{nist} \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
  
 \noindent\textbf{Findings:} We created 396 mappings and translated 58.8\% of the \gls*{dlmf} (2,405 expressions) successfully between \Maple{} and \gls*{dlmf}. For a significant percentage, the definitions in \Maple{} and the \gls*{dlmf} were different. Consequently, an atomic symbol in one system maps to a composite expression in the other system. The translator was also successfully used for automatic verification of mathematical online compendia and \gls*{cas}. Our evaluation techniques discovered two errors in the \gls*{dlmf} and one defect in \Maple.
  
@@ -229,7 +229,7 @@ has become the de facto standard for writing scientific publications over the pa
 P_n^{(\alpha , \beta)}(\cos(a\Theta)),
 \end{equation}
 where $n$ is a nonnegative integer, $\alpha, \beta > -1$, and $a,\Theta\in{\mathbf R}$.
-This mathematical expression is written in \LaTeX{} as
+This mathematical expression can be written in \LaTeX{} as
 \begin{equation*}
 \verb|P_n^{(\alpha,\beta)}(\cos(a\Theta))|.
 \end{equation*}
@@ -346,7 +346,7 @@ The position of the branch cut of the arccotangent function differs after transl
 \subsection{Insufficient Semantic Information}
 Other problematic cases for translations are the \Macro s themselves. In some cases, they do not provide sufficient semantic information to perform translations. One example is the \textit{Wronskian} determinant. For two differentiable functions, the \textit{Wronskian} is defined as~\parencite[(1.13.4)]{NIST:DLMF}
 \begin{equation*}
-	\mathscr{W} \left\{ w_1(z), w_2(z) \right\} = w_1(z)w_2'(z) - w_2(z)w_1'(z).
+\mathscr{W}\{ w_1(z), w_2(z) \} = w_1(z)w_2'(z) - w_2(z)w_1'(z).
 \end{equation*}
 In semantic \LaTeX{} it is currently implemented using
 \begin{equation}
@@ -689,7 +689,8 @@ The translation process of the \Macro 's is complex, so there is a special class
 \item an optional parameter in square brackets right after the macro node or after an exponent (Line~\ref{line:next_optional});
 \item a parameter in curly brackets (a \textit{sequence} node in the \gls*{pom-pt}) if none of the above and no `$@$' symbols were passed yet (Line~\ref{line:trans_paras});
 \item `$@$' symbols (Line~\ref{line:skip_ats}); or
-\item a variable in curly brackets (a \textit{sequence} node) after the `$@$' symbols were passed. (Line~\ref{line:trans_vars})
+\item a variable in curly brackets (a \textit{sequence} node) after the `$@$' symbols were 
+passed (Line~\ref{line:trans_vars}).
 \end{itemize}
 
 All cases before the `$@$' symbols are optional. The \verb|MacroTranslator| removes all following siblings according to the number of expected parameters and variables. Parameter and variable nodes are translated separately. If an exponent was registered right after the semantic macro node, it will be shifted to the end in Line~\ref{line:shifted_exp}. The macro itself will be translated by putting all translated parameters and variables into the translation pattern (Line~\ref{line:fill_pattern}).
@@ -710,7 +711,7 @@ Displayed As & \rule{0pt}{1.0\normalbaselineskip} $\cos^n(x)^m$ & & $\left( \cos
 \end{table}
 
 \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
-In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree than follows the same principle as for the forward translations.
+In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree then follows the same principle as for the forward translations.
 
 Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to get a syntax tree of the input\footnote{In consequence, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
@@ -849,7 +850,7 @@ With this technique we can detect translation errors such as in \eqref{eq:wrong-
 \begin{equation}
 \sin \left(u+v\right) = \sin{u}\cos{v} + \cos{u}\sin{v}.
 \end{equation}
-Assume the translator would forward translate the expression based on (\ref{eq:wrong-trans-1},~\ref{eq:wrong-trans-2}). Than
+Assume the translator would forward translate the expression based on (\ref{eq:wrong-trans-1},~\ref{eq:wrong-trans-2}). Then
 \begin{eqnarray}
 \verb|\sin@{u + v}| & \overset{\langMaple}{\mapsto} & \verb|cos(u + v)|,\\
 \verb|\sin@@{u}\cos@@{v}| & \overset{\langMaple}{\mapsto} & \verb|cos(u)*sin(v)|,\\
