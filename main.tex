@@ -284,7 +284,16 @@ This article presents a new approach for automatic \gls*{p2c} and vice versa con
 \begin{equation*}
 t \overset{\langMaple}{\mapsto} c,
 \end{equation*}
-where $t$ is an expression in the \LaTeX{} language and $c$ is an element of the \Maple{} language $\langMaple$. As we will see later in this article, we need to compare mathematical concepts between systems. This is impossible from a mathematical point of view. Consider the irrational mathematical constant $e$, known as Euler's number. The theoretical construct for this symbol cannot be mathematically equivalent to the value \verb|exp(1)| in \Maple, caused by computational and implementational limitations. Instead of using the term \textit{equivalent}, we introduce \textit{appropriate} and \textit{inappropriate} translations. We call a translation such as
+where $t$ is an expression in the \LaTeX{} language and $c$ is an element of the \Maple{} language $\langMaple$. As we will see later in this article, we need to compare mathematical concepts between systems. This is impossible from a mathematical point of view. Consider the irrational mathematical constant $e$, known as Euler's number. The theoretical construct for this symbol cannot be mathematically equivalent to the value \verb|exp(1)| in \Maple, caused by computational and implementational limitations. 
+
+Instead of using the term \textit{equivalent}, 
+we introduce the terms \textit{appropriate} and \textit{inappropriate} translations
+{\bf [HSC: I don't understand how {\it equivalent} translations has anything at 
+all to do with {\it appropriate} or {\it inapppropriate} translations. Please clarify.]}.
+{\bf [HSC: The supposed definition is: ``We consider a translation as {\it appropriate}, when a numerical evaluation returns the 
+same values in both concepts up to a numerical precision $|\epsilon|<<1$, for all possible 
+points in the domain of the functions.'' We also need a definition for innapropriate translation.]}
+We call a translation such as
 \begin{equation}\label{eq:cos-def}
 \verb|\cos@{z}| \overset{\langMaple}{\mapsto} \verb|cos(z)|
 \end{equation}
