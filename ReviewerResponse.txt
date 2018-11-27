@@ -12,12 +12,13 @@ In summary, we have :
 it was just a simplified pre-version of Algorithm 2;
 (4) added the subsection heading "Problems with the Look Ahead Approach" in 
 Section 5 for a better outline; and 
+[HSC: Why isn't there a (5) entry?? If not necessary, make the next one (5) instead of (6).]
 (6) further explained the different states of Algorithm 3 (now Algorithm 2) 
-by refer to the lines in the descriptions. We also explained how a power 
-after a macro is handled in more detail and why optional parameters needs 
-to be handled differently to other arguments.
+by referring to the lines in the descriptions [HSC: descriptions? please clarify]. 
+We also explained how a power after a macro is handled in more detail and why 
+optional parameters need to be handled differently than other arguments.
 
-We also gave further detailed descriptions about the PoM-Tagger, 
+We also gave further detailed descriptions concerning the PoM-Tagger, 
 namely its parsing process and lexicon files. 
 
 We also added LaTeXML to the related work section and gave a brief 
@@ -25,17 +26,16 @@ explanation with cited research (Schubotz et al., 2018, now included
 in our references), in order to explain why we did not choose MathML 
 as an intermediate data format for performing translations. In that 
 citation, we described detailed testing that we performed using LaTeXML 
-and other state of the art LaTeX to MathML conversion tools. In that
+and other state-of-the-art LaTeX to MathML conversion tools. In that
 reference, we discovered several critical problems which could occur 
-when translations would be performed using MathML as an intermediate
-data format.
+when translations would be performed using MathML as an intermediate data format.
 
 Note that we did not add further comparisons with LaTeXML to our 
 evaluations section, because current CAS are unable to understand MathML 
-which contains special functions. Thus we can only compare translations 
-without function calls or implement a solution which overcomes this 
-problem, in order to make a decent comparison. Because of the great amount 
-of problems which would need to be overcome, a full solution translation 
+which contains special functions. Thus, in order to make a decent 
+comparison, we can only compare translations without function calls or 
+implement a solution which is able overcome these problems.  Because of 
+the problems which would need to be overcome, a full solution translation 
 implementation using MathML is out of the scope of our current project. 
 This is now all explained in detail in the new version of the manuscript.
 
@@ -44,15 +44,15 @@ Reviewer 2:
 For clarification, throughout the manuscript, we decided to change the 
 wording "Word Processor" to "Document Preparation System," and 
 "Representations of Special Functions" to "Expressions involving Special 
-Functions." Since this wording
-occurred as part of the title, we did not add that we focus on LaTeX to the 
-title and hope that the Abstract points this out in an acceptable manner.
+Functions." Since this wording occurred as part of the title, we did not 
+add that we focus on LaTeX to the title and hope that the Abstract points 
+this out in an acceptable manner.
 
 Also, instead of creating an Appendix, we decided to add short paragraphs 
-which explain the purpose of the Sections 4 and 6. We hope 
-this helps the reader to decide whether he can skip the section, e.g., in 
-case of his lack of interest in Maple "hackings", or not.  In the new 
-version of the paper, we implemented all suggested minor changes as well as 
-adding the idea of improved numerical tests by using the mentioned cut 
-region detection to the future work section.
+which explain the purpose of Sections 4 and 6. We hope this helps the reader 
+to decide whether he can skip the section, e.g., in case of his lack of 
+interest in Maple "hackings", or not.  In the new version of the paper, we 
+implemented all suggested minor changes as well as adding the idea of 
+improved numerical tests by using the mentioned cut region detection to 
+the future work section.
 
