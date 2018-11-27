@@ -42,7 +42,9 @@ This is now all explained in detail in the new version of the manuscript.
 Reviewer 2:
 
 For clarification, throughout the manuscript, we decided to change the 
-wording "Word Processor" to "Document Preparation System." Since this wording
+wording "Word Processor" to "Document Preparation System," and 
+"Representations of Special Functions" to "Expressions involving Special 
+Functions." Since this wording
 occurred as part of the title, we did not add that we focus on LaTeX to the 
 title and hope that the Abstract points this out in an acceptable manner.
 
