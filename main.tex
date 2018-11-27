@@ -612,6 +612,7 @@ Nonetheless, adopting different notations, in some situations, could also solve 
 \caption{Potentially ambiguous examples of the factorial and double factorial function. One expression in a text format can be interpreted in different ways.}
 \label{tab:amb_ex}
 \end{table}
+\vspace*{-0.5cm}
 
 In most cases, parentheses can be used to disambiguate expressions. We used them in~\Cref{tab:amb_ex} to clarify the different interpretations in Example 2. Note that the use of parentheses will not always resolve a mistaken computation. For example, there is no way to add parentheses to force \Maple{} to compute `$n!!$' as the double factorial function. Even `$(n)!!$' will be interpreted as `$(n!)!$'. Rather than using the exclamation mark in \Maple, one could also use the functional notation. For example, the interpretations `$(2!)!$' and `$(2)!!$' can be distinguished in \Maple{} by using \verb|factorial(factorial(2))| and \verb|doublefactorial(2)| respectively. We define the translations as follows:
 
@@ -682,6 +683,7 @@ The \verb|SequenceTranslator| also handles positions of multiplication symbols. 
 	\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
+\vspace*{-0.2cm}
 
 The translation process of the \Macro 's is complex, so there is a special class, the \verb|MacroTranslator|, that handles those nodes in the \gls*{pom-pt}. Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has, in Line~\ref{line:get_info}. It also processes the following siblings to translate the arguments. The \verb|MacroTranslator| will be called in Line~\ref{line:transLeaf} in Algorithm~\ref{alg:translation}, since the macro is a leaf node in the \gls*{pom-pt}. The following cases describes the different kinds of the following siblings after a semantic macro node. Those can be
 \begin{itemize}
@@ -711,9 +713,7 @@ Displayed As & \rule{0pt}{1.0\normalbaselineskip} $\cos^n(x)^m$ & & $\left( \cos
 \end{table}
 
 \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
-In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree then follows the same principle as for the forward translations.
-
-Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to get a syntax tree of the input\footnote{Therefore, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
+In this section, we will discuss several techniques to get access to the parse tree of \Maple's input. The translation process from this parse tree then follows the same principle as for the forward translations. Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to get a syntax tree of the input\footnote{Therefore, a license of \Maple{} is mandatory to perform backward translations. The translator is using the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes and therefore also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
 \begin{wrapfigure}[7]{r}{0.61\textwidth}
 	\vspace{-15pt}
@@ -727,7 +727,8 @@ Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal dat
 
 Each node in the \gls*{dag} stores its children and has a header, which defines the type and the length of the node. Consider the polynomial $x^2+x$. Figure~\ref{fig:internal-maple-dag} illustrates the internal \gls*{dag} representation with headers and arguments.
 
-One can access the internal data structure of expressions via the \texttt{ToInert} command, which returns the \inertF. The \inertF{} format is a nested list\footnote{The nested list is a tree representation of a \gls*{dag} that splits nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}.
+One can access the internal data structure of expressions via the \texttt{ToInert} command, which returns the \inertF. The \inertF{} format is a nested list\footnote{The nested list is a tree representation of a \gls*{dag} that splits nodes with multiple parents into multiple nodes so that each node has only one parent node.} of the internal \gls*{dag} for the given expression. Some of the important types for the nodes are specified in \Cref{tab:maple-types}. The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel implementation.
+
 \begin{table}[ht]
 \centering
 \begin{tabular}{cp{10cm}}
@@ -749,7 +750,6 @@ One can access the internal data structure of expressions via the \texttt{ToIner
 \caption{A subset of important internal \Maple{} data types. See~\parencite{MAPLE:ProgrammingGuide} for a complete list.}
 \label{tab:maple-types}
 \end{table}
-The translator uses the \texttt{OpenMaple}~\parencite[\S 14.3]{MAPLE:ProgrammingGuide} \gls*{api} for interacting with \Maple's kernel implementation.
 
 \subsection{Automatic Changes of Inputs in Maple}\label{subsec:maple-probs}
 \Maple{} evaluates inputs automatically and changes the input into an internal representation. This internal representation might look a bit different to the input. One example has already been given with \Cref{fig:internal-maple-dag}, where each summand of a sum is stored with a factor. Here is a list of all internal changes that occur for inputs.
@@ -803,9 +803,7 @@ We implemented three approaches to evaluate whether a translation was \textit{ap
 \end{enumerate}
 
 \subsection{Round Trip Tests}\label{sec:round-trip}
-A round trip test always starts with a valid expression either in semantic \LaTeX{} or in \Maple. A translation from one system to another is called a \textbf{step}. A complete round trip translation (two steps) is called \textbf{one cycle}. A \textbf{fixed point representation} (or short fixed point) in a round trip translation process is a string representation that is identical to all string representations in the following cycles.
-
-Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reaches a fixed point. The test formula is
+A round trip test always starts with a valid expression either in semantic \LaTeX{} or in \Maple. A translation from one system to another is called a \textbf{step}. A complete round trip translation (two steps) is called \textbf{one cycle}. A \textbf{fixed point representation} (or short fixed point) in a round trip translation process is a string representation that is identical to all string representations in the following cycles. Table~\ref{tab:fixpoint} illustrates an example of a round trip test which reaches a fixed point for the formula
 \begin{equation}
 \frac{\cos\left(a\Theta\right)}{2}.
 \end{equation}
@@ -832,9 +830,9 @@ Step 4 is identical to step 2, and since the translator is a deterministic algor
 There is currently only one exception known where a round trip test does not reach a fixed point representation: Legendre's incomplete elliptic integrals~\parencite[(19.2.4-7)]{NIST:DLMF} are defined with the amplitude $\phi$ in the first argument in the \DLMF, while \Maple{} takes the trigonometric sine of the amplitude as the first argument. Therefore, the forward and backward translations are defined as
 \begin{eqnarray}
 \verb|\EllIntF@{\phi}{k}| & \overset{\langMaple}{\mapsto} & \verb|EllipticF(sin(phi),k)|,\\
-\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|.
+\verb|\EllIntF@{\asin@{\phi}}{k}| & \overset{\langMaple}{\mapsfrom} & \verb|EllipticF(phi,k)|,
 \end{eqnarray}
-The round-trip translations produce infinite chains of sine and inverse sine calls because there are no evaluations involved. 
+and the round-trip translations produce infinite chains of sine and inverse sine calls because there are no evaluations involved. 
 
 The round trip tests are very successful, but they only detect errors in string representations. However, because of the simplification techniques of fixed points, we are able to at least detect logical errors in one system: \Maple. On the other hand, these tests cannot determine logical errors in the translations between the two systems. Suppose we mistakenly defined an \textit{inappropriate} forward and backward translation for the sine function
 \begin{eqnarray}
@@ -953,9 +951,7 @@ The tasks for future work are diverse. The main task is to improve the translato
 The translator was designed to be easily extendable. This allows one to implement translations for other \gls*{cas} without much effort.
 An extensive weakness is the dependency on the special macros from the \gls*{dlmf}. The translator is not able to translate functions without using these macros. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
 
-A theoretical improvement for the numerical tests would be to perform the tests for specific, considered as critical, values with respect to the involved functions. J.~C.~Beamont et al.~tested  identities for multivalued elementary functions by choosing sample points from a region with respect to the branch cuts of the functions~\parencite{DBLP:journals/aaecc/BeaumontBDP07}. We assume that choosing sample points from those regions, significantly improves the results of our numerical tests. 
-
-Increasing the amount of translatable formulae in the \gls*{dlmf} and improving the verificiation techniques are parts of ongoing projects. 
+A theoretical improvement for the numerical tests would be to perform the tests for specific, considered as critical, values with respect to the involved functions. J.~C.~Beamont et al.~tested  identities for multivalued elementary functions by choosing sample points from a region with respect to the branch cuts of the functions~\parencite{DBLP:journals/aaecc/BeaumontBDP07}. We assume that choosing sample points from those regions, significantly improves the results of our numerical tests. Increasing the amount of translatable formulae in the \gls*{dlmf} and improving the verificiation techniques are parts of ongoing projects. 
 
 \emergencystretch=1em
 \printbibliography
