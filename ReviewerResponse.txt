@@ -55,3 +55,7 @@ implemented all suggested minor changes as well as adding the idea of
 improved numerical tests by using the mentioned cut region detection to 
 the future work section.
 
+To address the weakness in precision, we added an enhanced definition for 
+appropriate and inappropriate translations. Furthermore, we have rewritten
+the paragraph about alternative translations for the arccotangent function 
+on Page 6 (now Page 7).

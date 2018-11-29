@@ -287,25 +287,27 @@ t \overset{\langMaple}{\mapsto} c,
 where $t$ is an expression in the \LaTeX{} language and $c$ is an element of the \Maple{} language $\langMaple$. As we will see later in this article, we need to compare mathematical concepts between systems. This is impossible from a mathematical point of view. Consider the irrational mathematical constant $e$, known as Euler's number. The theoretical construct for this symbol cannot be mathematically equivalent to the value \verb|exp(1)| in \Maple, caused by computational and implementational limitations. 
 
 Instead of using the term \textit{equivalent}, 
-we introduce the terms \textit{appropriate} and \textit{inappropriate} translations
-{\bf [HSC: I don't understand how {\it equivalent} translations has anything at 
-all to do with {\it appropriate} or {\it inapppropriate} translations. Please clarify.]}.
-{\bf [HSC: The supposed definition is: ``We consider a translation as {\it appropriate}, when a numerical evaluation returns the 
+we introduce the terms \textit{appropriate} and \textit{inappropriate} translations. 
+%{\bf [HSC: I don't understand how {\it equivalent} translations has anything at 
+%all to do with {\it appropriate} or {\it inapppropriate} translations. Please clarify.]}.
+We consider a translation as {\it appropriate}, when a numerical evaluation returns the 
 same values in both concepts up to a numerical precision $|\epsilon|<<1$, for all possible 
-points in the domain of the functions.'' We also need a definition for innapropriate translation.]}
-We call a translation such as
+points in the domain of the functions.
+A translation is considered as {\it inappropriate}, when it is not {\it appropriate}.
+
+For example, a translation such as
 \begin{equation}\label{eq:cos-def}
 \verb|\cos@{z}| \overset{\langMaple}{\mapsto} \verb|cos(z)|
 \end{equation}
-\textit{appropriate}, while a translation such as
+is \textit{appropriate}, while a translation such as
 \begin{equation}
 \verb|\cos@{z}| \overset{\langMaple}{\mapsto} \verb|sin(z)|
 \end{equation}
-is \textit{inappropriate}. Note that it is not always as easy as in this example to decide if a translation is appropriate or not. Therefore, this article also presents several validation techniques to automatically verify if a translation is appropriate or inappropriate. In addition to this terminology, we introduce \textit{direct translations}. Later in the paper, we will explain that a translation from one specific mathematical object to its \textit{appropriate} counterpart in the other system is not always possible. We call a translation to the \textit{appropriate} counterpart \textit{direct}. For example, the translation~(\ref{eq:cos-def}) is \textit{direct}, while a translation to the definition of the cosine function
+is \textit{inappropriate}. Note that it is not always as easy as in this example to decide if a translation is {\it appropriate} or not. Therefore, this article also presents several validation techniques to automatically verify if a translation is {\it appropriate} or {\it inappropriate}. In addition to this terminology, we introduce \textit{direct translations}. Most mathematical objects in one system have a direct counterpart in other systems. However, later in the paper, we will explain that a translation from one specific mathematical object to its counterpart in the other system is not always \textit{appropriate}. Also, not every mathematical object has a counterpart in other systems. We call a translation to its counterpart \textit{direct}. For example, the translation~(\ref{eq:cos-def}) is \textit{direct}, while a translation to the definition of the cosine function
 \begin{equation*}
 \verb|\cos@{z}| \overset{\langMaple}{\mapsto} \verb|(exp(I*z)+exp(-I*z))/2|
 \end{equation*}
-is not a \textit{direct} translation.
+is not a \textit{direct} translation even though it is {\it appropriate}.
 Note that partial results of this paper have been published in~\parencite{CICM:Paper}.
  
 \section{Related Work}\label{sec:related-work}
@@ -350,7 +352,7 @@ In case of differences between defined branch cuts we can also use alternative t
 \end{eqnarray}
 
 \vspace{-0.2cm}
-The position of the branch cut of the arccotangent function differs after translation~\eqref{eq:acot-alternatives}, which may lead to incorrect calculations later on. The alternative translations~\eqref{eq:acot-alternatives-1} and~\eqref{eq:acot-alternatives-2} use other functions instead of the arccotangent function. The arctangent function~\eqref{eq:acot-alternatives-1} and the natural logarithm~(\ref{eq:acot-alternatives-2}) have the same positioned branch cuts as in the \gls*{dlmf} and in \Maple. Hence, translation~(\ref{eq:acot-alternatives-1}) solves the issue, as long as the user does not evaulate the function at $z = 0$, while translation~(\ref{eq:acot-alternatives-2}) solves the issue except at $z = -\iunit$.
+The position of the branch cut of the arccotangent function differs after the {\it direct} translation~\eqref{eq:acot-alternatives}, which may lead to incorrect calculations later on. The alternative translations~\eqref{eq:acot-alternatives-1} and~\eqref{eq:acot-alternatives-2} use other functions instead of the arccotangent function. The arctangent function~\eqref{eq:acot-alternatives-1} and the natural logarithm~(\ref{eq:acot-alternatives-2}) have the same positioned branch cuts as in the \gls*{dlmf} and in \Maple. Hence, translation~(\ref{eq:acot-alternatives-1}) solves the issue, as long as the user does not evaulate the function at $z = 0$, while translation~(\ref{eq:acot-alternatives-2}) solves the issue except at $z = -\iunit$. Note that none of the translations~(\ref{eq:acot-alternatives}-\ref{eq:acot-alternatives-2}) are {\it appropriate}.
 
 \subsection{Insufficient Semantic Information}
 Other problematic cases for translations are the \Macro s themselves. In some cases, they do not provide sufficient semantic information to perform translations. One example is the \textit{Wronskian} determinant. For two differentiable functions, the \textit{Wronskian} is defined as~\parencite[(1.13.4)]{NIST:DLMF}
