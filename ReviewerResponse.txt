@@ -12,9 +12,8 @@ In summary, we have :
 it was just a simplified pre-version of Algorithm 2;
 (4) added the subsection heading "Problems with the Look Ahead Approach" in 
 Section 5 for a better outline; and 
-[HSC: Why isn't there a (5) entry?? If not necessary, make the next one (5) instead of (6).]
-(6) further explained the different states of Algorithm 3 (now Algorithm 2) 
-by referring to the lines in the descriptions [HSC: descriptions? please clarify]. 
+(5) further explained the different states of Algorithm 3 (now Algorithm 2) 
+by referring to specific lines in the algorithm. 
 We also explained how a power after a macro is handled in more detail and why 
 optional parameters need to be handled differently than other arguments.
 
