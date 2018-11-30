@@ -287,8 +287,6 @@ where $t$ is an expression in the \LaTeX{} language and $c$ is an element of the
 
 In order to clarify the notion of \textit{equivalence} (or lack thereof) in our context of translations,
 we introduce the terms \textit{appropriate} and \textit{inappropriate} translations. 
-%{\bf [HSC: I don't understand how {\it equivalent} translations has anything at 
-%all to do with {\it appropriate} or {\it inapppropriate} translations. Please clarify.]}.
 We consider a translation to be {\it appropriate}, when a numerical evaluation returns the 
 same values in both concepts up to a numerical precision $|\epsilon|\ll 1$, for all possible 
 points in specified domains for the functions.
@@ -322,7 +320,7 @@ The semantics must be well-known before an expression can be translated. There a
 
 Another approach tries to avoid translation problems by allowing computations directly via the \LaTeX{} compiler, e.g., \textit{LaTeXCalc}~\parencite{LatexCalc}. Those packages are limited to the abilities of the compiler and therefore are not as powerful as \gls*{cas}. A workaround for this case is \textit{sagetex}~\parencite{Sagetex}, which is a \LaTeX{} package interface for the open source \gls*{cas} \textit{sage}\footnote{An abbreviation for \textit{SageMath}.}. This package allows \textit{sage} commands in \TeX{-}files and uses \textit{sage} in the background to compute the commands. In this scenario, a writer still needs to manually translate expressions to the syntax of \textit{sage}, but it is possible to integrate \gls*{cas} expressions directly into \TeX{} documents.
 
-There exist two approaches for marking up mathematical \TeX/\LaTeX{} documents semantically with \TeX{} macros. Namely, \sTeX{}~\parencite{sTeX} developed by Kohlhase and the \Macro s developed by Miller~\parencite{DLMF:Macros}. This paper shows that it is possible to develop a context-free translation tool using the semantic macros introduced by these two projects {\bf [HSC: which two projects? Please clarify.]}. The goal of \sTeX{} is to markup the functional structure of mathematical documents so that they can be exported to the \gls*{omdoc} format. The macro functionality developed by Miller introduces new macros for special functions, orthogonal polynomials, and mathematical constants. Each of these macros ties specific character sequences to a well-defined mathematical object and is linked with the corresponding definition in the \gls*{dlmf} or \gls*{drmf}. Therefore, we call these semantic macros \Macro s. These semantic macros are internally used in the \gls*{dlmf} and the \gls*{drmf}. We gave the \Macro{} set the favor for developing the translation engine because it provides \gls*{dlmf} definitions for a comprehensive number of functions. In contrast, \sTeX{} does not focus on the semantics of functions, is often complex to use, and defines diverse macros for symbols and concepts that \gls*{cas} usually does not usually support.
+There exist two approaches for marking up mathematical \TeX/\LaTeX{} documents semantically with \TeX{} macros. Namely, \sTeX{}~\parencite{sTeX} developed by Kohlhase and the \Macro s developed by Miller~\parencite{DLMF:Macros}. This paper shows that it is possible to develop a context-free translation tool using  the semantic macros introduced by Miller. The goal of \sTeX{} is to markup the functional structure of mathematical documents so that they can be exported to the \gls*{omdoc} format. The macro functionality developed by Miller introduces new macros for special functions, orthogonal polynomials, and mathematical constants. Each of these macros ties specific character sequences to a well-defined mathematical object and is linked with the corresponding definition in the \gls*{dlmf} or \gls*{drmf}. Therefore, we call these semantic macros \Macro s. These semantic macros are internally used in the \gls*{dlmf} and the \gls*{drmf}. We gave the \Macro{} set the favor for developing the translation engine because it provides \gls*{dlmf} definitions for a comprehensive number of functions. In contrast, \sTeX{} does not focus on the semantics of functions, is often complex to use, and defines diverse macros for symbols and concepts that \gls*{cas} usually does not usually support.
 
 Miller also developed LaTeXML, a tool for converting \LaTeX{} expressions to MathML~\parencite{LaTeXML}. LaTeXML is used to generate the \gls*{dlmf} and is able to parse the \Macro s to generate content MathML. Even though many \gls*{cas} are able to import and export MathML, they fail for special functions. Schubotz and collaborators recently performed benchmarks on several \LaTeX{} to MathML conversion tools, including LaTeXML, in~\parencite{DBLP:conf/jcdl/SchubotzGSMCG18}.
 
@@ -340,7 +338,7 @@ and linked to the semantic macro \verb|\Gudermannian| in the \gls*{dlmf} but doe
 \end{equation}
 
 \vspace{-0.2cm}
-Since translations such as these are nonintuitive, describing explanations become necessary for the translation process. A special logging function takes care {\bf [HSC: ``takes care'' is too informal. Use a different phrase or word.]} of each translation and provides details after a successful translation process. \Cref{sec:forward-translation} explains this task further.
+Since translations such as these are nonintuitive, describing explanations become necessary for the translation process. A particular logging function stores each translation and provides details after a successful translation process. \Cref{sec:forward-translation} explains this task further.
 
 Providing detailed information also solves the problem for multiple alternative translations. In some cases, a semantic macro has two alternative representations in the \gls*{cas} or vice versa. In such cases, the translator picks one of the alternatives and informs the user about the decision.
 
@@ -370,13 +368,12 @@ This translation is unfeasible because the macro does not explicitly define the 
 	\verb|\Wron{z}@{w_1(z)}{w_2(z)}|.
 \end{equation}
 This example demonstrates that the \Macro s are still a work in progress and further updates are sometimes
-necessary in order to further encapsulate critical semantic information {\bf [HSC: I changed this sentence. Check to make sure that it is still correct.]}.
+necessary in order to further encapsulate critical semantic information.
 
 \subsection{Potentially Ambiguous Expressions}
+Since the \Macro s aims to cover an extensive set of special functions, orthogonal polynomials, and mathematical constants, they does not contain specific macros for other mathematical objects. However, also mathematical expression without functions, polynomials and mathematical constants can be ambigious. As an example, multiplications are rarely explicitly marked in \LaTeX{} expressions, e.g., scientists using whitespace to indicate multiplications rather than using \verb|\cdot| or similar symbols. But whitespaces can also be used to improve the readability and not to represent a multiplication.
 
-{\bf [HSC: This section needs to start out with a short overview paragraph describing the issue instead of an example. Also, I changed the title of the section.]}
-
-A similar problem is multiplications since they are rarely explicitly marked in \LaTeX{} expressions, e.g., scientists using whitespace to indicate multiplications rather than using \verb|\cdot| or similar symbols. For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced by contributers of the \gls*{drmf} team, and automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} use this macro. Therefore, the translator has some simple 
+For such problems, we introduced a new macro \verb|\idot| for an invisible multiplication symbol (this macro will not be rendered). Since this macro is newly introduced by contributers of the \gls*{drmf} team, and automatic conversion of existing equations is difficult, none of the equations in the \gls*{dlmf} use this macro. Therefore, the translator has some simple 
 rules for performing translations without explicitly marking multiplication translations with \verb|\idot|.
 
 The \Macro s do not guarantee entirely disambiguated expressions. In~\Cref{tab:amb-latex} there are four examples of potentially ambiguous expressions. These expressions are unambiguous for the \LaTeX{} compiler since it only considers the very next token for superscripts and subscripts. Our translator follows the same rules to solve these issues.
@@ -397,7 +394,7 @@ The \Macro s do not guarantee entirely disambiguated expressions. In~\Cref{tab:a
 \label{tab:amb-latex}
 \end{table}
 
-Another more questionable translation decision is alphanumerical expressions. As explained in~\Cref{tab:allTypesTable}, the \gls*{pom}-tagger handles strings of letters and numbers differently depending on the order of the symbols. The reason is that an expression such as `$4b$' is usually considered to be a multiplication of $4$ and `$b$,' while `$b4$' gives the impression that $4$ indexing `$b$'. While the first example produces two nodes, namely $4$ and `$b$', the second example `$b4$' produces just a single alphanumerical node in the \gls*{pom-pt}. The translator interprets alphanumerical expressions as multiplications for two reasons:~(1) we would assume that the inputs `$4b$' and `$b4$' are mathematically equivalent; and (2) it is more common in mathematics to use single letter names for variables~\parencite{Notation:History}. Therefore we have used rules as follows {\bf [HSC: I changed the wording here, definition$\to$rules. Is this ok? Otherwise further clarify.]}
+Another more questionable translation decision addresses alphanumerical expressions. As explained in~\Cref{tab:allTypesTable}, the \gls*{pom}-tagger handles strings of letters and numbers differently depending on the order of the symbols. The reason is that an expression such as `$4b$' is usually considered to be a multiplication of $4$ and `$b$,' while `$b4$' gives the impression that $4$ indexing `$b$'. While the first example produces two nodes, namely $4$ and `$b$', the second example `$b4$' produces just a single alphanumerical node in the \gls*{pom-pt}. The translator interprets alphanumerical expressions as multiplications for two reasons:~(1) we would assume that the inputs `$4b$' and `$b4$' are mathematically equivalent; and (2) it is more common in mathematics to use single letter names for variables~\parencite{Notation:History}. Therefore we have used rules as follows
 
 \begin{eqnarray*}
 \verb|4b| & \overset{\langMaple}{\mapsto} & \verb|4*b|,\\
@@ -406,14 +403,13 @@ Another more questionable translation decision is alphanumerical expressions. As
 \end{eqnarray*}
 
 In general, the translator is designed to find a work-around for disambiguating expressions. 
-If there is no way to solve a potential ambiguity with defined rules, then we stop the translation process
-{\bf [HSC: I changed the wording here also. Is this ok?]}.
+If there is no way to solve a potential ambiguity with defined rules, then we stop the translation process.
 
 \section{The Translator}
 The translator analyzes a parse tree to perform translations. For generating a parse tree of \LaTeX{} expressions, the translator uses the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.}. \gls*{cas} define their own syntax parser. We were able to use \Maple's internal data structure to 
 obtain a parse tree of the input. \Cref{sec:forward-translation} and \Cref{sec:backward-translation} will explain the parsing and translation process in detail.
 
-All translations are defined by a library (\gls*{csv} and \gls*{json} files) that define translation patterns for each function and symbol. The pattern uses \verb|$i| as a placeholder used to describe {\bf [HSC: I used describe instead of define. Is this ok? Otherwise use a different more descriptive term.]} the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
+All translations are defined by a library (\gls*{csv} and \gls*{json} files) that define translation patterns for each function and symbol. The pattern uses \verb|$i| as a placeholder to determine the positions of the arguments. For example, the translation patterns for the Jacobi polynomial are illustrated in~\Cref{tab:placeholder_ex2}.
 
 \begin{table}[ht]
 	\centering
@@ -465,7 +461,7 @@ but would end up as
 We can solve this issue by using parentheses in such cases, e.g., \verb|diff($1, [$2$($0)])|.
 
 \section{Forward Translations}\label{sec:forward-translation}
-As a pre-processing step, we use the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} for parsing semantic \LaTeX{} expressions. The \gls*{pom}-Tagger is defined by a context-free grammar in \gls*{bnf} and is an \texttt{LL}-Parser, i.e., it parses the input from \textbf{L}eft to right and assigns the \textbf{L}eftmost (first applicable) derivation rule defined by the grammar to an expression. In other words, the \gls*{pom}-Tagger scans the input for \textit{terms} and groups them into subexpressions if suitable, where \textit{terms} are non-terminal symbols in the context of \gls*{bnf}. If a node in the generated parse tree matches a pre-defined symbol, it will be tagged by mata {\bf [HSC: mata? If this is correct, please define, otherwise clarify.]} information that are defined in manually cultivated lexicon files {\bf [HSC: please reword this sentence because it reads poorly.]}. 
+As a pre-processing step, we use the \gls*{pom}-Tagger~\parencite{POM-Tagger}\footnote{Named according to the Part-of-Speech-Taggers in \gls*{nlp}.} for parsing semantic \LaTeX{} expressions. The \gls*{pom}-Tagger is defined by a context-free grammar in \gls*{bnf} and is an \texttt{LL}-Parser, i.e., it parses the input from \textbf{L}eft to right and assigns the \textbf{L}eftmost (first applicable) derivation rule defined by the grammar to an expression. In other words, the \gls*{pom}-Tagger scans the input for \textit{terms} and groups them into subexpressions if suitable, where \textit{terms} are non-terminal symbols in the context of \gls*{bnf}. A node in the generated parse tree will be tagged by meta information if the node matches defined symbols. The meta information is stored in lexicon files. Those lexicon files were manually cultivated for the \gls*{pom}-Tagger. 
 
 We integrated the defined translation patterns from our library also into these lexicon files. The tagger also tags a node in the parse tree by its translation patterns. \Cref{tab:sine-lex-example} gives an example of an entry of the lexicon file.
 
@@ -517,7 +513,7 @@ Since the \gls*{bnf} does not define rules for semantic macros, each argument of
 	\vspace{-10pt}
 \end{figure}
 
-\Cref{fig:syntax-tree-usecase} visualizes the \gls*{pom-pt} of the Jacobi polynomial example from~\Cref{tab:JacobiP-usecase}. Because of the differences to {\bf [HSC: to? does not sound right? Pleased use a better word. between? Also, clean up the sentence. It does not read so well.]} expression trees, a backward conversion of the \gls*{pom-pt} to a string representation can be difficult, especially for finding necessary or unnecessary parentheses. Therefore we create the \gls*{teo}. The \gls*{teo} is a list containing already translated subexpressions.
+\Cref{fig:syntax-tree-usecase} visualizes the \gls*{pom-pt} of the Jacobi polynomial example from~\Cref{tab:JacobiP-usecase}. Because of the differences between expression trees and \gls*{pom-pt}, it can be difficult to generate a string representation after a successful translation process. It is especially difficult to determine necessary and unnecessary parentheses when we analyse the \gls*{pom-pt}. Therefore we create the \gls*{teo}. The \gls*{teo} is a list containing already translated subexpressions.
 
 With these tools, we can translate a \LaTeX{} expression by translating the \gls*{pom-pt} node by node and perform group or reordering operations for some special cases. The algorithm is realized in a simple recursive structure. Whenever the algorithm finds a leaf, it can translate this single term. If the node is not a leaf, it starts to translate all children of the node recursively. This idea appears to be a practical and elegant solution. However, it has a significant drawback. It cannot be used to translate functions. Since the arguments of functions are following siblings in the \gls*{pom-pt}, the algorithm needs to lookahead when a leaf is a known function, e.g., in the case of a semantic macro with arguments (see~\Cref{fig:syntax-tree-usecase}). Algorithm~\ref{alg:translation} is an improved version with lookahead functionality.
 
@@ -611,12 +607,12 @@ Functional & $\cdot(+(a, b), x)$\\
 
 If we intently examine mathematical notations, we discover many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{prefix notation}, \textit{Warsaw Notation} or \textit{{\L}ukasiewicz notation}. It was invented by J. {\L}ukasiewicz 1924 to create a parenthesis-free notation~\parencite{Hamblin1962}. Note that this notation is indeed parenthesis-free as long as all operators have the same arity.} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}. Also invented by J. {\L}ukasiewicz. Same as \gls*{pol} it does not need parenthesis as long as all operators have the same arity.} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense if the operator is a binary operator.
 
-In mathematical expressions, notations are mostly mixed, depending on the case and number of operands. For example, infix notation is common for binary operators ($+$, $-$, $\cdot$, $\mod$, etc.), while functional notations are conveniently used for any kind of functions ($\sin$, $\cos$, etc.). Sometimes the same symbol is used in different notations to distinguish different meanings. For example, the `$-$' as a unary operator is used in prefix notation to indicate the negative value of its operand, such as in `$-2$'. Of course, `$-$' can also be the binary operator for subtraction, which is commonly used in infix notation. One example is the postfix notation used with factorials, such as for `$2!$'
-{\bf [HSC: I changed the wording slightly here. Is this ok?]}.
+In mathematical expressions, notations are mostly mixed, depending on the case and number of operands. For example, infix notation is common for binary operators ($+$, $-$, $\cdot$, $\mod$, etc.), while functional notations are conveniently used for any kind of functions ($\sin$, $\cos$, etc.), and the postfix notation is often common for unary operators ($2!$, $-2$, etc.). Sometimes the same symbol is used in different notations to distinguish different meanings. For example, the `$-$' as a unary operator is used in prefix notation to indicate the negative value of its operand, such as in `$-2$'. Of course, `$-$' can also be the binary operator for subtraction, which is commonly used in infix notation. 
+% [AGP: I moved the 2! example to the first sentence where I explain all kinds of notations
 
 Since it is more convenient to parse expressions using uniform notations, most programming 
 languages (and \gls*{cas} as well) internally use prefix or postfix notation and do not mix 
-the notations in one expression {\bf [HSC: I reworded this sentence. Is it ok?]}.
+the notations in one expression.
 However, the common practice in science is to use mixed notations in expressions. Since the \gls*{pom} has rarely implemented mathematical grammatical rules, it takes the input as it is and does not build an expression tree. Therefore, it parses all four examples from~\Cref{tab:notations} to four different \gls*{pom-pt}s rather than to one unique expression tree. In general, this is not a problem for our translation process since most \gls*{cas} are familiar with most common notations. Therefore, the translator does not need to know that `$a$' and `$b$' are the operands of the binary operator `$+$' in `$a+b$.' The translator could simply translate the symbols in `$a+b$' in the same order as they appear in the expression and the \gls*{cas} would understand it. However, there are two new problems with this approach.
 \begin{enumerate}\item \label{prob:1} The translated expression is only syntactically correct if the input expression was syntactically correct.
 \item \label{prob:2} We cannot translate expressions to \gls*{cas} which use non-standard notations.
@@ -624,7 +620,7 @@ However, the common practice in science is to use mixed notations in expressions
 
 Problem~\ref{prob:1} should be obvious. Since we want to develop a translation tool and not a verification tool for mathematical \LaTeX{} expressions, we can assume syntactically correct input expressions and produce errors otherwise. Problem~\ref{prob:2} is more complex. If a user wants to support a \gls*{cas} that uses prefix or postfix notation by default, the translator would fail in its current state. Supporting \gls*{cas} with another notation would be a part of future work.
 
-Nonetheless, adopting different notations, in some situations, could also solve potential ambiguities. Consider the two potentially ambiguous examples in~\Cref{tab:amb_ex}. While a scientist would probably just ask for the right interpretation of the first example, \Maple{} automatically computes the first interpretation. On the other hand, \LaTeX{} automatically disambiguates the first example by only recognizing the very next element (single symbols or sequences in curly brackets) for the superscript and therefore displays the second interpretation. The second example should not be misinterpreted since this notation is the standard interpretation in science for the double factorial. We wrote the second interpretation with parentheses point it out more precisely {\bf [HSC: please rewrite this sentence.]}. However, surprisingly, \Maple{} computes the first interpretation (the factorial of the factorial of $n$) again rather than the common standard interpretation.
+Nonetheless, adopting different notations, in some situations, could also solve potential ambiguities. Consider the two potentially ambiguous examples in~\Cref{tab:amb_ex}. While a scientist would probably just ask for the right interpretation of the first example, \Maple{} automatically computes the first interpretation. On the other hand, \LaTeX{} automatically disambiguates the first example by only recognizing the very next element (single symbols or sequences in curly brackets) for the superscript and therefore displays the second interpretation. The second example should not be misinterpreted since this notation is the standard interpretation in science for the double factorial. We wrote the second interpretation with parentheses for pointing out that we mean the double factorial in this case. However, surprisingly, \Maple{} computes the first interpretation (the factorial of the factorial of $n$) again rather than the common standard interpretation.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lccc}
@@ -666,10 +662,7 @@ Algorithm~\ref{alg:translation} does not allow this translation right now. It ha
 \end{table}
 
 \subsection{Subtranslators}\label{sec:subtranslators}
-
-{\bf [HSC: Is it `The \verb|SequenceTranslator|' or is it `A \verb|SequenceTranslator|'? Please choose. You cannot use both. Once you have decided implement throughout the paper.]}
-
-A \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol is an open bracket (parentheses, square brackets and so on), the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the 
+The \verb|SequenceTranslator| translates the \textit{sequence} and \textit{balanced expressions} in the \gls*{pom-pt}. If a node $n$ is a leaf and the represented symbol is an open bracket (parentheses, square brackets and so on), the following nodes are also taken as a \textit{sequence}. Hence, combined with the recursive translation approach, the 
 \verb|SequenceTranslator| 
 also checks balancing of parentheses in expressions. An expression such as `$(a]$' produces a mismatched parentheses error. On the other hand, this is a problem for real interval expressions such as `$[a,b)$'. In the current version, the program cannot distinguish between mismatched parentheses and half-opened, half-closed intervals. Whether an expression is an interval or another expression is difficult to decide and can depend on the context. Also, the parentheses checker could simply be deactivated to allow mismatched parentheses in an expression. Another option is to use interval macros. e.g., \verb|\intcc@{a}{b} = [a,b]|.
 
@@ -713,9 +706,8 @@ The \verb|SequenceTranslator| also handles positions of multiplication symbols. 
 	\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
-\vspace*{-0.2cm}
 
-{\bf [HSC: This is a new paragraph, but it does not have standard vertical space above it. I do not know why this is. Can you fix this?]} The translation process for the \Macro s is complex, so there is a special class, the \verb|MacroTranslator|, that handles those nodes in the \gls*{pom-pt}. Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has, in Line~\ref{line:get_info}. It also processes the following siblings to translate the arguments. The \verb|MacroTranslator| will be called in Line~\ref{line:transLeaf} in Algorithm~\ref{alg:translation}, since the macro is a leaf node in the \gls*{pom-pt}. The following cases describe the different kinds of the following siblings after a semantic macro node. Those can be:
+The translation process for the \Macro s is complex, so there is a special class, the \verb|MacroTranslator|, that handles those nodes in the \gls*{pom-pt}. Algorithm~\ref{alg:macro-translation} explains the \verb|MacroTranslator| without error handling. It has extracted necessary information from the \gls*{pom-pt}, such as how many arguments this function has, in Line~\ref{line:get_info}. It also processes the following siblings to translate the arguments. The \verb|MacroTranslator| will be called in Line~\ref{line:transLeaf} in Algorithm~\ref{alg:translation}, since the macro is a leaf node in the \gls*{pom-pt}. The following cases describe the different kinds of the following siblings after a semantic macro node. Those can be:
 \begin{itemize}
 \item an exponent, such as for `\verb|^2|' right after the macro node (Line~\ref{line:next_caret});
 \item an optional parameter in square brackets right after the macro node or after an exponent (Line~\ref{line:next_optional});
@@ -743,7 +735,7 @@ Displayed As & \rule{0pt}{1.0\normalbaselineskip} $\cos^n(x)^m$ & & $\left( \cos
 \end{table}
 
 \section{\Maple{} to Semantic \LaTeX{} Translator}\label{sec:backward-translation}
-In this section, we will discuss several techniques to access the parse tree of \Maple's input. The translation process from this parse tree then follows the same principle as for the forward translations. Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to obtain the syntax tree of the input\footnote{A license of \Maple{} is mandatory to perform backward translations. Our translator uses the version \Maple{} 2016 {\bf [HSC: I reworded this. Is it ok? Otherwise fix.]}.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes 
+In this section, we will discuss several techniques to access the parse tree of \Maple's input. The translation process from this parse tree then follows the same principle as for the forward translations. Instead of writing a custom \Maple{} syntax parser, we use \Maple's internal data structure to obtain the syntax tree of the input\footnote{A license of \Maple{} is mandatory to perform backward translations. Our translator uses the version \Maple{} 2016.}. \Maple{} allows several different input styles. The \texttt{1D} input is mainly used for programming purposes 
 and is also used to perform our translations. Internally, \Maple{} uses a \gls*{dag} for syntax trees.
 
 \begin{wrapfigure}[7]{r}{0.61\textwidth}
@@ -831,7 +823,7 @@ We implemented three approaches to evaluate whether a translation was \textit{ap
 \begin{enumerate}
 \item \textbf{Round Trip Tests}:~translates expressions back and forth and analyzes the changes.
 \item\label{approach-2} \textbf{Function Relation Tests (Symbolical)}:~translates mathematically proven equivalent expressions from one system to a \gls*{cas} and evaluates whether the relation remains valid via symbolical equivalence checks.
-\item \textbf{Numerical Tests}:~takes the same equations from Approach~\ref{approach-2} but evaluates them on specific numerical values to test equivalence.
+\item \textbf{Numerical Tests}:~takes the same equations from Approach~\ref{approach-2} but evaluates them on specific numerical values to test whether the translation was {\it appropriate}.
 \end{enumerate}
 
 \subsection{Round Trip Tests}\label{sec:round-trip}
@@ -876,7 +868,7 @@ In that case the round trip test would not detect any errors but reaches a fixed
 \subsection{Function Relation Tests}\label{sec:relation-tests}
 The \gls*{dlmf} is a compendium for special functions and orthogonal polynomials and lists many relations between the functions and polynomials. The idea of this evaluation approach is to translate an entire relation and test whether the relation remains valid after performing the translations.
 
-With this technique {\bf [HSC: what technique? A technique has not been introduced yet in this section. Please describe this better, or be more specific.]}, we can detect translation errors such as in \eqref{eq:wrong-trans-1} and \eqref{eq:wrong-trans-2}. Consider the \gls*{dlmf} equation for the sine and cosine function~\parencite[(4.21.2)]{NIST:DLMF}
+With this idea, we can detect {\it inappropriate} translations such as in \eqref{eq:wrong-trans-1} and \eqref{eq:wrong-trans-2}. Consider the \gls*{dlmf} equation for the sine and cosine function~\parencite[(4.21.2)]{NIST:DLMF}
 \begin{equation}
 \sin \left(u+v\right) = \sin{u}\cos{v} + \cos{u}\sin{v}.
 \end{equation}
@@ -891,20 +883,19 @@ This produces the equation in \Maple
 \cos\left(u+v\right) = \cos{u}\sin{v} + \sin{u}\cos{v},
 \end{equation}
 which is wrong. Since the expression is correct before the translation, we conclude that there was an error 
-during the translation process.
+during the translation process and our defined translations were {\it inappropriate}.
 
-However, there are two essential problems with this approach. Testing the mathematical equivalence of expressions 
-is difficult to solve and \gls*{cas} often have difficulties testing simple equations symbolically. For example, 
+However, there are two essential problems with this approach. Testing whether expressions are {\it appropriate} representations of each other is a challenging task for \gls*{cas} and they often have difficulties testing simple equations symbolically. For example, 
 consider
 \parencite[(4.35.34)]{NIST:DLMF}
 \begin{equation*}
 \sinh \left( x+\iunit y \right) = \sinh x \cos y + \iunit \cosh x \sin y,
 \end{equation*}
-as a difference of the left- and right-hand sides cannot be simplified to zero by default. Furthermore, this approach only checks forward translations because there is no way to check equivalence {\bf [HSC: I thought we weren't using equivalence in this paper? Please clarify here and in all other places used in the paper.]} of expressions in \LaTeX{} automatically (again this could become feasible with our translator). We use \Maple's \texttt{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \texttt{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. Simplification function is the most powerful function to check the equivalence in \Maple. However, there are several cases where simplification fails. Because of implementation details, there are some techniques that help \Maple{} to find possible simplifications. For example, we can force \Maple{} to convert the formula
+as a difference of the left- and right-hand sides cannot be simplified to zero by default. Furthermore, this approach only checks forward translations because there is no way to automatically check whether two \LaTeX{} expressions are {\it appropriate} or {\it inappropriate} representations of each other (again this could become feasible with our translator). We use \Maple's \texttt{simplify} function to check if the difference of the left-hand side and the right-hand side of the equation is equal to zero. In addition, we use \texttt{simplify} and check if the division of the right-hand side by the left-hand side returns a numerical value or not. The simplification function is the most powerful function to check whether two expressions are {\it appropriate} representations in \Maple. However, there are several cases where simplification fails. Because of implementation details, there are some techniques that help \Maple{} to find possible simplifications. For example, we can force \Maple{} to convert the formula
 \begin{equation}
 \sinh{x} + \sin{x}
 \end{equation}
-to an equivalent representation using their exponential representations, namely
+to an {\it appropriate} representation using their exponential representations, namely
 \begin{equation}
 \frac{1}{2}\expe^x - \frac{1}{2}\expe^{-x} - \frac{1}{2} \iunit \left( \expe^{\iunit x}-\expe^{-\iunit x} \right).
 \end{equation}
@@ -918,7 +909,7 @@ The modified Bessel function of the second kind has its branch cut in \Maple{} a
 \verb|\BesselK{\frac{1}{4}}@{\frac{1}{4}z^2}| \overset{\langMaple}{\mapsto} \verb|BesselK(1/4,(1/4)*z^2)|
 \end{equation}
 is incorrect if $|\ph{z}| \in \left(\frac{\cpi}{2}, \cpi\right)$ and one should instead use the analytic continuation for the right-hand side of (\ref{eq:branch-cut-near}). 
-To evaluate such complex cases, the equivalence checks of \gls*{cas} are insufficient. Therefore we implement numerical tests as an additional step.
+To evaluate such complex cases, the previous checks for {\it appropriate} representations in \gls*{cas} are insufficient. Therefore we implement numerical tests as an additional step.
 
 \subsection{Numerical Tests}\label{sec:numerical-tests}
 Consider the difference of the left- and right-hand sides of equation~\eqref{eq:branch-cut-near}, namely
@@ -942,10 +933,10 @@ Table~\ref{tab:computations-for-difference} presents four numerical evaluations 
 \label{tab:computations-for-difference}
 \end{table}
 
-Considering machine accuracy and the default precision to $10$ significant digits, we can regard the first and last values as zero differences. While this evaluation is very powerful, it has a significant problem. Even when all tested values return zero, it does not prove the equivalence of~\eqref{eq:branch-cut-near}. However, when the values are different from zero, it does indicate that there might be an error satisfying one of the four cases~\parencite{NumericalTests:Paper}:
+Considering machine accuracy and the default precision to $10$ significant digits, we can regard the first and last values as zero differences. While this evaluation is very powerful, it has a significant problem. Even when all tested values return zero, it does not prove that~\eqref{eq:branch-cut-near} was {\it appropriately} translated. However, when the values are different from zero, it does indicate that there might be an error satisfying one of the four cases~\parencite{NumericalTests:Paper}:
 \begin{enumerate}
 \item the numerical engine tests invalid combinations of values;
-\item the translation is incorrect;
+\item the translation was {\it inappropriately} defined;
 \item there may be an error in the \gls*{dlmf} source; or
 \item there may be an error in \Maple.
 \end{enumerate}
@@ -954,10 +945,8 @@ Considering machine accuracy and the default precision to $10$ significant digit
 There are currently 685 \Macro{}s\footnote{The DLMF/DRMF semantic macros are still a work in progress, and the total number is constantly changing.} in total, and 665 of them were implemented in the translator engine. We defined forward translations to \Maple{} for 201 of the macros and backward translations from \Maple{} for 195 functions. 
 
 The \gls*{dlmf} provides a dataset of \LaTeX{} expressions with semantic macros. We extracted 4087 equations from the \gls*{dlmf} and applied our round-trip and relation tests on them. The translator was able to translate 2405\footnote{All percentages are approximately calculated.} (58.8\%) of the extracted equations without errors. 
-Simplification techniques of \Maple were successfully verified for 660 (27.4\%) of the translated 
-expressions {\bf [HSC: I tried to reword this sentence so that it does not start with a number, which it never
-should. Can you check to make sure the meaning has not changed?]}. 
-We applied additional numerical tests for the remaining 1745 equations. For 418 (24\%) cases {\bf [HSC: cases? Can you be more precise?]}, the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper}.
+Simplification techniques of \Maple{} were successfully verified for 660 (27.4\%) of the translated expressions. 
+We applied additional numerical tests for the remaining 1745 equations. For 418 (24\%) of them, the numerical tests were valid. More detailed results for numerical and symbolical tests were presented in~\parencite{NumericalTests:Paper}.
 
 
 The evaluation techniques have proven to be very powerful for evaluating \gls*{cas} and online mathematical compendia such as the \gls*{dlmf}. During the evaluations, we were able to detect several errors in the translation and evaluation engine, and also discovered two errors in the \gls*{dlmf} and one error in \Maple's \texttt{simplify} function.
@@ -984,17 +973,17 @@ Furthermore, although the nature of the defect changes, the defect still persist
 as of the publication of this manuscript.
 
 \section{Conclusion \& Future Work}\label{ch:conc-future-work}
-The translator concept has proven itself by discovering errors in the online \gls*{dlmf} compendia. The test cases have also shown how difficult it is to validate a translated expression and have uncovered the problems of translations 
-{\bf [HSC: `the problems of translations'? I do not understand what you mean here. Please clarify.]} between two systems with different sets of supported functions. Our validation techniques also assume the correctness of simplification and computational algorithms in \gls*{cas}. However, combining those techniques and automatically running translation checks, not only can discover errors in mathematical compendia but can also detect errors in simplifications or computations of the \gls*{cas}.
+During this project we uncovered several problems that needs to be solved before providing a translation of mathematical expressions between two systems. The translator concept has proven itself by discovering errors in the online \gls*{dlmf} compendia and the test cases have also shown how difficult it is to validate translated expression. Our validation techniques also assume the correctness of simplification and computational algorithms in \gls*{cas}. However, combining those techniques and automatically running translation checks, not only can discover errors in mathematical compendia but can also detect errors in simplifications or computations of the \gls*{cas}.
 
 The tasks for future work are diverse. The main task is to improve the translator by implementing more functions and features. For example, for the current state, only translations to \Maple's standard function library were implemented. \Maple{} allows one to load extra packages dynamically and therefore support an enhanced set of functions. This feature would drastically increase the number of possible translations. With such improvements, further work on evaluation techniques become worthwhile to evaluate the \gls*{dlmf} and \gls*{cas}.
 Increasing the amount of translatable formulae in the \gls*{dlmf} and improving the verificiation 
 techniques are also parts of ongoing projects. 
 
 The translator was designed to be easily extendable. This allows one to implement translations for other \gls*{cas} without much effort.
-An extensive weakness {\bf [HSC: a weakness? No. I like the last sentence of this paragraph, but the rest is not good. It needs to be repaired, or explained more clearly. Even with a generic to semantic converter, one still relies on the semantic macros, or something needs to be explained better.]} is the dependency on the special macros from the \gls*{dlmf}. The translator is not able to translate functions without using these macros. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
+An extensive weakness of the translator is that the input needs to be semantically enhanced, in this case by the special macros from the \gls*{dlmf}.
+Therefore, without exclusively given semantic information, the translator is not able to translate functions. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs. 
 
-Further improvements for numerical tests could be to perform tests for specific (critical) values \parencite{DBLP:journals/aaecc/BeaumontBDP07} with respect to the involved functions. Beamont and collaborators tested identities for multivalued elementary functions by choosing sample points from regions with respect to branch cuts for functions. Choosing sample points from those regions could significantly improve the success rate of the numerical tests {\bf [HSC: I changed the wording in this paragraph. Please check to make sure it is still correct.]}. 
+Further improvements for numerical tests could be to perform tests for specific (critical) values \parencite{DBLP:journals/aaecc/BeaumontBDP07} with respect to the involved functions. Beamont and collaborators tested identities for multivalued elementary functions by choosing sample points from regions with respect to branch cuts for functions. Choosing sample points from those regions could significantly improve the success rate of the numerical tests.
 \emergencystretch=1em
 \printbibliography
 
