@@ -584,8 +584,10 @@ Subsection~\ref{sec:subtranslators} discusses these classes in more detail.
 \subsection{Problems with the Lookahead Approach}
 The lookahead functionality appears to solve the problems for functions. However, there is a problem with the lookahead functionality that \Cref{sec:problems} did not address. In some cases, the arguments of a function do not follow but precede the function node. 
 
+If we intently examine mathematical notations, we discover many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{prefix notation}, \textit{Warsaw Notation} or \textit{{\L}ukasiewicz notation}. It was invented by J. {\L}ukasiewicz 1924 to create a parenthesis-free notation~\parencite{Hamblin1962}. Note that this notation is indeed parenthesis-free as long as all operators have the same arity.} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}. Also invented by J. {\L}ukasiewicz. Same as \gls*{pol} it does not need parenthesis as long as all operators have the same arity.} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense if the operator is a binary operator.
+
 \begin{wrapfigure}[10]{r}{0.38\textwidth} % optional parameter gives "# of narrow lines", very useful! 
-\vspace{4pt}
+\vspace{-5pt}
 \begin{minipage}{0.38\textwidth}
 \center
 \begin{tabular}{lc}
@@ -602,10 +604,8 @@ Functional & $\cdot(+(a, b), x)$\\
 \caption{The mathematical expression `$(a+b) \cdot x$' in infix, prefix, postfix and functional notation.}
 \label{tab:notations}
 \end{minipage}
-%\vspace{-5pt}
+\vspace{3pt}
 \end{wrapfigure}
-
-If we intently examine mathematical notations, we discover many different types of notations used to represent formulae. \Cref{tab:notations} illustrates the expression $(a+b)x$ in different notations. The \gls*{pol}\footnote{Also known as \textit{prefix notation}, \textit{Warsaw Notation} or \textit{{\L}ukasiewicz notation}. It was invented by J. {\L}ukasiewicz 1924 to create a parenthesis-free notation~\parencite{Hamblin1962}. Note that this notation is indeed parenthesis-free as long as all operators have the same arity.} (hereafter called prefix notation) places the operator to the left of/before its operands. The \gls*{rpol}\footnote{Also known as \textit{postfix notation}. Also invented by J. {\L}ukasiewicz. Same as \gls*{pol} it does not need parenthesis as long as all operators have the same arity.} (hereafter called postfix notation) does the opposite and places the operator to the right of/after its operands. The infix notation is commonly used in arithmetic and places the operator between its operands. This only makes sense if the operator is a binary operator.
 
 In mathematical expressions, notations are mostly mixed, depending on the case and number of operands. For example, infix notation is common for binary operators ($+$, $-$, $\cdot$, $\mod$, etc.), while functional notations are conveniently used for any kind of functions ($\sin$, $\cos$, etc.), and the postfix notation is often common for unary operators ($2!$, $-2$, etc.). Sometimes the same symbol is used in different notations to distinguish different meanings. For example, the `$-$' as a unary operator is used in prefix notation to indicate the negative value of its operand, such as in `$-2$'. Of course, `$-$' can also be the binary operator for subtraction, which is commonly used in infix notation. 
 % [AGP: I moved the 2! example to the first sentence where I explain all kinds of notations
