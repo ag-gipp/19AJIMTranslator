@@ -143,7 +143,7 @@
 
 \newacronym{dlmf}{DLMF}{Digital Library of Mathematical Functions}
 \newacronym{drmf}{DRMF}{Digital Repository of Mathematical Formulae}
-\newacronym{cas}{CAS}{Computer Algebra System}
+\newacronym{cas}{CAS}{Computer Algebra Systems}
 \newacronym{mlp}{MLP}{Mathematical Language Parser}
 \newacronym{mlp-pt}{PPT}{PoM-Parsed Tree}
 \newacronym{pom-pt}{PPT}{PoM-Parsed Tree}
@@ -167,7 +167,7 @@
 \newacronym{nist}{NIST}{National Institute of Standards and Technology}
 \newacronym{vmext}{VMEXT}{Visualizing Mathematical Expression Trees}
 \newacronym{opsf}{OPSF}{Orthogonal Polynomials and Special Functions}
-\newacronym{dps}{DPS}{Document Preparation System}
+\newacronym{dps}{DPS}{Document Preparation Systems}
 \newacronym{stem}{STEM}{Science, Technology, Engineering and Mathematics}
 \newacronym{gui}{GUI}{Graphical User Interface}
 \newacronym{omdoc}{OMDoc}{Open Mathematical Documents}
@@ -208,7 +208,7 @@
 \begin{abstract}
 \glsresetall
 \noindent
-\textbf{Purpose:} Modern mathematicians and scientists of math-related disciplines often use \glspl*{dps} to write and \glspl*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{dps} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{dps}.
+\textbf{Purpose:} Modern mathematicians and scientists of math-related disciplines often use \gls*{dps} to write and \gls*{cas} to calculate mathematical expressions. Usually, they translate the expressions manually between \gls*{dps} and \gls*{cas}. This process is time-consuming and error-prone. Our goal is to automate this translation. This paper uses \Maple{} and \Mathematica{} as the \gls*{cas}, and \LaTeX{} as our \gls*{dps}.
  
 \noindent\textbf{Approach:} Bruce Miller at the \gls*{nist} developed a collection of special \LaTeX{} macros that create links from mathematical symbols to their definitions in the \gls*{nist} \gls*{dlmf}. We are using these macros to perform rule-based translations between the formulae in the \gls*{dlmf} and \gls*{cas}. Moreover, we develop software to ease the creation of new rules and to discover inconsistencies.
  
@@ -222,7 +222,7 @@
 
 
 \section{Introduction}
-A typical workflow of a scientist who writes a scientific publication is to use a \gls*{dps} to write the paper and one or more \glspl*{cas} for verification, analysis and visualization. Especially in the \gls*{stem} literature, \LaTeX{}
+A typical workflow of a scientist who writes a scientific publication is to use \gls*{dps} to write the paper and one or more \gls*{cas} for verification, analysis and visualization. Especially in the \gls*{stem} literature, \LaTeX{}
 %\footnote{Note that technically \LaTeX{} is not a \gls*{dps} (\url{https://www.latex-project.org/about/}, seen 07/2017) like \textit{Microsoft Word}. However, since \LaTeX{} (an extension of \TeX) is the de facto standard for writing articles in \gls*{stem}, and we only focus on mathematical writing in this paper, we have categorized \LaTeX{} as a \gls*{dps} as well.} 
 has become the de facto standard for writing scientific publications over the past 30 years~\parencites{Knuth}[559]{DigitalTypo}{LATEX:Standard}. \LaTeX{} enables printing of mathematical formulae in a structure similar to handwritten style. For example, consider the specific Jacobi polynomial~\parencite[Table 18.3.1]{NIST:DLMF}
 \begin{equation}\label{eq:P}
