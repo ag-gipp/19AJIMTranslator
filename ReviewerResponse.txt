@@ -1,4 +1,4 @@
-In the following we respond specifically to the reviewers comments.
+In the following, we respond specifically to the reviewers' comments.
 
 Reviewer 1:
 
@@ -34,7 +34,7 @@ Note that we did not add further comparisons with LaTeXML to our
 evaluations section, because current CAS are unable to understand MathML 
 which contains special functions. Thus, in order to make a decent 
 comparison, we can only compare translations without function calls or 
-implement a solution which is able overcome these problems.  Because of 
+implement a solution which is able to overcome these problems.  Because of 
 the problems which would need to be overcome, a full solution translation 
 implementation using MathML is out of the scope of our current project. 
 This is now all explained in detail in the new version of the manuscript.
@@ -60,4 +60,3 @@ To address the weakness in precision, we added an enhanced definition for
 appropriate and inappropriate translations. Furthermore, we have rewritten
 the paragraph about alternative translations for the arccotangent function 
 on Page 6 (now Page 7).
-
