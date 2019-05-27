@@ -964,7 +964,7 @@ namely the \Maple{} {\tt simplify} procedure. The left-hand side of~\parencite[(
 where $e$ is the base of the natural logarithm, and $\operatorname{erfc}$ is the
 complementary error function. Our translation correctly produces 
 \begin{equation*}
-\verb|diff((exp((z)^(2))*erfc(z)), [z$(n))]|.
+\verb|diff((exp((z)^(2))*erfc(z)), [z$(n)])|.
 \end{equation*}
 However, the \Maple{ 2016} \verb|simplify| function falsely returns $0$ for the translated left-hand side.
 Maplesoft has confirmed in a private communication that this is indeed a defect in \Maple{ 2016}.
@@ -982,6 +982,9 @@ The translator was designed to be easily extendable. This allows one to implemen
 However, most \LaTeX{} sources, such as in arXiv, are given in generic \LaTeX{}. Semantic \LaTeX{}, which is a prerequsite for our translator, is currently prevalent in the DLMF and DRMF projects alone. Therefore, without exclusively given semantic information, the translator is not able to translate functions. Currently, we are working on mathematical information retrieval techniques which will allow for an extension of the translator to generic \LaTeX{} inputs.
 
 Further improvements for numerical tests could be to perform tests for specific (critical) values \parencite{DBLP:journals/aaecc/BeaumontBDP07} with respect to the involved functions. Beamont and collaborators tested identities for multivalued elementary functions by choosing sample points from regions with respect to branch cuts for functions. Choosing sample points from those regions could significantly improve the success rate of the numerical tests.
+
+\noindent{\bf\large Acknowledgements} This work was supported by the German Research Foundation (DFG grant GI-1259-1).
+
 \emergencystretch=1em
 \printbibliography
 
