@@ -21,6 +21,7 @@
 \usepackage{layout}
 \usepackage{textcomp} 
 \usepackage{authblk}
+\usepackage{comgipp}
 
 \usepackage[dvipsnames]{xcolor}
 \usepackage{lstomdoc}
@@ -38,7 +39,7 @@
 \usepackage{sectsty}
 \subsectionfont{\normalfont\large\itshape}
 
-\usepackage[	a4paper,	]{geometry}
+\usepackage[a4paper]{geometry}
 \setlength{\headheight}{14pt}
 \usepackage{fancyhdr}
 
@@ -66,8 +67,9 @@
 ]{biblatex}
 
 \DeclareNameAlias{sortname}{last-first}
-
-\addbibresource{./bibliography/Bibliography.bib} 
+\addbibresource{references.bib}
+\addbibresource{./bibliography/Bibliography.bib}
+\newcommand{\theReferenceText}{\fullcite{GreinerPetter2019}}
 \hypersetup{
 	pdftitle	= {Semantic Preserving Bijective Mappings for Expressions involving Special Functions in Computer Algebra Systems and Document Preparation Systems}
 }
