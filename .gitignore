@@ -45,3 +45,6 @@
 
 ### TMP File by JabRef ###
 *.bak
+
+latexmk
+venv
