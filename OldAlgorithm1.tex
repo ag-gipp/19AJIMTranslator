@@ -1,0 +1,21 @@
+\begin{wrapfigure}{r}{0.5\textwidth}
+\vspace{-20pt}
+\begin{minipage}{0.5\textwidth}
+\begin{algorithm}[H]
+\caption{Simple translation algorithm for the POM-Parse Tree}\label{alg:simple-translation}
+	\begin{algorithmic}[1]
+	\Require Root $r$ of the parse tree $T$
+	\Procedure{translate}{$r$}
+	\If{$r$ is leaf}
+		\State {\scriptsize TRANSLATE\_LEAF}($r$);
+	\Else
+		\ForAll{children $v_n$ of $r$}
+			\State {\scriptsize TRANSLATE}($v_n$);
+		\EndFor
+	\EndIf
+	\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+\end{minipage}
+\vspace{-14pt}
+\end{wrapfigure}

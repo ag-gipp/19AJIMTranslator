@@ -1,0 +1,62 @@
+In the following, we respond specifically to the reviewers' comments.
+
+Reviewer 1:
+
+As suggested, we made several changes to improve the structure of the paper.  
+In summary, we have :
+(1) added the subsection headings "Different Sets of Defined Functions", 
+"Positions of Branch Cuts", "Insufficient Semantic Information", and 
+"Potentially Ambiguous Expressions" in Section 3; 
+(2) gave an overview of the concept of the translator in Section 4;
+(3) as suggested, we removed the unnecessary Algorithm 1 in Section 5 
+because it was just a simplified pre-version of Algorithm 2;
+(4) added the subsection heading "Problems with the Look Ahead Approach" in 
+Section 5 for a better outline; and 
+(5) further explained the different states of Algorithm 3 (now Algorithm 2) 
+by referring to specific lines in the algorithm.  
+
+We explained how a power after a macro is handled in more detail and why 
+optional parameters need to be handled differently than other arguments.
+
+We gave further detailed descriptions concerning the PoM-Tagger, namely its 
+parsing process and lexicon files. 
+
+We added LaTeXML to the related work section and gave a brief 
+explanation with cited research (Schubotz et al., 2018, now included 
+in our references), in order to explain why we did not choose MathML 
+as an intermediate data format for performing translations. In that 
+citation, we described detailed testing that we performed using LaTeXML 
+and other state-of-the-art LaTeX to MathML conversion tools. In that
+reference, we discovered several critical problems which could occur 
+when translations would be performed using MathML as an intermediate data format.
+
+Note that we did not add further comparisons with LaTeXML to our 
+evaluations section, because current CAS are unable to understand MathML 
+which contains special functions. Thus, in order to make a decent 
+comparison, we can only compare translations without function calls or 
+implement a solution which is able to overcome these problems.  Because of 
+the problems which would need to be overcome, a full solution translation 
+implementation using MathML is out of the scope of our current project. 
+This is now all explained in detail in the new version of the manuscript.
+
+Reviewer 2:
+
+For clarification, throughout the manuscript, we decided to change the 
+wording "Word Processor" to "Document Preparation System," and 
+"Representations of Special Functions" to "Expressions involving Special 
+Functions." Since this wording occurred as part of the title, we did not 
+add that we focus on LaTeX to the title and hope that the Abstract points 
+this out in an acceptable manner.
+
+Instead of creating an Appendix, we decided to add short paragraphs 
+which explain the purpose of Sections 4 and 6. We hope this helps the reader 
+to decide whether he can skip the section, e.g., in case of his lack of 
+interest in Maple "hackings", or not.  In the new version of the paper, 
+we implemented all suggested minor changes as well as adding the idea of 
+improved numerical tests by using the mentioned cut region detection to 
+the future work section.
+
+To address the weakness in precision, we added an enhanced definition for 
+appropriate and inappropriate translations. Furthermore, we have rewritten
+the paragraph about alternative translations for the arccotangent function 
+on Page 6 (now Page 7).
